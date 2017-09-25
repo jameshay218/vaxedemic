@@ -4,17 +4,15 @@ Version: 0.0.1
 Author: James Hay <james.hay13@imperial.ac.uk>
 Maintainer: James Hay <james.hay13@imperial.ac.uk> <jameshay218@gmail.com>
 Description: Implements a stochastic compartmental model to solve a global model of pandemic influenza. The user is able to modify input parameters such as global connectivity, vaccine production and efficacy, and population demographics.
-Depends:
-	R (>= 3.0.0)
 License: GPL-3
 LazyData: true
 URL: https://github.com/jameshay218/vaxedemic
 BugReports: https://github.com/jameshay218/vaxedemic/issues
-Suggests:
-    plyr
+Suggests: Suggests:
+    testthat,
+    knitr,
+    rmarkdown
 LinkingTo: Rcpp
 SystemRequirements: C++11
-Suggests:
-    testthat
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr

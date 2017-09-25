@@ -1,8 +1,9 @@
 # vaxedemic
 > Optimal global allocation of vaccinations during a pandemic
+
 [![Build Status](https://travis-ci.org/user/pkg.svg?branch=master)](https://travis-ci.org/user/pkg)
 
-Testing link to vignette, if needed(https://jameshay218.github.io/vaxedemic/inst/doc/usage.html).
+Testing link to vignette, if [needed](https://jameshay218.github.io/vaxedemic/inst/doc/usage.html).
 
 ## Installation
 The package uses compiled C++ code, so you should have Rtools installed.

@@ -28,10 +28,5 @@
 .Rproj.user
 .Rhistory
 .RData
-tests/testthat/examples/*.rds
 issues.md
-tests/testthat/*.c
-tests/testthat/tmp*
-inst/doc
-inst/web
 .valgrind_ignore

@@ -12,7 +12,10 @@ Suggests:
     testthat,
     knitr,
     rmarkdown
-LinkingTo: Rcpp
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo,
+    RcppEigen
 SystemRequirements: C++11
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr

@@ -11,5 +11,5 @@ my_data[,numeric_cols] <- as.data.frame(lapply(my_data[,numeric_cols], function(
 my_data[,numeric_cols] <- my_data[,numeric_cols]*1000
 my_data[,3:6] <- lapply(my_data[,3:6], function(x) x/my_data$Total)
 colnames(my_data) <- c("countryID", "N", "propn_age1", "propn_age2", "propn_age3", "propn_age4")
-saveRDS(my_data,"demography_data_world_population_prospects.rds")
-write.table(my_data,file = "demography_data_world_population_prospects_clean.csv",sep = ",")
+# saveRDS(my_data,"demography_data_world_population_prospects.rds")
+# write.table(my_data,file = "demography_data_world_population_prospects_clean.csv",sep = ",")

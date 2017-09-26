@@ -1,3 +1,5 @@
+library(ggplot2)
+
 ##Inputs:
 R0 <- 1.8
 TR <- 2.6
@@ -5,8 +7,8 @@ gamma <- 1/TR
 pop <- 10000*matrix(1,5,1)#Popuation
 X <- pop
 n <- length(X)
-propRisk <- c(.2,.2,.2,.2)#Proportion of each age group at risk
-risk <- matrix(1.5,4,1);#Risk multiplication factor - migth want to re-structure********
+propRisk <- c(.5,.5,.5,.5)#Proportion of each age group at risk
+risk <- matrix(1,4,1);#Risk multiplication factor - migth want to re-structure********
 K <- matrix(1,n,n)+999*diag(n)#Travel coupling - assumed independent of age (but can be changed)
 ndays <- 100#Number of days to simulate
 div=24#Time interval = day/div
@@ -14,6 +16,7 @@ gamma <- gamma/div
 
 #Properties:
 ageProp <- matrix(c(5,14,45,16)/80,4,1)#Assumed uniform between 0 and 79 - option to change/make country dependent
+#ageProp <- matrix(.25,4,1)
 
 ##================================================================================================
 ##Heterogeneities:
@@ -22,7 +25,11 @@ Cnum <- matrix(c(6.92,.25,.77,.45,.19,3.51,.57,.2,.42,.38,1.4,.17,.36,.44,1.03,1
 Cnum=t(Cnum)#Contact number
 Cdur <- matrix(c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.73),4,4)
 Cdur=t(Cdur)#Contact duration
-C1 <- Cnum*Cdur#Age/risk matrix (4x4)
+#Age off:
+#Cnum <- matrix(1,4,4)
+#Cdur <- Cnum
+
+C1 <- Cnum*Cdur#Number x duration (4x4)
 
 #Account for risk in dimensionality:
 k2 <- matrix(1,2,2);
@@ -47,10 +54,11 @@ C <- C2*Rf#THE age/risk matrix
 
 #Travel:
 Krow <- rowSums(K)
-K <- kronecker(matrix(1,1,n),matrix(Krow,n,1))
+Knorm <- kronecker(matrix(1,1,n),matrix(Krow,n,1))
+K <- K/Knorm
 Kdelta <- kronecker(diag(8),K)
 K1 <- kronecker(matrix(1,8,8),t(K))
-KC <- kronecker(C1,t(K))
+KC <- kronecker(C,t(K))
 
 #Vaccination:
 V <- matrix(0,n,n)#Vaxine distribution
@@ -64,8 +72,7 @@ Mm1[M==0] <- 0
 Mm1 <- kronecker(matrix(1,8*n,1),t(Mm1))
 Xover=1/X
 Xover[X==0] <- 0
-Njover <- kronecker(matrix(1,8*n,1),t(X))#Need?
-L1 <- (kronecker(matrix(1,1,8*n),X)*Kdelta*Mm1)%*%K1
+L1 <- (kronecker(matrix(1,1,8*n),X)*Kdelta*Mm1)%*%KC
 
 #Beta calcualtion (global):
 XX <- 1/gamma*L1
@@ -73,7 +80,8 @@ ev <- eigen(XX)
 ev <- ev$values
 Rstar <- max(abs(ev))
 beta <- R0/Rstar
-LD <- beta*(Kdelta*Mm1)%*%K1#L^D in DH's work, INCLUDING FACTOR OF BETA
+LD <- beta*(Kdelta*Mm1)%*%KC
+#L^D in DH's work, INCLUDING FACTOR OF BETA
 
 #Seeding:
 seedC <- 1#Seed country
@@ -112,4 +120,17 @@ attack <- 1-Splot[ndays*div]/sum(X)
 print(attack)
 toplot <- Iplot
 ymax <- max(toplot)
-plot(seq(1/div,ndays,by=1/div), toplot, xlim=c(0,ndays), ylim=c(0,ymax), xlab='Days', ylab='Proportion of population')
+
+plot_age_group <- function(Imat, age_group, n, ymax=500
+                           ){
+  tmpImat <- Imat[seq(age_group,nrow(Imat),by=n),]
+  tmpImat <- reshape2::melt(tmpImat)
+  colnames(tmpImat) <- c("index","x","value")
+  p <- ggplot(tmpImat) + geom_line(aes(x=x,y=value)) + facet_wrap(~index) + scale_y_continuous(limits=c(0,ymax))
+  return(p)
+}
+
+p1 <- plot_age_group(Imat, 1, n)
+print(p1)
+
+#plot(seq(1/div,ndays,by=1/div), Imat[seq(1,nrow(Imat),by=n),], xlim=c(0,ndays), ylim=c(0,ymax), xlab='Days', ylab='Proportion of population')

@@ -1,0 +1,6 @@
+main_simulation <- function(tmax, LD, I0, S0, R0, params){
+    beta <- params["beta"]
+    gamma <- params["gamma"]
+
+    
+}

@@ -1,8 +1,7 @@
 # script to process demography and contact matrices csv files
 # the age groups are 0-4, 5-14, 15-64, 65+
 
-setwd("~/git_repos/vaxedemic/data")
-library(xlsx)
+setwd("~/Documents/vaxedemic/data")
 
 
 # first pass at demographic data
@@ -24,8 +23,8 @@ write.table(demographic_data,file = "demography_data_clean.csv",sep = ",", row.n
 # get contact data names
 n_files <- 2
 contact_filenames <- paste0("MUestimates_all_locations_", seq_len(n_files), ".xlsx")
-workbooks <- lapply(contact_filenames, loadWorkbook)
-sheets <- lapply(workbooks, getSheets)
+workbooks <- lapply(contact_filenames, xlsx::loadWorkbook)
+sheets <- lapply(workbooks, xlsx::getSheets)
 contact_country_names <- lapply(sheets, names)
 first_name_in_sheet_2 <- contact_country_names[[2]][1]
 contact_country_names <- unlist(contact_country_names)
@@ -66,7 +65,7 @@ read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_file
     name_in_2 <- (country_name == first_name_in_sheet_2) ||
       (!(sort(c(country_name, first_name_in_sheet_2))[1] == country_name))
     filename <- contact_filenames[as.numeric(name_in_2) + 1]
-    contact_data <- read.xlsx(filename, sheetName = country_name, header = !name_in_2)
+    contact_data <- xlsx::read.xlsx(filename, sheetName = country_name, header = !name_in_2)
     contact_data_summed <- sum_over_age_groups(contact_data)
     contact_data_summed
   }

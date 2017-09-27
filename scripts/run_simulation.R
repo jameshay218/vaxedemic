@@ -1,3 +1,5 @@
+library(reshape2)
+library(ggplot2)
 source("~/Documents/vaxedemic/R/simulation.R")
 
 ## LIFE HISTORY PARAMETER INPUTS
@@ -99,4 +101,4 @@ p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
 
 p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 
-cowplot::plot_grid(p1,p2,ncol=2,align="hv")
+grid_plot <- cowplot::plot_grid(p1,p2,ncol=2,align="hv")

@@ -1,6 +1,7 @@
 library(reshape2)
 library(ggplot2)
 source("~/Documents/vaxedemic/R/simulation.R")
+source("~/Documents/vaxedemic/R/setup.R")
 
 
 real_data = TRUE

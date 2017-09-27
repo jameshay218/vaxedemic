@@ -3,8 +3,7 @@
 
 setwd("~/Documents/vaxedemic/data")
 
-
-# first pass at demographic data
+# demographic data
 demographic_data <- read.csv("demography_data_world_population_prospects.csv",
                     stringsAsFactors = FALSE)
 demographic_data <- demographic_data[demographic_data$Reference.date..as.of.1.July. == 2015 &
@@ -16,9 +15,10 @@ demographic_data[,numeric_cols] <- as.data.frame(lapply(demographic_data[,numeri
 demographic_data[,numeric_cols] <- demographic_data[,numeric_cols]*1000
 demographic_data[,3:6] <- lapply(demographic_data[,3:6], function(x) x/demographic_data$Total)
 colnames(demographic_data) <- c("countryID", "N", "propn_age1", "propn_age2", "propn_age3", "propn_age4")
+demographic_data <- demographic_data[order(demographic_data$countryID),]
 demographic_country_names <- unlist(demographic_data$countryID)
-saveRDS(demographic_data,"demography_data.rds")
-write.table(demographic_data,file = "demography_data_clean.csv",sep = ",", row.names = FALSE)
+
+write.table(demographic_data,file = "demographic_data_clean.csv",sep = ",", row.names = FALSE)
 
 # get contact data names
 n_files <- 2
@@ -36,11 +36,6 @@ contact_country_names <- unlist(contact_country_names)
 # locations <- read.xlsx("locations.xlsx",1,startRow = 31, header = FALSE,colIndex = c(2,6,9))
 # colnames(locations) <- c("country_name", "location_code", "subregion_name")
 # locations <- locations[locations$location_code == 4,c(1,3)]
-
-countries_in_both <- intersect(demographic_country_names, contact_country_names)
-demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
-countries_in_both <- sort(countries_in_both)
-demographic_data <- demographic_data[order(demographic_data$countryID),]
 
 read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_filenames){
   age_group_spacing <- 5
@@ -74,5 +69,16 @@ read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_file
 
 read_format_contact_data <- read_format_contact_data_closure(first_name_in_sheet_2, contact_filenames)
 
-contact_data <- lapply(countries_in_both, read_format_contact_data)
-saveRDS(contact_data,"contact_data.rds")
+# contact_data <- lapply(countries_in_both, read_format_contact_data)
+contact_data <- lapply(contact_country_names, read_format_contact_data)
+contact_data <- lapply(contact_data, function(x) matrix(x, 1, length(contact_data[[1]])))
+contact_data <- do.call(rbind, contact_data)
+contact_data <- cbind(contact_country_names, as.data.frame(contact_data))
+
+write.table(contact_data,file = "contact_data_clean.csv",sep = ",", row.names = FALSE)
+
+countries_in_both <- intersect(demographic_country_names, contact_country_names)
+demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
+write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
+contact_data <- contact_data[contact_country_names %in% countries_in_both,]
+write.table(contact_data,file = "contact_data_intersect.csv",sep = ",", row.names = FALSE)

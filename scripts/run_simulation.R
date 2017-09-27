@@ -2,6 +2,9 @@ library(reshape2)
 library(ggplot2)
 source("~/Documents/vaxedemic/R/simulation.R")
 
+
+real_data = TRUE
+
 ## LIFE HISTORY PARAMETER INPUTS
 life_history_params <- list(R0=1.8,TR=2.6)
 
@@ -13,14 +16,23 @@ simulation_flags <- list(ageMixing=TRUE,
 tmax <- 100
 tdiv <- 24
 
-## SETUP FAKE COUNTRY DATA
-popn_size <- 100000
-n_countries <- 10
+if(real_data) {
+  demography_filename <- "~/Documents/vaxedemic/data/demographic_data_intersect.csv"
+  tmp <- read.csv(demography_filename, sep = ",")
+  n_countries <- nrow(tmp)
+  n_ages <- ncol(tmp) - 2
+} else {
+  ## SETUP FAKE COUNTRY DATA
+  popn_size <- 100000
+  
+  
+  ## Setup age propns
+  n_ages <- 4
+  age_propns <- rep(1/n_ages, n_ages)
+  age_propns <- c(5,14,45,16)/80
+  n_countries <- 10
+}
 
-## Setup age propns
-n_ages <- 4
-age_propns <- rep(1/n_ages, n_ages)
-age_propns <- c(5,14,45,16)/80
 ## Setup risk groups
 n_riskgroups <- 2
 
@@ -45,9 +57,16 @@ contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.7
 ## Travel coupling
 K <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
 
-tmp <- setup_populations(popn_size,n_countries,age_propns, n_ages,
-                         risk_propns, risk_factors,
-                         n_riskgroups)
+if(real_data) {
+  tmp <- setup_populations_real_data(demography_filename,
+                            risk_propns, risk_factors,
+                            n_riskgroups)
+} else {
+  tmp <- setup_populations(popn_size,n_countries,age_propns, n_ages,
+                           risk_propns, risk_factors,
+                           n_riskgroups)
+}
+
 X <- tmp$X
 labels <- tmp$labels
     

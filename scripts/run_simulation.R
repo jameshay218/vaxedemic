@@ -1,3 +1,5 @@
+library(reshape2)
+library(ggplot2)
 source("~/Documents/vaxedemic/R/simulation.R")
 source("~/Documents/vaxedemic/R/setup.R")
 
@@ -78,4 +80,26 @@ res <- run_simulation(simulation_flags, life_history_params, sim_params,
 
 
 
-#cowplot::plot_grid(p1,p2,ncol=2,align="hv")
+
+plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
+
+I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I)
+I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
+I$Age <- as.factor(I$Age)
+I$RiskGroup <- as.factor(I$RiskGroup)
+I$variable <- as.numeric(I$variable)
+times <- seq(0,tmax,by=1/tdiv)
+I$variable <- times[I$variable]
+I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=sum)
+
+N <- aggregate(data=labels, X~Location + Age,FUN=sum)
+I_aggregated <- merge(I_aggregated,N,id.vars=c("Location","Age"))
+
+p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
+    geom_line() +
+    facet_wrap(~Location) +
+    theme_bw()
+
+p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
+
+grid_plot <- cowplot::plot_grid(p1,p2,ncol=2,align="hv")

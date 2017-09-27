@@ -163,11 +163,33 @@ setup_populations <- function(popn_size, n_countries,
     risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
 
     ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-    age_group_risk <- rep(c(age_groups), each=n_riskgroups)
+    age_group_risk <- rep(c(age_groups), n_riskgroups)
 
     ## Multiply together to get proportion of population in each location/age/risk group combo
     X <- trunc(risk_matrix*age_group_risk)
     
     labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
     return(list(X=X,labels=labels))
+}
+
+setup_populations_real_data <- function(demography_filename,
+                              risk_propns, risk_factors,
+                              n_riskgroups){
+  
+  demographic_data <- read.csv(demography_filename,sep = ",")
+  age_groups <- as.matrix(demographic_data[,2] * demographic_data[,seq(3,ncol(demographic_data))])
+
+  ## Generate risk propns for each age group
+  ## Enumerate out risk groups to same dimension as countries
+  ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
+  risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
+  
+  ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
+  age_group_risk <- rep(c(age_groups), n_riskgroups)
+  
+  ## Multiply together to get proportion of population in each location/age/risk group combo
+  X <- round(risk_matrix*age_group_risk)
+  
+  labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
+  return(list(X=X,labels=labels))
 }

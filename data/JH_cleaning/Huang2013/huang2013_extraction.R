@@ -4,7 +4,7 @@ codeFile <- "airports_extended_huang2013.csv"
 flightFile <- "prediction_huang2013.csv"
 SAVE <- TRUE
 ADD_RETURNS <- FALSE
-topwd <- "~/Documents/vaxedemic_tmp/Huang2013"
+topwd <- "~/Documents/vaxedemic/data/JH_cleaning/Huang2013"
 setwd(topwd)
 source("../travel_plotting_funcs.R")
 
@@ -103,5 +103,5 @@ if(SAVE){
 ## For country labels
 countries <- unique(summed$Origin)
 countries <- countries[order(countries)]
-countries <- data.frame("ID"=1:length(countries),"Location"=countries)
+countries <- data.frame("originalID"=1:length(countries),"Location"=countries,"Data"="Huang2013")
 if(SAVE) write.table(countries,"~/Documents/vaxedemic_tmp/huang2013_countries.csv",sep=",",row.names=FALSE)

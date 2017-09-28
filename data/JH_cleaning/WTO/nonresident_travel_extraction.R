@@ -4,7 +4,7 @@ codeFile <- "flight_ids_WTO.csv"
 flightFile <- "raw_flights_WTO.csv"
 SAVE <- TRUE
 ADD_RETURNS <- FALSE
-topwd <- "~/Documents/vaxedemic_tmp/WTO"
+topwd <- "~/Documents/vaxedemic/data/JH_cleaning/WTO"
 setwd(topwd)
 
 ## Read in country IDs and names
@@ -70,5 +70,5 @@ if(SAVE){
 ## For country labels
 countries <- unique(melted_data$Origin)
 countries <- countries[order(countries)]
-countries <- data.frame("ID"=1:length(countries),"Location"=countries)
+countries <- data.frame("originalID"=1:length(countries),"Location"=countries,"Data"="WTO")
 if(SAVE) write.table(countries,"~/Documents/vaxedemic_tmp/WTO_countries.csv",sep=",",row.names=FALSE)

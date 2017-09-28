@@ -3,6 +3,7 @@ run_simulation <- function(simulation_flags, life_history_params,
                            X,
                            contactMatrix,
                            travelMatrix,
+                           cum_vax_pool_func,
                            tmax=100,tdiv=24){
     
     ageMixing <- simulation_flags[["ageMixing"]]
@@ -81,7 +82,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     sigma <- matrix(0,maxIndex,1)
     sigma[(seed_countries-1)*groupsPerLoc + seed_ages,1] <- seed_ns
 
-    # intial exposed are distrubted among vaccinated and unvaccinated proportionally
+    # intial exposed are distributed among vaccinated and unvaccinated proportionally
     EV <- round(sigma * propn_vax0)
     E <- sigma - EV
     SV <- round((X - sigma) * propn_vax0)
@@ -92,7 +93,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy)
     
     result <- main_simulation(tmax,tdiv,LD, S, E, I, R, 
-                              SV, EV, IV, RV, modelParameters)
+                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func)
     result
 }
 
@@ -101,7 +102,8 @@ run_simulation <- function(simulation_flags, life_history_params,
 ## This could be moved to C
 
 main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0, 
-                            SV0, EV0, IV0, RV0, params){
+                            SV0, EV0, IV0, RV0, params,
+                            cum_vax_pool_func){
   
     gamma <- params["gamma"]
     alpha <- params["alpha"]
@@ -132,8 +134,17 @@ main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0,
     EVmat[,1] <- EV0
     IVmat[,1] <- IV0
     RVmat[,1] <- RV0
+    
+    vax_pool_vec <- double(length(times))
+    vax_pool <- 0
+    cum_vax_pool <- vapply(times, cum_vax_pool_func, double(1))
 
     for(i in 2:(tend+1)){
+
+#################
+## VAX PRODUCTION
+#################            
+        vax_pool <- vax_pool + cum_vax_pool[i] - cum_vax_pool[i - 1]
 #################
         ## INFECTIONS
 #################
@@ -197,12 +208,13 @@ main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0,
         EVmat[,i] <- EV
         IVmat[,i] <- IV
         RVmat[,i] <- RV
+        vax_pool_vec[i] <- vax_pool
     }
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
 
     return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat))
+                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec))
 }
 
 

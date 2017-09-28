@@ -207,3 +207,11 @@ setup_populations_real_data <- function(demography_filename,
   labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
   return(list(X=X,labels=labels))
 }
+
+read_contact_data <- function(contact_filename){
+  
+  contact_data <- read.table(contact_filename,sep = ",",stringsAsFactors = FALSE,row.names = 1,header = TRUE)
+  contact_data <- t(contact_data)
+  contact_data <- lapply(contact_data, function(x) matrix(x,4,4))
+  return(contact_data)
+}

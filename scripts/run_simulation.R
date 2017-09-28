@@ -11,7 +11,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = FALSE,
+                         real_data = TRUE,
                          country_specific_contact = TRUE,
                          seed = 1)
 tmax <- 100
@@ -23,6 +23,7 @@ if(!is.null(simulation_flags[["seed"]])) {
 
 if(simulation_flags[["real_data"]]) {
   demography_filename <- "~/Documents/vaxedemic/data/demographic_data_intersect.csv"
+  contact_filename <- "~/Documents/vaxedemic/data/contact_data_intersect.csv"
   tmp <- read.csv(demography_filename, sep = ",")
   n_countries <- nrow(tmp)
   n_ages <- ncol(tmp) - 2
@@ -81,7 +82,7 @@ labels <- tmp$labels
 ## of these matrices of length n_countries
 if(simulation_flags[["real_data"]]) {
   # to do: read from contact matrix csv
-  C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
+  C1 <- read_contact_data(contact_filename)
 } else {
   C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
   if(simulation_flags[["country_specific_contact"]]) {

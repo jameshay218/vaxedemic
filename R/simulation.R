@@ -4,7 +4,8 @@ run_simulation <- function(simulation_flags, life_history_params,
                            contactMatrix,
                            travelMatrix,
                            cum_vax_pool_func,
-                           tmax=100,tdiv=24){
+                           vax_allocation_func,
+                           tmax=100,tdiv=24, vax_alloc_period = 24 * 7){
     
     ageMixing <- simulation_flags[["ageMixing"]]
     riskGroups <- simulation_flags[["riskGroups"]]
@@ -92,8 +93,9 @@ run_simulation <- function(simulation_flags, life_history_params,
 
     modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy)
     
-    result <- main_simulation(tmax,tdiv,LD, S, E, I, R, 
-                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func)
+    result <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
+                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                              vax_allocation_func)
     result
 }
 
@@ -101,9 +103,9 @@ run_simulation <- function(simulation_flags, life_history_params,
 
 ## This could be moved to C
 
-main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0, 
+main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
-                            cum_vax_pool_func){
+                            cum_vax_pool_func, vax_allocation_func){
   
     gamma <- params["gamma"]
     alpha <- params["alpha"]
@@ -145,6 +147,34 @@ main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0,
 ## VAX PRODUCTION
 #################            
         vax_pool <- vax_pool + cum_vax_pool[i] - cum_vax_pool[i - 1]
+        
+#################
+## VAX ALLOCATION
+#################       
+        if(i %% vax_alloc_period == 0) {
+          # allocate vaccines
+          vax_alloc <- floor(vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool))
+          
+          ## update vax pool
+          vax_pool <- vax_pool - sum(vax_alloc)
+          
+          # distribute vaccines proportionally among S, E, I, R
+          sum_SEIR <- S + E + I + R
+          E_alloc <- round(E / sum_SEIR * vax_alloc)
+          I_alloc <- round(I / sum_SEIR * vax_alloc)
+          R_alloc <- round(R / sum_SEIR * vax_alloc)
+          S_alloc <- vax_alloc - E_alloc - I_alloc - R_alloc
+          
+          S <- S - S_alloc
+          E <- E - E_alloc
+          I <- I - I_alloc
+          R <- R - R_alloc
+          
+          SV <- SV + S_alloc
+          EV <- EV + E_alloc
+          IV <- IV + I_alloc
+          RV <- RV + R_alloc
+        }
 #################
         ## INFECTIONS
 #################

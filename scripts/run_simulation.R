@@ -11,8 +11,11 @@ life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 vax_params <- list(efficacy = 1, propn_vax0 = 0)
 
 ## example parameters for vaccine production (see cum_vax_pool_func_closure)
-vax_production_params <- list(detection_delay = 1, production_delay = 2, 
+vax_production_params <- list(detection_delay = 1, production_delay = 45, 
                               production_rate = 1e3, max_vax = 1e5)
+
+## example parameters for vaccine allocation
+vax_allocation_params <- list(example = 1)
 
 ## SIMULATION OPTIONS
 simulation_flags <- list(ageMixing=TRUE,
@@ -24,6 +27,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          seed = 1)
 tmax <- 100
 tdiv <- 24
+vax_alloc_period <- 24 * 7
 
 if(!is.null(simulation_flags[["seed"]])) {
   set.seed(simulation_flags[["seed"]])
@@ -112,7 +116,8 @@ if(is.list(C1)) { # for country specific contact rates
 
 ## vaccination production curve
 
-# a closure to make a function which gives the number of vaccines which have ever existed at time t
+# a closure to make a function which returns a scalar:
+# the number of vaccines which have ever existed at time t
 # (may involve integrating the production rate curve if you want,
 # otherwise provide directly)
 # current example:
@@ -136,6 +141,25 @@ cum_vax_pool_func_closure <- function(vax_production_params) {
 
 cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
 
+## vaccine allocation strategy
+
+# a closure to make a function which returns a vector of length
+# n_countries * n_ages * n_risk_groups:
+# the number of vaccines to be allocated to each location, age, risk group
+# vaccine allocation is a function of the current state of the epidemic, the
+# current vaccine pool size, the travel matrix and other parameters
+# probably can make independent of the vaccinated classes...
+
+# current example:
+# allocate vaccines to nobody (cruel world)
+vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params) {
+  function(S, E, I, R, SV, EV, IV, RV, vax_pool) {
+    return(S * 0)
+  }
+}
+
+vax_allocation_func <- vaccine_allocation_closure(K, vax_allocation_params)
+
 ## Normalise 
 
 sim_params <- list(n_countries=n_countries,
@@ -146,7 +170,7 @@ sim_params <- list(n_countries=n_countries,
                    seedAges=seedAges)
 
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
-                      X, C3, K, cum_vax_pool_func, tmax, tdiv)
+                      X, C3, K, cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 

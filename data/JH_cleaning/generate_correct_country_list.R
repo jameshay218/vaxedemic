@@ -69,12 +69,19 @@ correct_original_id <- function(dataset, countries){
   return(corrected)
 }
 
+correct_original_id_col <- function(dataset, countries, col){
+  colnames(dataset)[colnames(dataset) == col] <- "Location"
+  correctNames <- unique(merge(dataset,countries[,c("Location","Correct","correctID")],by="Location"))
+  colnames(correctNames)[colnames(correctNames) %in% c("Correct","correctID")] <- c(col,paste0(col,"ID"))
+  colnames(correctNames)[colnames(correctNames) == "Location"] <- paste0("Old",col)
+  return(correctNames)
+}
 
 #SAVE <- FALSE
 #countries <- clean_country_database("~/Documents/vaxedemic/data/JH_cleaning/all_countries_FINAL.csv",
 #                                    topwd="~/Documents/vaxedemic/data/JH_cleaning/",TRUE)
 #correct <- generate_correct_country_ids(countries,TRUE)
 
-locations <- read.csv("LocationData/latitudes.csv",stringsAsFactors=FALSE)
-locations <- locations[,c("Location","originalID","Data")]
-wow <- check_new_countries(locations,return_diff=TRUE,save=FALSE)
+# locations <- read.csv("LocationData/latitudes.csv",stringsAsFactors=FALSE)
+# locations <- locations[,c("Location","originalID","Data")]
+# wow <- check_new_countries(locations,return_diff=TRUE,save=FALSE)

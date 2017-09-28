@@ -13,7 +13,7 @@ vax_params <- list(efficacy = 1 - 1.2/1.8, propn_vax0 = 0)
 
 ## example parameters for vaccine production (see cum_vax_pool_func_closure)
 vax_production_params <- list(detection_delay = 0, production_delay = 0, 
-                              production_rate = 1e3, max_vax = 1e5)
+                              production_rate = 5e7, max_vax = 5e9)
 
 ## example parameters for vaccine allocation
 vax_allocation_params <- list(example = 1)
@@ -23,7 +23,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = FALSE,
+                         real_data = TRUE,
                          country_specific_contact = TRUE,
                          seed = 1)
 tmax <- 100
@@ -209,12 +209,12 @@ I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=s
 N <- aggregate(data=labels, X~Location + Age,FUN=sum)
 I_aggregated <- merge(I_aggregated,N,id.vars=c("Location","Age"))
 
-p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
-    geom_line() +
-    facet_wrap(~Location) +
-    theme_bw()
-
-p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
+# p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
+#     geom_line() +
+#     facet_wrap(~Location) +
+#     theme_bw()
+# 
+# p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 
 # to do: make plot of vaccines allocated (SV + EV + IV + RV) over time by country
 # grid_plot <- cowplot::plot_grid(p1,p2,ncol=2,align="hv")

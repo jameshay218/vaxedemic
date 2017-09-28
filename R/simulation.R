@@ -24,7 +24,6 @@ run_simulation <- function(simulation_flags, life_history_params,
     maxIndex <- n_countries*n_ages*n_riskgroups
     groupsPerLoc <- n_ages*n_riskgroups
 
-    
     if(normaliseTravel){
         Krow <- rowSums(travelMatrix)
         Knorm <- kronecker(matrix(1,1,n_countries),matrix(Krow,n_countries,1))
@@ -32,7 +31,22 @@ run_simulation <- function(simulation_flags, life_history_params,
     }
     Kdelta <- kronecker(diag(groupsPerLoc),travelMatrix)
     K1 <- kronecker(matrix(1,groupsPerLoc,groupsPerLoc),t(travelMatrix))
-    KC <- kronecker(contactMatrix,t(travelMatrix))
+    
+    if(is.list(contactMatrix)) { # if age-risk mixing is country-specific
+      # row concatenation of age/risk matrices by country
+      Cvec <- do.call(rbind, contactMatrix)
+      # next three lines: getting the row order right
+      idx_vec <- matrix(seq_len(nrow(Cvec)), n_ages * n_riskgroups, n_countries)
+      idx_vec <- matrix(t(idx_vec), nrow(Cvec), 1)
+      Cvec <- Cvec[idx_vec,]
+      
+      CT <- t(Cvec)
+      Cnew <- matrix(CT,groupsPerLoc,groupsPerLoc*n_countries)
+      Chome <- kronecker(t(Cnew),matrix(1,1,n_countries))#Mix as though were home
+      KC <- kronecker(matrix(1,n_ages * n_riskgroups,n_ages * n_riskgroups),travelMatrix)*Chome
+    } else {
+      KC <- kronecker(contactMatrix,t(travelMatrix))
+    }
 
     ## Denominator of force of infection term
     M <- K1%*%X

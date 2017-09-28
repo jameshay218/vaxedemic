@@ -3,9 +3,6 @@ library(ggplot2)
 source("~/Documents/vaxedemic/R/simulation.R")
 source("~/Documents/vaxedemic/R/setup.R")
 
-
-real_data = TRUE
-
 ## LIFE HISTORY PARAMETER INPUTS
 life_history_params <- list(R0=1.8,TR=2.6)
 
@@ -13,11 +10,18 @@ life_history_params <- list(R0=1.8,TR=2.6)
 simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
-                         spatialCoupling=TRUE)
+                         spatialCoupling=TRUE,
+                         real_data = FALSE,
+                         country_specific_contact = TRUE,
+                         seed = 1)
 tmax <- 100
 tdiv <- 24
 
-if(real_data) {
+if(!is.null(simulation_flags[["seed"]])) {
+  set.seed(simulation_flags[["seed"]])
+}
+
+if(simulation_flags[["real_data"]]) {
   demography_filename <- "~/Documents/vaxedemic/data/demographic_data_intersect.csv"
   tmp <- read.csv(demography_filename, sep = ",")
   n_countries <- nrow(tmp)
@@ -56,9 +60,10 @@ contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.7
 
 
 ## Travel coupling
+## to do: if(simulation_flags[["real_data"]]), read in real data 
 K <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
 
-if(real_data) {
+if(simulation_flags[["real_data"]]) {
   tmp <- setup_populations_real_data(demography_filename,
                             risk_propns, risk_factors,
                             n_riskgroups)
@@ -72,16 +77,30 @@ X <- tmp$X
 labels <- tmp$labels
     
 ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups). ie. get age specific,
-## then enumerate out by risk group. If we had country specific contact rates, we would need
-## a matrix with the same dimensions as X
-C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
-C2 <- kronecker(C1, matrix(1,n_riskgroups,n_riskgroups))
+## then enumerate out by risk group. If we had country specific contact rates, we get a list
+## of these matrices of length n_countries
+if(simulation_flags[["real_data"]]) {
+  # to do: read from contact matrix csv
+  C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
+} else {
+  C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
+  if(simulation_flags[["country_specific_contact"]]) {
+    C1 <- rep(list(C1), n_countries)
+  }
+} 
+
 
 ## Generate risk factor modifier. ie. modifier for each age/risk group pair, same dimensions as C2
 risk <- c(t(age_specific_riskgroup_factors))
 risk_matrix <- t(kronecker(risk,matrix(1,1,n_riskgroups*n_ages)))
 
-C3 <- C2*risk_matrix
+if(is.list(C1)) { # for country specific contact rates
+  C2 <- lapply(C1, function(x) kronecker(x, matrix(1,n_riskgroups,n_riskgroups)))
+  C3 <- lapply(C2, function(x) x*risk_matrix)
+} else {
+  C2 <- kronecker(C1, matrix(1,n_riskgroups,n_riskgroups))
+  C3 <- C2*risk_matrix
+}
 
 ## Normalise 
 
@@ -91,14 +110,9 @@ sim_params <- list(n_countries=n_countries,
                    seedCs=seedCountries,
                    seedNs=seedSizes,
                    seedAges=seedAges)
-travelMatrix <- K
-contactMatrix <- C3
 
 res <- run_simulation(simulation_flags, life_history_params, sim_params,
                       X, C3, K, tmax, tdiv)
-
-
-
 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 
@@ -121,4 +135,4 @@ p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
 
 p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 
-grid_plot <- cowplot::plot_grid(p1,p2,ncol=2,align="hv")
+# grid_plot <- cowplot::plot_grid(p1,p2,ncol=2,align="hv")

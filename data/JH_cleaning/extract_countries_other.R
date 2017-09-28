@@ -20,6 +20,3 @@ countries_demography <- unique(demography$countryID)
 countries_demography <- countries_demography[order(countries_demography)]
 countries_demography <- data.frame("originalID"=1:length(countries_demography),"Location"=countries_demography,"Data"="demography")
 write.table(countries_demography,paste0(topwd,"demography_countries.csv"),sep=",",row.names=FALSE)
-
-
-

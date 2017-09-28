@@ -15,9 +15,9 @@ check_new_countries <- function(newLocations, countryFileLoc="all_countries_FINA
   missing_countries <- dplyr::anti_join(newLocations,countries,by=c("originalID","Location"))
   
   if(!is.null(missing_countries) && nrow(missing_countries) > 0){ 
-    new_countries <- merge(missing_countries, countries, all=TRUE)
+    new_countries <- merge(missing_countries,unique(countries[,c("Location","Correct","correctID")]),all.x=TRUE)
     new_countries <- new_countries[,colnames(countries)]
-    countries <- new_countries
+    countries <- rbind(countries,new_countries)
   }
   ############################################
   if(save) write.table(countries, countryFileLoc, sep=",",row.names=FALSE)
@@ -75,5 +75,6 @@ correct_original_id <- function(dataset, countries){
 #                                    topwd="~/Documents/vaxedemic/data/JH_cleaning/",TRUE)
 #correct <- generate_correct_country_ids(countries,TRUE)
 
-
-
+locations <- read.csv("LocationData/latitudes.csv",stringsAsFactors=FALSE)
+locations <- locations[,c("Location","originalID","Data")]
+wow <- check_new_countries(locations,return_diff=TRUE,save=FALSE)

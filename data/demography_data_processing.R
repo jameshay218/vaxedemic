@@ -18,7 +18,7 @@ colnames(demographic_data) <- c("countryID", "N", "propn_age1", "propn_age2", "p
 demographic_data <- demographic_data[order(demographic_data$countryID),]
 demographic_country_names <- unlist(demographic_data$countryID)
 
-write.table(demographic_data,file = "demographic_data_clean.csv",sep = ",", row.names = FALSE)
+# write.table(demographic_data,file = "demographic_data_clean.csv",sep = ",", row.names = FALSE)
 
 # get contact data names
 n_files <- 2
@@ -29,6 +29,10 @@ contact_country_names <- lapply(sheets, names)
 first_name_in_sheet_2 <- contact_country_names[[2]][1]
 contact_country_names <- unlist(contact_country_names)
 
+countries_in_both <- intersect(demographic_country_names, contact_country_names)
+demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
+write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
+
 # use for extrapolation of contact matrices later.  
 # For now, just take intersection of country names from the demographic and
 # contact data.
@@ -37,7 +41,7 @@ contact_country_names <- unlist(contact_country_names)
 # colnames(locations) <- c("country_name", "location_code", "subregion_name")
 # locations <- locations[locations$location_code == 4,c(1,3)]
 
-read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_filenames){
+read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_filenames, demographic_data){
   age_group_spacing <- 5
   nrow_contact_data <- 16
   age_groups <- age_group_spacing * (seq_len(nrow_contact_data) - 1)
@@ -45,15 +49,22 @@ read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_file
   age_groups_wanted_idx <- c(which(age_groups %in% age_groups_wanted), 
                              length(age_groups) + 1)
   
-  sum_over_age_groups <- function(matrix_in){
-    matrix_out <- outer(age_groups_wanted, age_groups_wanted) * 0
-    for(i in seq_along(age_groups_wanted)) {
+  condense_age_groups <- function(contact_data, propn_ages){
+    condense_age_contacts <- outer(age_groups, age_groups_wanted) * 0
+    for(i in seq_along(age_groups)) {
       for(j in seq_along(age_groups_wanted)) {
-       matrix_out[i,j] <- sum(matrix_in[seq(age_groups_wanted_idx[i],age_groups_wanted_idx[i + 1] - 1),
+        condense_age_contacts[i,j] <- sum(contact_data[i,
                                         seq(age_groups_wanted_idx[j],age_groups_wanted_idx[j + 1] - 1)]) 
       }
     }
-    matrix_out
+    condense_age_individual <- outer(age_groups_wanted, age_groups_wanted) * 0
+    for(i in seq_along(age_groups_wanted)) {
+      for(j in seq_along(age_groups_wanted)) {
+        condense_age_individual[i,j] <- mean(condense_age_contacts[seq(age_groups_wanted_idx[i],age_groups_wanted_idx[i + 1] - 1),
+                                                       j]) / propn_ages[j]
+      }
+    }
+    condense_age_individual
   }
   
   f <- function(country_name){
@@ -61,24 +72,26 @@ read_format_contact_data_closure <- function(first_name_in_sheet_2, contact_file
       (!(sort(c(country_name, first_name_in_sheet_2))[1] == country_name))
     filename <- contact_filenames[as.numeric(name_in_2) + 1]
     contact_data <- xlsx::read.xlsx(filename, sheetName = country_name, header = !name_in_2)
-    contact_data_summed <- sum_over_age_groups(contact_data)
-    contact_data_summed
+    propn_ages <- as.numeric(demographic_data[demographic_data$countryID == country_name, seq_along(age_groups_wanted) + 2])
+    contact_data_condensed <- condense_age_groups(contact_data, propn_ages)
+    contact_data_condensed
   }
   f
 }
 
-read_format_contact_data <- read_format_contact_data_closure(first_name_in_sheet_2, contact_filenames)
+read_format_contact_data <- read_format_contact_data_closure(first_name_in_sheet_2, 
+                            contact_filenames, demographic_data)
 
-# contact_data <- lapply(countries_in_both, read_format_contact_data)
-contact_data <- lapply(contact_country_names, read_format_contact_data)
+contact_data <- lapply(countries_in_both, read_format_contact_data)
+# contact_data <- lapply(contact_country_names, read_format_contact_data)
 contact_data <- lapply(contact_data, function(x) matrix(x, 1, length(contact_data[[1]])))
 contact_data <- do.call(rbind, contact_data)
-contact_data <- cbind(contact_country_names, as.data.frame(contact_data))
+contact_data <- cbind(countries_in_both, as.data.frame(contact_data))
 
-write.table(contact_data,file = "contact_data_clean.csv",sep = ",", row.names = FALSE)
-
-countries_in_both <- intersect(demographic_country_names, contact_country_names)
-demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
-write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
-contact_data <- contact_data[contact_country_names %in% countries_in_both,]
+# write.table(contact_data,file = "contact_data_clean.csv",sep = ",", row.names = FALSE)
+# 
+# countries_in_both <- intersect(demographic_country_names, contact_country_names)
+# demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
+# write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
+# contact_data <- contact_data[contact_country_names %in% countries_in_both,]
 write.table(contact_data,file = "contact_data_intersect.csv",sep = ",", row.names = FALSE)

@@ -140,8 +140,19 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     vax_pool_vec <- double(length(times))
     vax_pool <- 0
     cum_vax_pool <- vapply(times, cum_vax_pool_func, double(1))
+    
+    alloc_minifunc_closure <- function(sum_SEIR, vax_alloc){
+      function(comp) {
+        alloc <- pmin(comp, round(comp / sum_SEIR * vax_alloc))
+        alloc[is.na(alloc)] <- 0
+        return(alloc)
+      }
+    }
 
     for(i in 2:(tend+1)){
+      
+      stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
+                all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
 
 #################
 ## VAX PRODUCTION
@@ -153,27 +164,35 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
 #################       
         if(i %% vax_alloc_period == 0) {
           # allocate vaccines
-          vax_alloc <- floor(vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool))
-          
-          ## update vax pool
-          vax_pool <- vax_pool - sum(vax_alloc)
-          
-          # distribute vaccines proportionally among S, E, I, R
-          sum_SEIR <- S + E + I + R
-          E_alloc <- round(E / sum_SEIR * vax_alloc)
-          I_alloc <- round(I / sum_SEIR * vax_alloc)
-          R_alloc <- round(R / sum_SEIR * vax_alloc)
-          S_alloc <- vax_alloc - E_alloc - I_alloc - R_alloc
-          
-          S <- S - S_alloc
-          E <- E - E_alloc
-          I <- I - I_alloc
-          R <- R - R_alloc
-          
-          SV <- SV + S_alloc
-          EV <- EV + E_alloc
-          IV <- IV + I_alloc
-          RV <- RV + R_alloc
+          vax_alloc <- round(vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool))
+          if(any(vax_alloc > 0)) {
+            # distribute vaccines proportionally among S, E, I, R
+            sum_SEIR <- S + E + I + R
+            
+            alloc_minifunc <- alloc_minifunc_closure(sum_SEIR, vax_alloc)
+            E_alloc <- alloc_minifunc(E)
+            I_alloc <- alloc_minifunc(I)
+            R_alloc <- alloc_minifunc(R)
+            S_alloc <- pmin(S, vax_alloc - E_alloc - I_alloc - R_alloc)
+            S_alloc[is.na(S_alloc)] <- 0
+            
+            # actual number allocated after all the rounding
+            vax_alloc <- S_alloc + E_alloc + I_alloc + R_alloc
+            
+            ## update vax pool
+            vax_pool <- vax_pool - sum(vax_alloc)
+            
+            S <- S - S_alloc
+            E <- E - E_alloc
+            I <- I - I_alloc
+            R <- R - R_alloc
+            
+            SV <- SV + S_alloc
+            EV <- EV + E_alloc
+            IV <- IV + I_alloc
+            RV <- RV + R_alloc
+          }
+
         }
 #################
         ## INFECTIONS

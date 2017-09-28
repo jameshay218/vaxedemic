@@ -4,14 +4,15 @@ source("~/Documents/vaxedemic/R/simulation.R")
 source("~/Documents/vaxedemic/R/setup.R")
 
 ## LIFE HISTORY PARAMETER INPUTS
-life_history_params <- list(R0=1.8,TR=2.6)
+## R_0, recovery time and latent period
+life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
 ## SIMULATION OPTIONS
 simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = TRUE,
+                         real_data = FALSE,
                          country_specific_contact = TRUE,
                          seed = 1)
 tmax <- 100
@@ -81,7 +82,6 @@ labels <- tmp$labels
 ## then enumerate out by risk group. If we had country specific contact rates, we get a list
 ## of these matrices of length n_countries
 if(simulation_flags[["real_data"]]) {
-  # to do: read from contact matrix csv
   C1 <- read_contact_data(contact_filename)
 } else {
   C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])

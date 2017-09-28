@@ -12,7 +12,9 @@ run_simulation <- function(simulation_flags, life_history_params,
     
     R0 <- life_history_params[["R0"]]
     TR <- life_history_params[["TR"]]
+    LP <- life_history_params[["LP"]]
     gamma <- 1/TR
+    alpha <- 1/LP
 
     n_countries <- sim_params[["n_countries"]]
     n_ages <- sim_params[["n_ages"]]
@@ -77,13 +79,13 @@ run_simulation <- function(simulation_flags, life_history_params,
     sigma <- matrix(0,maxIndex,1)
     sigma[(seed_countries-1)*groupsPerLoc + seed_ages,1] <- seed_ns
 
-    I <- sigma
-    S <- X - I
-    R <- matrix(0, maxIndex)
+    E <- sigma
+    S <- X - E
+    I <- R <- matrix(0, maxIndex)
 
-    modelParameters <- c("gamma"=gamma)
+    modelParameters <- c("gamma"=gamma, "alpha" = alpha)
     
-    result <- main_simulation(tmax,tdiv,LD, I, S, R, modelParameters)
+    result <- main_simulation(tmax,tdiv,LD, E, I, S, R, modelParameters)
     result
 }
 
@@ -91,9 +93,11 @@ run_simulation <- function(simulation_flags, life_history_params,
 
 ## This could be moved to C
 
-main_simulation <- function(tmax, tdiv, LD, I0, S0, R0, params){
+main_simulation <- function(tmax, tdiv, LD, E0, I0, S0, R0, params){
     gamma <- params["gamma"]
-
+    alpha <- params["alpha"]
+    
+    E <- E0
     I <- I0
     S <- S0
     R <- R0
@@ -103,10 +107,9 @@ main_simulation <- function(tmax, tdiv, LD, I0, S0, R0, params){
     tend <- tmax*tdiv
     times <- seq(0,tmax,by=1/tdiv)
     
-    Imat <- matrix(0, length(I0), length(times))
-    Smat <- matrix(0, length(S0), length(times))
-    Rmat <- matrix(0, length(R0), length(times))
+    Emat <- Imat <- Smat <- Rmat <- matrix(0, length(I0), length(times))
 
+    Emat[,1] <- E0
     Imat[,1] <- I0
     Smat[,1] <- S0
     Rmat[,1] <- R0
@@ -126,7 +129,20 @@ main_simulation <- function(tmax, tdiv, LD, I0, S0, R0, params){
 
         ## Update populations
         S <- S - newInfections
-        I <- I + newInfections
+        E <- E + newInfections
+        
+#################
+## EXPOSED BECOMING INFECTIOUS
+#################
+        ## Generate probability of exposed becoming infectious
+        P_infectious <- 1 - exp(-alpha)
+        
+        ## Simulate new recoveries
+        newInfectious <- rbinom(n_groups, E, P_infectious)
+        
+        ## Update populations
+        E <- E - newInfectious
+        I <- I + newInfectious
 
 #################
         ## RECOVERIES
@@ -145,12 +161,13 @@ main_simulation <- function(tmax, tdiv, LD, I0, S0, R0, params){
         ## SAVE RESULTS
 #################
         Smat[,i] <- S
+        Emat[,i] <- E
         Imat[,i] <- I
         Rmat[,i] <- R
     }
-    colnames(Smat) <- colnames(Imat) <- colnames(Rmat) <- times
+    colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
 
-    return(list(beta=beta,S=Smat,I=Imat,R=Rmat))
+    return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat))
 }
 
 

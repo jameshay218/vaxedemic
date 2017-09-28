@@ -1,5 +1,5 @@
 run_simulation <- function(simulation_flags, life_history_params,
-                           sim_params,
+                           vax_params, sim_params,
                            X,
                            contactMatrix,
                            travelMatrix,
@@ -13,6 +13,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     R0 <- life_history_params[["R0"]]
     TR <- life_history_params[["TR"]]
     LP <- life_history_params[["LP"]]
+    efficacy <- vax_params[["efficacy"]]
     gamma <- 1/TR
     alpha <- 1/LP
 
@@ -81,11 +82,13 @@ run_simulation <- function(simulation_flags, life_history_params,
 
     E <- sigma
     S <- X - E
-    I <- R <- matrix(0, maxIndex)
+    # assume for now that no initial vaccinated
+    I <- R <- SV <- EV <- IV <- RV <- matrix(0, maxIndex)
 
-    modelParameters <- c("gamma"=gamma, "alpha" = alpha)
+    modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy)
     
-    result <- main_simulation(tmax,tdiv,LD, E, I, S, R, modelParameters)
+    result <- main_simulation(tmax,tdiv,LD, S, E, I, R, 
+                              SV, EV, IV, RV, modelParameters)
     result
 }
 
@@ -93,43 +96,59 @@ run_simulation <- function(simulation_flags, life_history_params,
 
 ## This could be moved to C
 
-main_simulation <- function(tmax, tdiv, LD, E0, I0, S0, R0, params){
+main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0, 
+                            SV0, EV0, IV0, RV0, params){
+  
     gamma <- params["gamma"]
     alpha <- params["alpha"]
-    
+    efficacy <- params["efficacy"]
+
+    S <- S0    
     E <- E0
     I <- I0
-    S <- S0
     R <- R0
+    SV <- SV0    
+    EV <- EV0
+    IV <- IV0
+    RV <- RV0
 
     n_groups <- length(I0)
     
     tend <- tmax*tdiv
     times <- seq(0,tmax,by=1/tdiv)
     
-    Emat <- Imat <- Smat <- Rmat <- matrix(0, length(I0), length(times))
+    Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
+    SVmat <- EVmat <- IVmat <- RVmat <- Smat
 
+    Smat[,1] <- S0
     Emat[,1] <- E0
     Imat[,1] <- I0
-    Smat[,1] <- S0
     Rmat[,1] <- R0
+    SVmat[,1] <- SV0
+    EVmat[,1] <- EV0
+    IVmat[,1] <- IV0
+    RVmat[,1] <- RV0
 
     for(i in 2:(tend+1)){
 #################
         ## INFECTIONS
 #################
         ## Generate force of infection on each group/location
-        lambda <- LD%*%I
+        lambda <- LD%*%(I + IV)
 
         ## Generate probability of infection from this
         P_infection <- 1 - exp(-lambda)
+        P_infection_vax <- 1 - exp(-lambda*(1 - efficacy))
 
         ## Simulate new infections for each location
         newInfections <- rbinom(n_groups, S, P_infection)
+        newInfectionsVax <- rbinom(n_groups, SV, P_infection_vax)
 
         ## Update populations
         S <- S - newInfections
         E <- E + newInfections
+        SV <- SV - newInfectionsVax
+        EV <- EV + newInfectionsVax
         
 #################
 ## EXPOSED BECOMING INFECTIOUS
@@ -139,10 +158,13 @@ main_simulation <- function(tmax, tdiv, LD, E0, I0, S0, R0, params){
         
         ## Simulate new recoveries
         newInfectious <- rbinom(n_groups, E, P_infectious)
-        
+        newInfectiousVax <- rbinom(n_groups, EV, P_infectious)
+        browser()
         ## Update populations
         E <- E - newInfectious
         I <- I + newInfectious
+        EV <- EV - newInfectiousVax
+        IV <- IV + newInfectiousVax
 
 #################
         ## RECOVERIES
@@ -152,10 +174,13 @@ main_simulation <- function(tmax, tdiv, LD, E0, I0, S0, R0, params){
 
 ## Simulate new recoveries
         newRecoveries <- rbinom(n_groups, I, P_recover)
+        newRecoveriesVax <- rbinom(n_groups, IV, P_recover)
 
         ## Update populations
         I <- I - newRecoveries
         R <- R + newRecoveries
+        IV <- IV - newRecoveriesVax
+        RV <- RV + newRecoveriesVax
 
 #################
         ## SAVE RESULTS
@@ -164,10 +189,16 @@ main_simulation <- function(tmax, tdiv, LD, E0, I0, S0, R0, params){
         Emat[,i] <- E
         Imat[,i] <- I
         Rmat[,i] <- R
+        SVmat[,i] <- SV
+        EVmat[,i] <- EV
+        IVmat[,i] <- IV
+        RVmat[,i] <- RV
     }
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
+    colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
 
-    return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat))
+    return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
+                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat))
 }
 
 

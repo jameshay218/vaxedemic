@@ -7,6 +7,8 @@ source("~/Documents/vaxedemic/R/setup.R")
 ## R_0, recovery time and latent period
 life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
+vax_params <- list(efficacy = 1)
+
 ## SIMULATION OPTIONS
 simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
@@ -112,12 +114,12 @@ sim_params <- list(n_countries=n_countries,
                    seedNs=seedSizes,
                    seedAges=seedAges)
 
-res <- run_simulation(simulation_flags, life_history_params, sim_params,
+res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       X, C3, K, tmax, tdiv)
 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 
-I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I)
+I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
 I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
 I$Age <- as.factor(I$Age)
 I$RiskGroup <- as.factor(I$RiskGroup)

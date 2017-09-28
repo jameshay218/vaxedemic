@@ -8,10 +8,11 @@ source("~/Documents/vaxedemic/R/setup.R")
 life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
 ## vaccine efficacy and initial vaccinated proportion
-vax_params <- list(efficacy = 1, propn_vax0 = 0)
+# this example roughly brings effective R to 1.2
+vax_params <- list(efficacy = 1 - 1.2/1.8, propn_vax0 = 0)
 
 ## example parameters for vaccine production (see cum_vax_pool_func_closure)
-vax_production_params <- list(detection_delay = 1, production_delay = 45, 
+vax_production_params <- list(detection_delay = 0, production_delay = 0, 
                               production_rate = 1e3, max_vax = 1e5)
 
 ## example parameters for vaccine allocation
@@ -147,18 +148,40 @@ cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
 # n_countries * n_ages * n_risk_groups:
 # the number of vaccines to be allocated to each location, age, risk group
 # vaccine allocation is a function of the current state of the epidemic, the
+# rate of change of the epidemic (i.e. incidence etc.),
 # current vaccine pool size, the travel matrix and other parameters
+
 # probably can make independent of the vaccinated classes...
 
+# if non-integer outputted, main simulation will round the numbers down
+# this may cause problems because of the number of classes, might be that
+# no vaccines are ever allocated -- we'll see
+
 # current example:
-# allocate vaccines to nobody (cruel world)
-vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params) {
+# allocate vaccines according to absolute incidence in each location/age/risk group
+# note unrealism because we would obviously want to allocate vaccines to everyone 
+# in the same country as the epidemic is occurring regardless of the age/risk group
+# in which the current infectious people are
+
+# to improve this, I've included the labels as an input for ease of coding, so that
+# we can easily figure out the elements in each vector corresponding to
+# e.g. the people in the same country as people currently infected
+vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params, labels) {
+
   function(S, E, I, R, SV, EV, IV, RV, vax_pool) {
-    return(S * 0)
+    if(any(E > 0)) {
+      return(E / sum(E) * vax_pool) # incidence proportional to E
+    } else if(any(I > 0)){
+      return(I / sum(I) * vax_pool) # if no exposed unvaccinated left, allocate proportional to prevalence
+    } else if(any(S > 0)){
+      return(S / sum(S) * vax_pool) # if no infectious unvaccinated left, allocate proportional to susceptibles
+    } else {
+      return(S * 0) # allocate nothing
+    }
   }
 }
 
-vax_allocation_func <- vaccine_allocation_closure(K, vax_allocation_params)
+vax_allocation_func <- vaccine_allocation_closure(K, vax_allocation_params, labels)
 
 ## Normalise 
 
@@ -193,4 +216,5 @@ p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
 
 p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 
+# to do: make plot of vaccines allocated (SV + EV + IV + RV) over time by country
 # grid_plot <- cowplot::plot_grid(p1,p2,ncol=2,align="hv")

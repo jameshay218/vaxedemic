@@ -14,6 +14,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     TR <- life_history_params[["TR"]]
     LP <- life_history_params[["LP"]]
     efficacy <- vax_params[["efficacy"]]
+    propn_vax0 <- vax_params[["propn_vax0"]]
     gamma <- 1/TR
     alpha <- 1/LP
 
@@ -80,10 +81,13 @@ run_simulation <- function(simulation_flags, life_history_params,
     sigma <- matrix(0,maxIndex,1)
     sigma[(seed_countries-1)*groupsPerLoc + seed_ages,1] <- seed_ns
 
-    E <- sigma
-    S <- X - E
-    # assume for now that no initial vaccinated
-    I <- R <- SV <- EV <- IV <- RV <- matrix(0, maxIndex)
+    # intial exposed are distrubted among vaccinated and unvaccinated proportionally
+    EV <- round(sigma * propn_vax0)
+    E <- sigma - EV
+    SV <- round((X - sigma) * propn_vax0)
+    S <- X - sigma - SV
+
+    I <- R <- IV <- RV <- matrix(0, maxIndex)
 
     modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy)
     
@@ -159,7 +163,7 @@ main_simulation <- function(tmax, tdiv, LD, S0, E0, I0, R0,
         ## Simulate new recoveries
         newInfectious <- rbinom(n_groups, E, P_infectious)
         newInfectiousVax <- rbinom(n_groups, EV, P_infectious)
-        browser()
+
         ## Update populations
         E <- E - newInfectious
         I <- I + newInfectious

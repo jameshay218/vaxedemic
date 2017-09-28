@@ -7,7 +7,8 @@ source("~/Documents/vaxedemic/R/setup.R")
 ## R_0, recovery time and latent period
 life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
-vax_params <- list(efficacy = 1)
+## vaccine efficacy and initial vaccinated proportion
+vax_params <- list(efficacy = 1, propn_vax0 = 0)
 
 ## SIMULATION OPTIONS
 simulation_flags <- list(ageMixing=TRUE,

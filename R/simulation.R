@@ -11,7 +11,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     riskGroups <- simulation_flags[["riskGroups"]]
     spatialCoupling <- simulation_flags[["spatialCoupling"]]
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
-    seasonal <- FALSE#Change to real thing########
+    seasonal <- simulation_flags[["seasonal"]]
     
     R0 <- life_history_params[["R0"]]
     TR <- life_history_params[["TR"]]
@@ -54,7 +54,6 @@ run_simulation <- function(simulation_flags, life_history_params,
     } else {
       Phi <- 1
     }
-
     
     if(normaliseTravel){
         Krow <- rowSums(travelMatrix)
@@ -234,9 +233,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
 
         if(seasonal){
           M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
-          LD <- beta/tdiv*(Kdelta*M1Phi)%*%KC
+          LD <- beta*(Kdelta*M1Phi)%*%KC
         }
-        
+
         lambda <- LD%*%(I + IV)
 
         ## Generate probability of infection from this

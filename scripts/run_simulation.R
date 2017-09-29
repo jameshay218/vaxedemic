@@ -28,6 +28,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          spatialCoupling=TRUE,
                          real_data = FALSE,
                          country_specific_contact = TRUE,
+                         seasonal = TRUE,
                          rng_seed = 1)
 tmax <- 100
 tdiv <- 24

@@ -22,7 +22,6 @@ run_simulation <- function(simulation_flags, life_history_params,
     alpha <- 1/LP
     tdelay <- 0#Delay from peak summer in northern hemisphere########
     amp <- .5#Amplitude of seasonality########
-    latitudes <- matrix(1,n,1)#column vector of country centroid latitudes########
 
     n_countries <- sim_params[["n_countries"]]
     n_ages <- sim_params[["n_ages"]]
@@ -36,10 +35,10 @@ run_simulation <- function(simulation_flags, life_history_params,
     
     
     ##Seasonality:
-    latitudes <- matrix(1,n,1)#column vector of country centroid latitudes
-    Beta1 <- function(lats,n){
+    latitudes <- matrix(1,n_countries,1)#column vector of country centroid latitudes
+    Beta1 <- function(lats,n_countries){
       trop <- 23.5/90*pi#Tropics.
-      Y=matrix(1,n,1)#Flat outside of tropics - could modify (DH/SR)
+      Y=matrix(1,n_countries,1)#Flat outside of tropics - could modify (DH/SR)
       Y[abs(lats)<trop] <- lats/trop
       Y[lats<-trop] <- -1
       return(Y)
@@ -226,7 +225,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## Generate force of infection on each group/location
         
         if(seasonal){
-          Mm1Phi <- Mm1*kronecker(matrix(1,8*n,1),t(Phi[,i-1]))
+          Mm1Phi <- Mm1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
           LD <- beta/tdiv*(Kdelta*Mm1Phi)%*%KC
         }
         

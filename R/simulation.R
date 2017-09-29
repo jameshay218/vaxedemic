@@ -11,6 +11,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     riskGroups <- simulation_flags[["riskGroups"]]
     spatialCoupling <- simulation_flags[["spatialCoupling"]]
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
+    seasonal <- TRUE#Change to real thing########
     
     R0 <- life_history_params[["R0"]]
     TR <- life_history_params[["TR"]]
@@ -19,6 +20,9 @@ run_simulation <- function(simulation_flags, life_history_params,
     propn_vax0 <- vax_params[["propn_vax0"]]
     gamma <- 1/TR
     alpha <- 1/LP
+    tdelay <- 0#Delay from peak summer in northern hemisphere########
+    amp <- .5#Amplitude of seasonality########
+    latitudes <- matrix(1,n,1)#column vector of country centroid latitudes########
 
     n_countries <- sim_params[["n_countries"]]
     n_ages <- sim_params[["n_ages"]]
@@ -29,7 +33,27 @@ run_simulation <- function(simulation_flags, life_history_params,
 
     maxIndex <- n_countries*n_ages*n_riskgroups
     groupsPerLoc <- n_ages*n_riskgroups
+    
+    
+    ##Seasonality:
+    latitudes <- matrix(1,n,1)#column vector of country centroid latitudes
+    Beta1 <- function(lats,n){
+      trop <- 23.5/90*pi#Tropics.
+      Y=matrix(1,n,1)#Flat outside of tropics - could modify (DH/SR)
+      Y[abs(lats)<trop] <- lats/trop
+      Y[lats<-trop] <- -1
+      return(Y)
+    }
+    if(seasonal){
+      beta1 <- Beta1(latitudes,n_countries)
+      B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv),beta1)#8 in here - change to numages*numrisk
+      timevec <- seq(1/tdiv,tmax,by=1/tdiv)
+      timevec <- t(timevec)
+      wave <- sin((timevec-tdelay)*2*pi/365)
+      Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
+    }
 
+    
     if(normaliseTravel){
         Krow <- rowSums(travelMatrix)
         Knorm <- kronecker(matrix(1,1,n_countries),matrix(Krow,n_countries,1))
@@ -105,7 +129,8 @@ run_simulation <- function(simulation_flags, life_history_params,
 
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
-                            cum_vax_pool_func, vax_allocation_func){
+                            cum_vax_pool_func, vax_allocation_func,
+                            M1, beta, Kdelta, KC){
   
     gamma <- params["gamma"]
     alpha <- params["alpha"]
@@ -198,6 +223,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## INFECTIONS
 #################
         ## Generate force of infection on each group/location
+        
+        if(seasonal){
+          Mm1Phi <- Mm1*kronecker(matrix(1,8*n,1),t(Phi[,i-1]))
+          LD <- beta/tdiv*(Kdelta*Mm1Phi)%*%KC
+        }
+        
         lambda <- LD%*%(I + IV)
 
         ## Generate probability of infection from this

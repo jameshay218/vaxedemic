@@ -30,3 +30,6 @@
 .RData
 issues.md
 .valgrind_ignore
+
+.~*
+*.csv#

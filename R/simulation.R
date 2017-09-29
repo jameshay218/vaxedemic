@@ -342,7 +342,7 @@ setup_populations <- function(popn_size, n_countries,
     risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
 
     ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-    age_group_risk <- rep(c(age_groups), n_riskgroups)
+    age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
 
     ## Multiply together to get proportion of population in each location/age/risk group combo
     X <- trunc(risk_matrix*age_group_risk)
@@ -365,7 +365,7 @@ setup_populations_real_data <- function(demography_filename,
   risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
   
   ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-  age_group_risk <- rep(c(age_groups), n_riskgroups)
+  age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
   
   ## Multiply together to get proportion of population in each location/age/risk group combo
   X <- round(risk_matrix*age_group_risk)

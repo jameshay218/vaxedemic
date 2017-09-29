@@ -11,7 +11,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     riskGroups <- simulation_flags[["riskGroups"]]
     spatialCoupling <- simulation_flags[["spatialCoupling"]]
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
-    seasonal <- TRUE#Change to real thing########
+    seasonal <- FALSE#Change to real thing########
     
     R0 <- life_history_params[["R0"]]
     TR <- life_history_params[["TR"]]
@@ -43,6 +43,7 @@ run_simulation <- function(simulation_flags, life_history_params,
       Y[lats<-trop] <- -1
       return(Y)
     }
+    
     if(seasonal){
       beta1 <- Beta1(latitudes,n_countries)
       B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv),beta1)#8 in here - change to numages*numrisk
@@ -50,6 +51,8 @@ run_simulation <- function(simulation_flags, life_history_params,
       timevec <- t(timevec)
       wave <- sin((timevec-tdelay)*2*pi/365)
       Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
+    } else {
+      Phi <- 1
     }
 
     
@@ -113,8 +116,9 @@ run_simulation <- function(simulation_flags, life_history_params,
 
     I <- R <- IV <- RV <- matrix(0, maxIndex)
 
-    modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy,
-                         "beta" = beta)
+    modelParameters <- list("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy,
+                         "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
+                         "Phi" = Phi, "seasonal" = seasonal)
     
     result <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
@@ -128,13 +132,17 @@ run_simulation <- function(simulation_flags, life_history_params,
 
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
-                            cum_vax_pool_func, vax_allocation_func,
-                            M1, beta, Kdelta, KC){
+                            cum_vax_pool_func, vax_allocation_func){
   
-    gamma <- params["gamma"]
-    alpha <- params["alpha"]
-    efficacy <- params["efficacy"]
-    beta <- params["beta"]
+    gamma <- params[["gamma"]]
+    alpha <- params[["alpha"]]
+    efficacy <- params[["efficacy"]]
+    beta <- params[["beta"]]
+    M1 <- params[["M1"]]
+    Kdelta <- params[["Kdelta"]]
+    KC <- params[["KC"]]
+    Phi <- params[["Phi"]]
+    seasonal <- params[["seasonal"]]
 
     S <- S0    
     E <- E0
@@ -223,10 +231,10 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## INFECTIONS
 #################
         ## Generate force of infection on each group/location
-        
+
         if(seasonal){
-          Mm1Phi <- Mm1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
-          LD <- beta/tdiv*(Kdelta*Mm1Phi)%*%KC
+          M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
+          LD <- beta/tdiv*(Kdelta*M1Phi)%*%KC
         }
         
         lambda <- LD%*%(I + IV)

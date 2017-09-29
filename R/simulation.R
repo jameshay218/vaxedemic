@@ -11,7 +11,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     riskGroups <- simulation_flags[["riskGroups"]]
     spatialCoupling <- simulation_flags[["spatialCoupling"]]
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
-    seasonal <- TRUE#Change to real thing########
+    seasonal <- simulation_flags[["seasonal"]]
     
     R0 <- life_history_params[["R0"]]
     TR <- life_history_params[["TR"]]
@@ -22,7 +22,6 @@ run_simulation <- function(simulation_flags, life_history_params,
     alpha <- 1/LP
     tdelay <- 0#Delay from peak summer in northern hemisphere########
     amp <- .5#Amplitude of seasonality########
-    latitudes <- matrix(1,n,1)#column vector of country centroid latitudes########
 
     n_countries <- sim_params[["n_countries"]]
     n_ages <- sim_params[["n_ages"]]
@@ -36,14 +35,15 @@ run_simulation <- function(simulation_flags, life_history_params,
     
     
     ##Seasonality:
-    latitudes <- matrix(1,n,1)#column vector of country centroid latitudes
-    Beta1 <- function(lats,n){
+    latitudes <- matrix(1,n_countries,1)#column vector of country centroid latitudes
+    Beta1 <- function(lats,n_countries){
       trop <- 23.5/90*pi#Tropics.
-      Y=matrix(1,n,1)#Flat outside of tropics - could modify (DH/SR)
+      Y=matrix(1,n_countries,1)#Flat outside of tropics - could modify (DH/SR)
       Y[abs(lats)<trop] <- lats/trop
       Y[lats<-trop] <- -1
       return(Y)
     }
+    
     if(seasonal){
       beta1 <- Beta1(latitudes,n_countries)
       B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv),beta1)#8 in here - change to numages*numrisk
@@ -51,8 +51,9 @@ run_simulation <- function(simulation_flags, life_history_params,
       timevec <- t(timevec)
       wave <- sin((timevec-tdelay)*2*pi/365)
       Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
+    } else {
+      Phi <- 1
     }
-
     
     if(normaliseTravel){
         Krow <- rowSums(travelMatrix)
@@ -104,8 +105,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     
     LD <- beta*(Kdelta*M1)%*%KC
 
-    sigma <- matrix(0,maxIndex,1)
-    sigma[(seed_countries-1)*groupsPerLoc + seed_ages,1] <- seed_ns
+    sigma <- sim_params[["seed_vec"]]
 
     # intial exposed are distributed among vaccinated and unvaccinated proportionally
     EV <- round(sigma * propn_vax0)
@@ -115,7 +115,9 @@ run_simulation <- function(simulation_flags, life_history_params,
 
     I <- R <- IV <- RV <- matrix(0, maxIndex)
 
-    modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy)
+    modelParameters <- list("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy,
+                         "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
+                         "Phi" = Phi, "seasonal" = seasonal)
     
     result <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
@@ -129,12 +131,17 @@ run_simulation <- function(simulation_flags, life_history_params,
 
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
-                            cum_vax_pool_func, vax_allocation_func,
-                            M1, beta, Kdelta, KC){
+                            cum_vax_pool_func, vax_allocation_func){
   
-    gamma <- params["gamma"]
-    alpha <- params["alpha"]
-    efficacy <- params["efficacy"]
+    gamma <- params[["gamma"]]
+    alpha <- params[["alpha"]]
+    efficacy <- params[["efficacy"]]
+    beta <- params[["beta"]]
+    M1 <- params[["M1"]]
+    Kdelta <- params[["Kdelta"]]
+    KC <- params[["KC"]]
+    Phi <- params[["Phi"]]
+    seasonal <- params[["seasonal"]]
 
     S <- S0    
     E <- E0
@@ -223,12 +230,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## INFECTIONS
 #################
         ## Generate force of infection on each group/location
-        
+
         if(seasonal){
-          Mm1Phi <- Mm1*kronecker(matrix(1,8*n,1),t(Phi[,i-1]))
-          LD <- beta/tdiv*(Kdelta*Mm1Phi)%*%KC
+          M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
+          LD <- beta*(Kdelta*M1Phi)%*%KC
         }
-        
+
         lambda <- LD%*%(I + IV)
 
         ## Generate probability of infection from this
@@ -289,6 +296,19 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         IVmat[,i] <- IV
         RVmat[,i] <- RV
         vax_pool_vec[i] <- vax_pool
+        if(sum(E + I + EV + IV) == 0) {
+          # sorry for terrible coding -- will fix later (Ada)
+          Smat[,(i+1):ncol(Smat)] <- matrix(S, length(S), length((i+1):ncol(Smat)))
+          Emat[,(i+1):ncol(Smat)] <- matrix(E, length(S), length((i+1):ncol(Smat)))
+          Imat[,(i+1):ncol(Smat)] <- matrix(I, length(S), length((i+1):ncol(Smat)))
+          Rmat[,(i+1):ncol(Smat)] <- matrix(R, length(S), length((i+1):ncol(Smat)))
+          SVmat[,(i+1):ncol(Smat)] <- matrix(SV, length(S), length((i+1):ncol(Smat)))
+          EVmat[,(i+1):ncol(Smat)] <- matrix(EV, length(S), length((i+1):ncol(Smat)))
+          IVmat[,(i+1):ncol(Smat)] <- matrix(IV, length(S), length((i+1):ncol(Smat)))
+          RVmat[,(i+1):ncol(Smat)] <- matrix(RV, length(S), length((i+1):ncol(Smat)))
+          vax_pool_vec[(i+1):ncol(Smat)] <- vax_pool
+          break
+        }
     }
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
@@ -321,7 +341,7 @@ setup_populations <- function(popn_size, n_countries,
     risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
 
     ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-    age_group_risk <- rep(c(age_groups), n_riskgroups)
+    age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
 
     ## Multiply together to get proportion of population in each location/age/risk group combo
     X <- trunc(risk_matrix*age_group_risk)
@@ -344,7 +364,7 @@ setup_populations_real_data <- function(demography_filename,
   risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
   
   ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-  age_group_risk <- rep(c(age_groups), n_riskgroups)
+  age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
   
   ## Multiply together to get proportion of population in each location/age/risk group combo
   X <- round(risk_matrix*age_group_risk)

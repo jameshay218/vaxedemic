@@ -3,7 +3,10 @@ Title: Optimal allocation of vaccination during a pandemic
 Version: 0.0.1
 Author: James Hay <james.hay13@imperial.ac.uk>
 Maintainer: James Hay <james.hay13@imperial.ac.uk> <jameshay218@gmail.com>
-Description: Implements a stochastic compartmental model to solve a global model of pandemic influenza. The user is able to modify input parameters such as global connectivity, vaccine production and efficacy, and population demographics.
+Description: Implements a stochastic compartmental model to solve a global
+    model of pandemic influenza. The user is able to modify input parameters
+    such as global connectivity, vaccine production and efficacy, and population
+    demographics.
 License: GPL-3
 LazyData: true
 URL: https://github.com/jameshay218/vaxedemic
@@ -12,10 +15,9 @@ Suggests:
     testthat,
     knitr,
     rmarkdown
-LinkingTo: 
-    Rcpp,
+LinkingTo: Rcpp,
     RcppArmadillo,
     RcppEigen
 SystemRequirements: C++11
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 VignetteBuilder: knitr

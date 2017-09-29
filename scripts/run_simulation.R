@@ -28,7 +28,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          spatialCoupling=TRUE,
                          real_data = TRUE,
                          country_specific_contact = TRUE,
-                         debugging = TRUE,
+                         true_contact_matrix = TRUE,
                          seed = 1)
 tmax <- 100
 tdiv <- 24
@@ -108,7 +108,7 @@ labels <- tmp$labels
 ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups). ie. get age specific,
 ## then enumerate out by risk group. If we had country specific contact rates, we get a list
 ## of these matrices of length n_countries
-if(simulation_flags[["debugging"]]) {
+if(simulation_flags[["true_contact_matrix"]]) {
   C1 <- read_contact_data(contact_filename)
   C1 <- C1[[1]]
 } else {
@@ -117,7 +117,7 @@ if(simulation_flags[["debugging"]]) {
 
 # for now, make contact matrices same for all countries
 if(simulation_flags[["country_specific_contact"]]) {
-  C1 <- rep(list(C1[[1]]), n_countries)
+  C1 <- rep(list(C1), n_countries)
 }
 
 

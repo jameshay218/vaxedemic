@@ -32,7 +32,7 @@ generate_age_matrix <- function(ages){
 #' @return the matrix of age-specific contact rates/durations
 #' @export
 generate_age_mixing <- function(contactVector, n_ages, ON=TRUE, TRANSPOSE=TRUE){
-    if(!ON) return(matrix(1,n_age,n_ages))
+    if(!ON) return(matrix(1,n_ages,n_ages))
     if(is.vector(contactVector)){
         Cnum <- matrix(contactVector, n_ages, n_ages)
         if(TRANSPOSE) Cnum <- t(Cnum)

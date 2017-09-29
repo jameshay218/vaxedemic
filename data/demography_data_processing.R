@@ -17,13 +17,12 @@ demographic_data[,numeric_cols] <- as.data.frame(lapply(demographic_data[,numeri
                                stringsAsFactors = FALSE)
 demographic_data[,numeric_cols] <- demographic_data[,numeric_cols]*1000
 demographic_data[,3:6] <- lapply(demographic_data[,3:6], function(x) x/demographic_data$Total)
-colnames(demographic_data) <- c("countryID", "N", "propn_age1", "propn_age2", "propn_age3", "propn_age4")
+demographic_colnames <- c("countryID", "N", "propn_age1", "propn_age2", "propn_age3", "propn_age4")
+colnames(demographic_data) <- demographic_colnames
 demographic_data <- demographic_data[order(demographic_data$countryID),]
 demographic_data <- correct_original_id_col(demographic_data,countries,"countryID")
-demographic_data <- demographic_data[,c("countryID", "N", "propn_age1", "propn_age2", "propn_age3", "propn_age4")]
+demographic_data <- demographic_data[,demographic_colnames]
 demographic_country_names <- unlist(demographic_data$countryID)
-
-# write.table(demographic_data,file = "demographic_data_clean.csv",sep = ",", row.names = FALSE)
 
 # get contact data names
 n_files <- 2
@@ -36,10 +35,7 @@ contact_country_names <- unlist(contact_country_names)
 
 contact_country_names_df <- data.frame(country_name = contact_country_names)
 contact_country_names_df <- correct_original_id_col(contact_country_names_df, countries, "country_name")
-correct_contact_country_names <- contact_country_names_df$country_name
-# countries_in_both <- intersect(demographic_country_names, contact_country_names)
-# demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
-# write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
+correct_contact_country_names <- as.character(contact_country_names_df$country_name)
 
 # use for extrapolation of contact matrices later.  
 # For now, just take intersection of country names from the demographic and
@@ -57,7 +53,6 @@ read_contact_data_closure <- function(first_name_in_sheet_2, contact_filenames){
       (!(sort(c(country_name, first_name_in_sheet_2))[1] == country_name))
     filename <- contact_filenames[as.numeric(name_in_2) + 1]
     contact_data <- xlsx::read.xlsx(filename, sheetName = country_name, header = !name_in_2)
-
   }
   f
 }
@@ -86,9 +81,6 @@ condense_age_groups <- function(contact_data, propn_ages){
   }
   condense_age_individual
 }
-# propn_ages <- as.numeric(demographic_data[demographic_data$countryID == country_name, seq_along(age_groups_wanted) + 2])
-# contact_data_condensed <- condense_age_groups(contact_data, propn_ages)
-# contact_data_condensed
 
 read_contact_data <- read_contact_data_closure(first_name_in_sheet_2, 
                             contact_filenames)
@@ -105,21 +97,20 @@ countries_in_all_datasets <- intersect(demographic_country_names,
                                        intersect(correct_contact_country_names,
                                                  flight_data_names))
 
-demographic_data <- demographic_data[demographic_data$countryID %in% countries_in_all_datasets]
-contact_data <- contact_data[correct_contact_country_names %in% countries_in_all_datasets]
+demographic_data <- demographic_data[demographic_data$countryID %in% countries_in_all_datasets,]
+contact_data <- lapply(which(correct_contact_country_names %in% countries_in_all_datasets), function(x) contact_data[[x]])
 flight_data <- flight_data[flight_data$Destination %in% countries_in_all_datasets &
-                             flight_data$Origin %in% countries_in_all_datasets]
-# flight_data <- reshape2::dcast(flight_data,Destination~Origin)
-# flight_data <- flight_data[,-1]
+                             flight_data$Origin %in% countries_in_all_datasets,]
 
-# contact_data <- lapply(contact_data, function(x) matrix(x, 1, length(contact_data[[1]])))
-# contact_data <- do.call(rbind, contact_data)
-# contact_data <- cbind(countries_in_both, as.data.frame(contact_data))
+flight_data <- reshape2::dcast(flight_data,Origin~Destination)
+flight_data <- as.matrix(flight_data[,-1])
+flight_data <- flight_data - diag(diag(flight_data))
+contact_data <- lapply(seq_along(contact_data), function(x) condense_age_groups(contact_data[[x]], as.numeric(demographic_data[x,3:6])))
+contact_data <- lapply(contact_data, function(x) matrix(x, nrow = 1))
+contact_data <- do.call(rbind, contact_data)
+contact_data <- cbind(countries_in_all_datasets, as.data.frame(contact_data))
 
-# write.table(contact_data,file = "contact_data_clean.csv",sep = ",", row.names = FALSE)
-# 
-# countries_in_both <- intersect(demographic_country_names, contact_country_names)
-# demographic_data <- demographic_data[demographic_country_names %in% countries_in_both,]
-# write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
-# contact_data <- contact_data[contact_country_names %in% countries_in_both,]
-# write.table(contact_data,file = "contact_data_intersect.csv",sep = ",", row.names = FALSE)
+write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", row.names = FALSE)
+write.table(contact_data,file = "contact_data_intersect.csv",sep = ",", row.names = FALSE)
+write.table(flight_data,file = "flight_data_intersect.csv",sep = ",", row.names = FALSE)
+write(countries_in_all_datasets, file = "countries_intersect.csv", sep = ",")

@@ -304,7 +304,8 @@ setup_populations_real_data <- function(demography_filename,
                               n_riskgroups){
   
   demographic_data <- read.csv(demography_filename,sep = ",")
-  age_groups <- as.matrix(demographic_data[,2] * demographic_data[,seq(3,ncol(demographic_data))])
+  pop_size <- demographic_data[,"N"]
+  age_groups <- as.matrix(pop_size * demographic_data[,seq(3,ncol(demographic_data))])
 
   ## Generate risk propns for each age group
   ## Enumerate out risk groups to same dimension as countries
@@ -317,14 +318,28 @@ setup_populations_real_data <- function(demography_filename,
   ## Multiply together to get proportion of population in each location/age/risk group combo
   X <- round(risk_matrix*age_group_risk)
   
-  labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
-  return(list(X=X,labels=labels))
+  location_names <- demographic_data[,"countryID"]
+  labels <- cbind(X,expand.grid("Location"=location_names, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
+  return(list("X"=X,"labels"=labels, "pop_size" = pop_size))
 }
 
 read_contact_data <- function(contact_filename){
   
   contact_data <- read.table(contact_filename,sep = ",",stringsAsFactors = FALSE,row.names = 1,header = TRUE)
-  contact_data <- t(contact_data)
-  contact_data <- lapply(contact_data, function(x) matrix(x,4,4))
+  contact_data <- as.data.frame(t(contact_data))
+  contact_data <- lapply(contact_data, function(x) matrix(x,nrow = sqrt(nrow(contact_data))))
   return(contact_data)
+  
+}
+
+setup_travel_real_data <- function(travel_filename, pop_size, travel_params) {
+
+  travel_data <- read.table(travel_filename,sep = ",",stringsAsFactors = FALSE,header = TRUE)
+  travel_data <- as.matrix(travel_data)
+  colnames(travel_data) <- NULL
+  # normalise travel data to mean so that epsilon is more meaningful
+  travel_data <- travel_data / mean(travel_data[travel_data != 0]) * mean(pop_size)
+  travel_matrix <- diag(pop_size) + travel_params[["epsilon"]] * travel_data
+  return(travel_matrix)
+  
 }

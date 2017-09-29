@@ -24,8 +24,8 @@ contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.7
 
 
 #Properties:
-#ageProp <- matrix(c(5,14,45,16)/80,4,1)#Assumed uniform between 0 and 79 - option to change/make country dependent
-#ageProp <- matrix(.25,4,1)
+ageProp <- matrix(c(5,14,45,16)/80,4,1)#Assumed uniform between 0 and 79 - option to change/make country dependent
+ageProp <- matrix(.25,4,1)
 
 ##================================================================================================
 ##Heterogeneities:
@@ -35,8 +35,8 @@ contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.7
 #Cdur <- matrix(,4,4)
 #Cdur=t(Cdur)#Contact duration
 #Age off:
-#Cnum <- matrix(1,4,4)
-#Cdur <- Cnum
+Cnum <- matrix(1,4,4)
+Cdur <- Cnum
 
 C1 <- Cnum*Cdur#Number x duration (4x4)
 
@@ -132,7 +132,7 @@ print(attack)
 toplot <- Iplot
 ymax <- max(toplot)
 
-p1 <- plot_age_group(Imat, 1, n)
-print(p1)
+# p1 <- plot_age_group(Imat, 1, n)
+# print(p1)
 
-#plot(seq(1/div,ndays,by=1/div), Imat[seq(1,nrow(Imat),by=n),], xlim=c(0,ndays), ylim=c(0,ymax), xlab='Days', ylab='Proportion of population')
+plot(seq(1/div,ndays,by=1/div), Imat[seq(1,nrow(Imat),by=n),], xlim=c(0,ndays), ylim=c(0,ymax), xlab='Days', ylab='Proportion of population')

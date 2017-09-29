@@ -7,28 +7,33 @@ source("~/Documents/vaxedemic/R/setup.R")
 ## R_0, recovery time and latent period
 life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
+## travel parameters: scaling of off-diagonals
+travel_params <- list(epsilon = 1e-3)
+
 ## vaccine efficacy and initial vaccinated proportion
 # this example roughly brings effective R to 1.2
 vax_params <- list(efficacy = 1 - 1.2/1.8, propn_vax0 = 0)
 
 ## example parameters for vaccine production (see cum_vax_pool_func_closure)
 vax_production_params <- list(detection_delay = 0, production_delay = 0, 
-                              production_rate = 5e7, max_vax = 5e9)
+                              production_rate = 0, max_vax = 5e9)
 
 ## example parameters for vaccine allocation
 vax_allocation_params <- list(example = 1)
 
 ## SIMULATION OPTIONS
-simulation_flags <- list(ageMixing=TRUE,
+simulation_flags <- list(ageMixing=FALSE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = TRUE,
+                         real_data = FALSE,
                          country_specific_contact = TRUE,
                          seed = 1)
 tmax <- 100
 tdiv <- 24
-vax_alloc_period <- 24 * 7
+## allocate and distribute vaccine every vac_alloc_period time divisions
+## i.e. in this example, every 7 days
+vax_alloc_period <- 24 * 7 
 
 if(!is.null(simulation_flags[["seed"]])) {
   set.seed(simulation_flags[["seed"]])
@@ -37,6 +42,7 @@ if(!is.null(simulation_flags[["seed"]])) {
 if(simulation_flags[["real_data"]]) {
   demography_filename <- "~/Documents/vaxedemic/data/demographic_data_intersect.csv"
   contact_filename <- "~/Documents/vaxedemic/data/contact_data_intersect.csv"
+  travel_filename <- "~/Documents/vaxedemic/data/flight_data_intersect.csv"
   tmp <- read.csv(demography_filename, sep = ",")
   n_countries <- nrow(tmp)
   n_ages <- ncol(tmp) - 2
@@ -73,23 +79,30 @@ contactRates <- c(6.92,.25,.77,.45,.19,3.51,.57,.2,.42,.38,1.4,.17,.36,.44,1.03,
 contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.73)
 
 
-## Travel coupling
+
 ## to do: if(simulation_flags[["real_data"]]), read in real data 
-K <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
+
 
 if(simulation_flags[["real_data"]]) {
+  ## demography
   tmp <- setup_populations_real_data(demography_filename,
                             risk_propns, risk_factors,
                             n_riskgroups)
-} else {
+  ## Travel coupling
+  K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
+} else {c
+  
+  ## demography
   tmp <- setup_populations(popn_size,n_countries,age_propns, n_ages,
                            risk_propns, risk_factors,
                            n_riskgroups)
+  ## Travel coupling
+  K <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
 }
 
 X <- tmp$X
 labels <- tmp$labels
-    
+
 ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups). ie. get age specific,
 ## then enumerate out by risk group. If we had country specific contact rates, we get a list
 ## of these matrices of length n_countries
@@ -100,13 +113,12 @@ if(simulation_flags[["real_data"]]) {
   if(simulation_flags[["country_specific_contact"]]) {
     C1 <- rep(list(C1), n_countries)
   }
-} 
+}
 
 
 ## Generate risk factor modifier. ie. modifier for each age/risk group pair, same dimensions as C2
 risk <- c(t(age_specific_riskgroup_factors))
 risk_matrix <- t(kronecker(risk,matrix(1,1,n_riskgroups*n_ages)))
-
 if(is.list(C1)) { # for country specific contact rates
   C2 <- lapply(C1, function(x) kronecker(x, matrix(1,n_riskgroups,n_riskgroups)))
   C3 <- lapply(C2, function(x) x*risk_matrix)
@@ -114,6 +126,7 @@ if(is.list(C1)) { # for country specific contact rates
   C2 <- kronecker(C1, matrix(1,n_riskgroups,n_riskgroups))
   C3 <- C2*risk_matrix
 }
+
 
 ## vaccination production curve
 
@@ -209,11 +222,11 @@ I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=s
 N <- aggregate(data=labels, X~Location + Age,FUN=sum)
 I_aggregated <- merge(I_aggregated,N,id.vars=c("Location","Age"))
 
-# p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
-#     geom_line() +
-#     facet_wrap(~Location) +
-#     theme_bw()
-# 
+p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
+    geom_line() +
+    facet_wrap(~Location) +
+    theme_bw()
+
 # p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 
 # to do: make plot of vaccines allocated (SV + EV + IV + RV) over time by country

@@ -81,3 +81,6 @@ correct_original_id_col <- function(dataset, countries, col){
 #latitudes <- read.csv("LocationData/latitudes.csv")
 #map("world", fill=TRUE, col="white", bg="lightblue", ylim=c(-60, 90), mar=c(0,0,0,0))
 #points(latitudes$longitude,latitudes$latitude, col="red", pch=16)
+#latitudes <- read.csv("LocationData/latitudes.csv")
+#latitudes <- correct_original_id_col(latitudes,countries,"Location")
+#write.table(latitudes,"LocationData/latitudes_clean.csv",sep=",",row.names=FALSE)

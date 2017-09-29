@@ -28,15 +28,15 @@ simulation_flags <- list(ageMixing=TRUE,
                          spatialCoupling=TRUE,
                          real_data = TRUE,
                          country_specific_contact = TRUE,
-                         seed = 1)
+                         rng_seed = 1)
 tmax <- 100
 tdiv <- 24
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
 vax_alloc_period <- 24 * 7 
 
-if(!is.null(simulation_flags[["seed"]])) {
-  set.seed(simulation_flags[["seed"]])
+if(!is.null(simulation_flags[["rng_seed"]])) {
+  set.seed(simulation_flags[["rng_seed"]])
 }
 
 if(simulation_flags[["real_data"]]) {
@@ -70,17 +70,19 @@ age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
                                          ncol=n_riskgroups)
 
 ## Seeding setting
-seedCountries <- c(1)
+if(simulation_flags[["real_data"]]) {
+  seedCountries <- "China"
+} else {
+  seedCountries <- 1
+}
+
 seedSizes <- c(10)
 seedAges <- 3
+seedRiskGroups <- 1
 
 ## Contact rates
 contactRates <- c(6.92,.25,.77,.45,.19,3.51,.57,.2,.42,.38,1.4,.17,.36,.44,1.03,1.83)
 contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.73)
-
-
-
-## to do: if(simulation_flags[["real_data"]]), read in real data 
 
 
 if(simulation_flags[["real_data"]]) {
@@ -90,7 +92,7 @@ if(simulation_flags[["real_data"]]) {
                             n_riskgroups)
   ## Travel coupling
   K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
-} else {c
+} else {
   
   ## demography
   tmp <- setup_populations(popn_size,n_countries,age_propns, n_ages,
@@ -103,18 +105,24 @@ if(simulation_flags[["real_data"]]) {
 X <- tmp$X
 labels <- tmp$labels
 
+# for now, can only seed in one location, age, risk group. Vectorise later
+
+seed_vec <- double(length(X))
+seed_vec[(which(labels$Location == seedCountries & labels$Age == seedAges &
+              labels$RiskGroup == seedRiskGroups))[1]] <- seedSizes
+
 ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups). ie. get age specific,
 ## then enumerate out by risk group. If we had country specific contact rates, we get a list
 ## of these matrices of length n_countries
 if(simulation_flags[["real_data"]]) {
   C1 <- read_contact_data(contact_filename)
 } else {
+  # for now, make contact matrices same for all countries
   C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
   if(simulation_flags[["country_specific_contact"]]) {
     C1 <- rep(list(C1), n_countries)
   }
 }
-
 
 ## Generate risk factor modifier. ie. modifier for each age/risk group pair, same dimensions as C2
 risk <- c(t(age_specific_riskgroup_factors))
@@ -201,31 +209,29 @@ vax_allocation_func <- vaccine_allocation_closure(K, vax_allocation_params, labe
 sim_params <- list(n_countries=n_countries,
                    n_ages=n_ages,
                    n_riskgroups=n_riskgroups,
-                   seedCs=seedCountries,
-                   seedNs=seedSizes,
-                   seedAges=seedAges)
+                   seed_vec = seed_vec)
 
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       X, C3, K, cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
 
-plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
-
-I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
-I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
-I$Age <- as.factor(I$Age)
-I$RiskGroup <- as.factor(I$RiskGroup)
-I$variable <- as.numeric(I$variable)
-times <- seq(0,tmax,by=1/tdiv)
-I$variable <- times[I$variable]
-I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=sum)
-
-N <- aggregate(data=labels, X~Location + Age,FUN=sum)
-I_aggregated <- merge(I_aggregated,N,id.vars=c("Location","Age"))
-
-p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
-    geom_line() +
-    facet_wrap(~Location) +
-    theme_bw()
+# plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
+# 
+# I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
+# I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
+# I$Age <- as.factor(I$Age)
+# I$RiskGroup <- as.factor(I$RiskGroup)
+# I$variable <- as.numeric(I$variable)
+# times <- seq(0,tmax,by=1/tdiv)
+# I$variable <- times[I$variable]
+# I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=sum)
+# 
+# N <- aggregate(data=labels, X~Location + Age,FUN=sum)
+# I_aggregated <- merge(I_aggregated,N,id.vars=c("Location","Age"))
+# 
+# p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
+#     geom_line() +
+#     facet_wrap(~Location) +
+#     theme_bw()
 
 # p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 

@@ -104,8 +104,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     
     LD <- beta*(Kdelta*M1)%*%KC
 
-    sigma <- matrix(0,maxIndex,1)
-    sigma[(seed_countries-1)*groupsPerLoc + seed_ages,1] <- seed_ns
+    sigma <- sim_params[["seed_vec"]]
 
     # intial exposed are distributed among vaccinated and unvaccinated proportionally
     EV <- round(sigma * propn_vax0)
@@ -115,7 +114,8 @@ run_simulation <- function(simulation_flags, life_history_params,
 
     I <- R <- IV <- RV <- matrix(0, maxIndex)
 
-    modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy)
+    modelParameters <- c("gamma"=gamma, "alpha" = alpha, "efficacy" = efficacy,
+                         "beta" = beta)
     
     result <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
@@ -135,6 +135,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     gamma <- params["gamma"]
     alpha <- params["alpha"]
     efficacy <- params["efficacy"]
+    beta <- params["beta"]
 
     S <- S0    
     E <- E0
@@ -289,6 +290,19 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         IVmat[,i] <- IV
         RVmat[,i] <- RV
         vax_pool_vec[i] <- vax_pool
+        if(sum(E + I + EV + IV) == 0) {
+          # sorry for terrible coding -- will fix later (Ada)
+          Smat[,(i+1):ncol(Smat)] <- matrix(S, length(S), length((i+1):ncol(Smat)))
+          Emat[,(i+1):ncol(Smat)] <- matrix(E, length(S), length((i+1):ncol(Smat)))
+          Imat[,(i+1):ncol(Smat)] <- matrix(I, length(S), length((i+1):ncol(Smat)))
+          Rmat[,(i+1):ncol(Smat)] <- matrix(R, length(S), length((i+1):ncol(Smat)))
+          SVmat[,(i+1):ncol(Smat)] <- matrix(SV, length(S), length((i+1):ncol(Smat)))
+          EVmat[,(i+1):ncol(Smat)] <- matrix(EV, length(S), length((i+1):ncol(Smat)))
+          IVmat[,(i+1):ncol(Smat)] <- matrix(IV, length(S), length((i+1):ncol(Smat)))
+          RVmat[,(i+1):ncol(Smat)] <- matrix(RV, length(S), length((i+1):ncol(Smat)))
+          vax_pool_vec[(i+1):ncol(Smat)] <- vax_pool
+          break
+        }
     }
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times

@@ -258,6 +258,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         IVmat[,i] <- IV
         RVmat[,i] <- RV
         vax_pool_vec[i] <- vax_pool
+        if(sum(E + I + EV + IV) == 0) {
+          break
+        }
     }
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times

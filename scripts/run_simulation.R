@@ -8,7 +8,7 @@ source("~/Documents/vaxedemic/R/setup.R")
 life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
 ## travel parameters: scaling of off-diagonals
-travel_params <- list(epsilon = 1e-3)
+travel_params <- list(epsilon = .001)
 
 ## vaccine efficacy and initial vaccinated proportion
 # this example roughly brings effective R to 1.2
@@ -28,6 +28,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          spatialCoupling=TRUE,
                          real_data = TRUE,
                          country_specific_contact = TRUE,
+                         debugging = TRUE,
                          seed = 1)
 tmax <- 100
 tdiv <- 24
@@ -70,7 +71,7 @@ age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
                                          ncol=n_riskgroups)
 
 ## Seeding setting
-seedCountries <- c(1)
+seedCountries <- c(23)
 seedSizes <- c(10)
 seedAges <- 3
 
@@ -90,7 +91,8 @@ if(simulation_flags[["real_data"]]) {
                             n_riskgroups)
   ## Travel coupling
   K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
-} else {c
+  # K <- matrix(1,n_countries,n_countries)+999*diag(n_countries)
+} else {
   
   ## demography
   tmp <- setup_populations(popn_size,n_countries,age_propns, n_ages,
@@ -106,13 +108,16 @@ labels <- tmp$labels
 ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups). ie. get age specific,
 ## then enumerate out by risk group. If we had country specific contact rates, we get a list
 ## of these matrices of length n_countries
-if(simulation_flags[["real_data"]]) {
+if(simulation_flags[["debugging"]]) {
   C1 <- read_contact_data(contact_filename)
+  C1 <- C1[[1]]
 } else {
   C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
-  if(simulation_flags[["country_specific_contact"]]) {
-    C1 <- rep(list(C1), n_countries)
-  }
+}
+
+# for now, make contact matrices same for all countries
+if(simulation_flags[["country_specific_contact"]]) {
+  C1 <- rep(list(C1[[1]]), n_countries)
 }
 
 

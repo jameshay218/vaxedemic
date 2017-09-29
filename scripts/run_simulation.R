@@ -22,11 +22,11 @@ vax_production_params <- list(detection_delay = 0, production_delay = 0,
 vax_allocation_params <- list(example = 1)
 
 ## SIMULATION OPTIONS
-simulation_flags <- list(ageMixing=FALSE,
+simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = FALSE,
+                         real_data = TRUE,
                          country_specific_contact = TRUE,
                          seed = 1)
 tmax <- 100
@@ -40,9 +40,9 @@ if(!is.null(simulation_flags[["seed"]])) {
 }
 
 if(simulation_flags[["real_data"]]) {
-  demography_filename <- "~/Documents/vaxedemic/data/demographic_data_intersect.csv"
-  contact_filename <- "~/Documents/vaxedemic/data/contact_data_intersect.csv"
-  travel_filename <- "~/Documents/vaxedemic/data/flight_data_intersect.csv"
+  demography_filename <- "~/Documents/vaxedemic/data/unified/demographic_data_intersect.csv"
+  contact_filename <- "~/Documents/vaxedemic/data/unified/contact_data_intersect.csv"
+  travel_filename <- "~/Documents/vaxedemic/data/unified/flight_data_intersect.csv"
   tmp <- read.csv(demography_filename, sep = ",")
   n_countries <- nrow(tmp)
   n_ages <- ncol(tmp) - 2

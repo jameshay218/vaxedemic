@@ -187,7 +187,7 @@ run_simulation <- function(simulation_flags, life_history_params,
 #' infectious
 #' @param RV0 numeric vector of length max_Index: initial number of vaccinated
 #' removed
-#' @params list of model parameters
+#' @param params list of model parameters
 #' @param cum_vax_pool_func a function of time which gives the numebr of vaccines
 #' ever produced at that time
 #' @param vax_allocation_func a function of the current state of the simulation which

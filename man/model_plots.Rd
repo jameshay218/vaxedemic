@@ -32,4 +32,3 @@ TO DO: 1) need to make sure that the denominator is correct and that we are grou
 This is very much a work in progress. Takes the output of \code{\link{run_simulation}} and returns 
 a set of incidence curve and heatmaps for per capita incidence by region. Requires data table and ggplot2.
 }
-

@@ -17,4 +17,3 @@ the matrix of proportions in each age goup
 \description{
 Given a vector of age boundaries and a maximum age, returns a matrix with a uniform age distribution
 }
-

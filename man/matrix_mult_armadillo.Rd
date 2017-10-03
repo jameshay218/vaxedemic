@@ -12,4 +12,3 @@ the multiplied matrix
 \description{
 Testing
 }
-

@@ -1,7 +1,9 @@
 library(reshape2)
 library(ggplot2)
-source("~/Documents/vaxedemic/R/simulation.R")
-source("~/Documents/vaxedemic/R/setup.R")
+
+wd <- "~/Documents/vaxedemic/" ## working directory
+source(paste0(wd, "R/simulation.R"))
+source(paste0(wd, "R/setup.R"))
 
 ## LIFE HISTORY PARAMETER INPUTS
 ## R_0, recovery time and latent period
@@ -26,32 +28,43 @@ simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = FALSE,
+                         real_data = TRUE,
+                         two_countries = TRUE,
                          country_specific_contact = TRUE,
                          seasonal = TRUE,
                          rng_seed = 1)
+
+## run simulation for tmax days
 tmax <- 100
+## tdiv timesteps per day
 tdiv <- 24
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
 vax_alloc_period <- 24 * 7 
 
+# set random number generation seed
 if(!is.null(simulation_flags[["rng_seed"]])) {
   set.seed(simulation_flags[["rng_seed"]])
 }
 
 if(simulation_flags[["real_data"]]) {
-  demography_filename <- "~/Documents/vaxedemic/data/unified/demographic_data_intersect.csv"
-  contact_filename <- "~/Documents/vaxedemic/data/unified/contact_data_intersect.csv"
-  travel_filename <- "~/Documents/vaxedemic/data/unified/flight_data_intersect.csv"
+  ## get number of countries and ages from files
+  if(simulation_flags[["two_countries"]]) {
+    demography_filename <- paste0(wd, "data/two_countries/demographic_data.csv")
+    contact_filename <- paste0(wd, "data/two_countries/contact_data.csv")
+  } else {
+    demography_filename <- paste0(wd, "data/unified/demographic_data_intersect.csv")
+    contact_filename <- paste0(wd, "data/unified/contact_data_intersect.csv")
+  }
+
+  travel_filename <- paste0(wd, "data/unified/flight_data_intersect.csv")
+  latitude_filename <- paste0(wd, "data/unified/latitudes_intersect.csv")
   tmp <- read.csv(demography_filename, sep = ",")
   n_countries <- nrow(tmp)
   n_ages <- ncol(tmp) - 2
 } else {
   ## SETUP FAKE COUNTRY DATA
   popn_size <- 100000
-  
-  
   ## Setup age propns
   n_ages <- 4
   age_propns <- rep(1/n_ages, n_ages)
@@ -72,52 +85,65 @@ age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
 
 ## Seeding setting
 if(simulation_flags[["real_data"]]) {
-  seedCountries <- "China"
+  if(simulation_flags[["two_countries"]]){
+    seedCountries <- "c1"
+  } else {
+    seedCountries <- "China"
+  }
+
 } else {
   seedCountries <- 1
 }
 
+## number of exposed individuals in each seeded country
 seedSizes <- c(10)
+## which age group(s) to seed
 seedAges <- 3
+## which risk group(s) to seed
 seedRiskGroups <- 1
 
-## Contact rates
-contactRates <- c(6.92,.25,.77,.45,.19,3.51,.57,.2,.42,.38,1.4,.17,.36,.44,1.03,1.83)
-contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.73)
-
-
 if(simulation_flags[["real_data"]]) {
-  ## demography
+  ## construct demography matrix
   tmp <- setup_populations_real_data(demography_filename,
-                            risk_propns, risk_factors,
-                            n_riskgroups)
-  ## Travel coupling
-  K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
+                            risk_propns, risk_factors)
+  if(simulation_flags[["two_countries"]]) {
+    K <- diag(2)
+    latitudes <- matrix(0,2,1)
+  } else {
+    ## construct travel matrix
+    K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
+    ## construct latitude vector
+    latitudes <- read_latitude_data(latitude_filename)
+  }
 } else {
   
-  ## demography
-  tmp <- setup_populations(popn_size,n_countries,age_propns, n_ages,
-                           risk_propns, risk_factors,
-                           n_riskgroups)
-  ## Travel coupling
+  ## construct demography matrix
+  tmp <- setup_populations(popn_size,n_countries,age_propns, 
+                           risk_propns, risk_factors)
+  ## construct travel matrix
   K <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
+  ## construct latitude vector
+  latitudes <- matrix(seq_len(n_countries), n_countries, 1)
 }
 
 X <- tmp$X
 labels <- tmp$labels
 
-# for now, can only seed in one location, age, risk group. Vectorise later
-
+#construct vector of number of exposed individuals in each location, age, risk group 
+## for now, can only seed in one location, age, risk group. Vectorise later
 seed_vec <- double(length(X))
 seed_vec[(which(labels$Location == seedCountries & labels$Age == seedAges &
               labels$RiskGroup == seedRiskGroups))[1]] <- seedSizes
 
 ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups). ie. get age specific,
-## then enumerate out by risk group. If we had country specific contact rates, we get a list
+## then enumerate out by risk group. If we have country specific contact rates, we get a list
 ## of these matrices of length n_countries
 if(simulation_flags[["real_data"]]) {
   C1 <- read_contact_data(contact_filename)
 } else {
+  ## Contact rates
+  contactRates <- c(6.92,.25,.77,.45,.19,3.51,.57,.2,.42,.38,1.4,.17,.36,.44,1.03,1.83)
+  contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.73)
   # for now, make contact matrices same for all countries
   C1 <- generate_contact_matrix(contactRates, contactDur,n_ages, simulation_flags[["ageMixing"]])
   if(simulation_flags[["country_specific_contact"]]) {
@@ -126,6 +152,7 @@ if(simulation_flags[["real_data"]]) {
 }
 
 ## Generate risk factor modifier. ie. modifier for each age/risk group pair, same dimensions as C2
+## The risk factor modifier modifies the susceptibility of age/risk groups
 risk <- c(t(age_specific_riskgroup_factors))
 risk_matrix <- t(kronecker(risk,matrix(1,1,n_riskgroups*n_ages)))
 if(is.list(C1)) { # for country specific contact rates
@@ -150,6 +177,7 @@ if(is.list(C1)) { # for country specific contact rates
 # then no production
 
 cum_vax_pool_func_closure <- function(vax_production_params) {
+  ## vaccine production function defined here
   function(t) {
     t_since_production <- t - (vax_production_params[["detection_delay"]] + 
       vax_production_params[["production_delay"]])
@@ -162,6 +190,7 @@ cum_vax_pool_func_closure <- function(vax_production_params) {
   }
 }
 
+## make the vaccine production function using the above closure
 cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
 
 ## vaccine allocation strategy
@@ -189,7 +218,7 @@ cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
 # we can easily figure out the elements in each vector corresponding to
 # e.g. the people in the same country as people currently infected
 vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params, labels) {
-
+  ## vaccine allocation function defined here
   function(S, E, I, R, SV, EV, IV, RV, vax_pool) {
     if(any(E > 0)) {
       return(E / sum(E) * vax_pool) # incidence proportional to E
@@ -203,18 +232,20 @@ vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params, lab
   }
 }
 
+# make the vaccine alloation function using the above closure
 vax_allocation_func <- vaccine_allocation_closure(K, vax_allocation_params, labels)
 
-## Normalise 
-
+## gather simulation parameters
 sim_params <- list(n_countries=n_countries,
                    n_ages=n_ages,
                    n_riskgroups=n_riskgroups,
                    seed_vec = seed_vec)
 
+## run simulation
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
-                      X, C3, K, cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
+                      X, C3, K, latitudes, cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
 
+## plot stuff 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 
 I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)

@@ -1,49 +1,57 @@
 # script to process demography and contact matrices csv files
 # the age groups are 0-4, 5-14, 15-64, 65+
 
-setwd("~/Documents/vaxedemic/data")
+setwd("~/Documents/vaxedemic/data") ## change working directory as necessary
 source("JH_cleaning/generate_correct_country_list.R")
 
+## read in list of original and new country IDs, original and new country names
+## to enforce consistency between data sets
 countries <- read.table("JH_cleaning/all_countries_FINAL.csv", sep = ",", header = TRUE)
 
-# demographic data
+## demographic data
+## read in raw data
 demographic_data <- read.csv("demography_data_world_population_prospects.csv",
                     stringsAsFactors = FALSE)
+## find latest data sets (2015) and relevant age columns
 demographic_data <- demographic_data[demographic_data$Reference.date..as.of.1.July. == 2015 &
                      demographic_data$Country.code < 900,
                    c("Region..subregion..country.or.area..","Total","X0.4","X5.14","X15.64","X65.")]
+## make total population size and population size in age group columns numeric
 numeric_cols <- seq(2,ncol(demographic_data))
 demographic_data[,numeric_cols] <- as.data.frame(lapply(demographic_data[,numeric_cols], function(x) as.numeric(gsub(" ","",x))),
                                stringsAsFactors = FALSE)
+## population size reported as x 10^3 -- scale accordingly
 demographic_data[,numeric_cols] <- demographic_data[,numeric_cols]*1000
+## find proportion of population in each age group
 demographic_data[,3:6] <- lapply(demographic_data[,3:6], function(x) x/demographic_data$Total)
+
 demographic_colnames <- c("countryID", "N", "propn_age1", "propn_age2", "propn_age3", "propn_age4")
 colnames(demographic_data) <- demographic_colnames
+## enforce consistent country names between data sets
 demographic_data <- demographic_data[order(demographic_data$countryID),]
 demographic_data <- correct_original_id_col(demographic_data,countries,"countryID")
 demographic_data <- demographic_data[,demographic_colnames]
+## find list of countries in this data set
 demographic_country_names <- unlist(demographic_data$countryID)
 
-# get contact data names
-n_files <- 2
+## get contact data filenames
+n_files <- 2 ## contact data spread across two files
 contact_filenames <- paste0("MUestimates_all_locations_", seq_len(n_files), ".xlsx")
+
+## get country names from names of spreadsheets
 workbooks <- lapply(contact_filenames, xlsx::loadWorkbook)
 sheets <- lapply(workbooks, xlsx::getSheets)
 contact_country_names <- lapply(sheets, names)
+
+## get first country name in sheet 2 to figure out which countries are in which
+## spreadsheet (they are in alphabetical order)
 first_name_in_sheet_2 <- contact_country_names[[2]][1]
 contact_country_names <- unlist(contact_country_names)
 
+## enforce consistent country names between data sets
 contact_country_names_df <- data.frame(country_name = contact_country_names)
 contact_country_names_df <- correct_original_id_col(contact_country_names_df, countries, "country_name")
 correct_contact_country_names <- as.character(contact_country_names_df$country_name)
-
-# use for extrapolation of contact matrices later.  
-# For now, just take intersection of country names from the demographic and
-# contact data.
-
-# locations <- read.xlsx("locations.xlsx",1,startRow = 31, header = FALSE,colIndex = c(2,6,9))
-# colnames(locations) <- c("country_name", "location_code", "subregion_name")
-# locations <- locations[locations$location_code == 4,c(1,3)]
 
 read_contact_data_closure <- function(first_name_in_sheet_2, contact_filenames){
 

@@ -52,7 +52,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     propn_vax0 <- vax_params[["propn_vax0"]] # initial proportion of vaccinated individuals
     gamma <- 1/TR # recovery rate
     sigma <- 1/LP # rate of exposed -> infectious
-    tdelay <- 90 #Delay from peak summer in northern hemisphere########
+    tdelay <- 0 #Delay from peak summer in northern hemisphere######## ##DH
     amp <- .5 #Amplitude of seasonality########
 
     n_countries <- sim_params[["n_countries"]]
@@ -147,7 +147,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     # intial exposed are distributed among vaccinated and unvaccinated proportionally
     EV <- round(seed_vec * propn_vax0)
     E <- seed_vec - EV
-    SV <- round((X - seed_vec) * propn_vax0)
+    SV <- round((X - seed_vec) * propn_vax0) ##DH
     S <- X - seed_vec - SV
 
     I <- R <- IV <- RV <- matrix(0, maxIndex)

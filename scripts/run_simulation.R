@@ -1,7 +1,7 @@
 library(reshape2)
 library(ggplot2)
 
-wd <- "~/Documents/vaxedemic/" ## working directory
+wd <- "~/Global Burden/vaxedemic/" ## working directory ##DH - deleted "Documents/" - R is weird!
 source(paste0(wd, "R/simulation.R"))
 source(paste0(wd, "R/setup.R"))
 
@@ -29,15 +29,14 @@ simulation_flags <- list(ageMixing=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
                          real_data = TRUE,
-                         two_countries = TRUE,
                          country_specific_contact = TRUE,
-                         seasonal = TRUE,
+                         seasonal = FALSE,
                          rng_seed = 1)
 
 ## run simulation for tmax days
-tmax <- 100
+tmax <- 360
 ## tdiv timesteps per day
-tdiv <- 24
+tdiv <- 6 ##DH
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
 vax_alloc_period <- 24 * 7 
@@ -49,13 +48,8 @@ if(!is.null(simulation_flags[["rng_seed"]])) {
 
 if(simulation_flags[["real_data"]]) {
   ## get number of countries and ages from files
-  if(simulation_flags[["two_countries"]]) {
-    demography_filename <- paste0(wd, "data/two_countries/demographic_data.csv")
-    contact_filename <- paste0(wd, "data/two_countries/contact_data.csv")
-  } else {
-    demography_filename <- paste0(wd, "data/unified/demographic_data_intersect.csv")
-    contact_filename <- paste0(wd, "data/unified/contact_data_intersect.csv")
-  }
+  demography_filename <- paste0(wd, "data/unified/demographic_data_intersect.csv")
+  contact_filename <- paste0(wd, "data/unified/contact_data_intersect.csv")
 
   travel_filename <- paste0(wd, "data/unified/flight_data_intersect.csv")
   latitude_filename <- paste0(wd, "data/unified/latitudes_intersect.csv")
@@ -85,20 +79,15 @@ age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
 
 ## Seeding setting
 if(simulation_flags[["real_data"]]) {
-  if(simulation_flags[["two_countries"]]){
-    seedCountries <- "c1"
-  } else {
-    seedCountries <- "China"
-  }
-
+  seedCountries <- "Nigeria"
 } else {
   seedCountries <- 1
 }
 
 ## number of exposed individuals in each seeded country
-seedSizes <- c(10)
+seedSizes <- c(100)
 ## which age group(s) to seed
-seedAges <- 3
+seedAges <- 2
 ## which risk group(s) to seed
 seedRiskGroups <- 1
 
@@ -106,15 +95,12 @@ if(simulation_flags[["real_data"]]) {
   ## construct demography matrix
   tmp <- setup_populations_real_data(demography_filename,
                             risk_propns, risk_factors)
-  if(simulation_flags[["two_countries"]]) {
-    K <- diag(2)
-    latitudes <- matrix(0,2,1)
-  } else {
-    ## construct travel matrix
-    K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
-    ## construct latitude vector
-    latitudes <- read_latitude_data(latitude_filename)
-  }
+
+  ## construct travel matrix
+  K <- setup_travel_real_data(travel_filename, tmp$pop_size, travel_params)
+  ## construct latitude vector
+  latitudes <- read_latitude_data(latitude_filename)
+
 } else {
   
   ## construct demography matrix

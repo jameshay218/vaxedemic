@@ -1,9 +1,11 @@
 library(reshape2)
 library(ggplot2)
 
-wd <- "~/Global Burden/vaxedemic/" ## working directory ##DH - deleted "Documents/" - R is weird!
+# wd <- "~/Global Burden/vaxedemic/" ## working directory ##DH - deleted "Documents/" - R is weird!
+wd <- "~/git_repos/vaxedemic/" ## Ada's Windows machine
 source(paste0(wd, "R/simulation.R"))
 source(paste0(wd, "R/setup.R"))
+source(paste0(wd, "R/helpers.R"))
 
 ## LIFE HISTORY PARAMETER INPUTS
 ## R_0, recovery time and latent period
@@ -28,7 +30,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = TRUE,
+                         real_data = FALSE,
                          country_specific_contact = TRUE,
                          seasonal = FALSE,
                          rng_seed = 1)
@@ -114,7 +116,7 @@ if(simulation_flags[["real_data"]]) {
 
 X <- tmp$X
 labels <- tmp$labels
-
+browser()
 #construct vector of number of exposed individuals in each location, age, risk group 
 ## for now, can only seed in one location, age, risk group. Vectorise later
 seed_vec <- double(length(X))
@@ -204,6 +206,10 @@ cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
 # we can easily figure out the elements in each vector corresponding to
 # e.g. the people in the same country as people currently infected
 vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params, labels) {
+    
+    ## create a function which sums a state vector across age and risk groups
+    sum_age_risk_func <- sum_age_risk_closure(labels)
+    
   ## vaccine allocation function defined here
   function(S, E, I, R, SV, EV, IV, RV, vax_pool) {
     if(any(E > 0)) {

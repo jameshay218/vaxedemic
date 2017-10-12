@@ -48,10 +48,20 @@ distribute_vax_among_age_risk_closure <- function(priorities, labels) {
         y_long_vec <- rep(y, each = n_countries)
     }
     
-    f <- function(n_vax_allocated, n_unvaccinated) {
-        vax_alloc_long_vec <- rep(n_vax_allocated, times = n_groups)
-        vax_alloc_loc_age_risk <- vax_alloc_long_vec * n_unvaccinated * y_long_vec
-        vax_alloc_loc_age_risk
+    state_names <- c("S", "E", "I", "R")
+    n_states <- length(state_names)
+    ## non-discriminatory distribution among S, E, I, R
+    y_long_vec <- rep(y_long_vec, times = n_states) / n_states
+    
+    f <- function(n_vax_allocated, S, E, I, R) {
+        vax_alloc <- rep(n_vax_allocated, times = n_groups * n_states)
+        vax_alloc <- vax_alloc * c(S, E, I, R) * y_long_vec
+        vax_alloc <- round_preserve_sum(vax_alloc)
+        # all the below line does is split the vaccine allocation vector into
+        # four equal parts
+        vax_alloc <- split(vax_alloc, ceiling(seq_along(vax_alloc) / n_states))
+        names(vax_alloc) <- state_names
+        return(vax_alloc)
     }
     f
 }

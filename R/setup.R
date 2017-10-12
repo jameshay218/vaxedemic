@@ -164,7 +164,7 @@ read_latitude_data <- function(latitude_filename){
     
     latitude_data <- read.table(latitude_filename, sep = ",", header = TRUE)
     latitudes <- latitude_data$latitude
-    # alphebetise
+    # alphabetise
     latitudes <- latitudes[order(latitude_data$Location)]
     return(matrix(latitudes, ncol = 1))
     

@@ -41,6 +41,8 @@ run_simulation <- function(simulation_flags, life_history_params,
                            cum_vax_pool_func,
                            vax_allocation_func,
                            tmax=100,tdiv=24, vax_alloc_period = 24 * 7){
+  
+    #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
     seasonal <- simulation_flags[["seasonal"]]
@@ -53,7 +55,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     gamma <- 1/TR # recovery rate
     sigma <- 1/LP # rate of exposed -> infectious
     tdelay <- 0 #Delay from peak summer in northern hemisphere######## ##DH
-    amp <- .5 #Amplitude of seasonality########
+    amp <- 1 #Amplitude of seasonality########
 
     n_countries <- sim_params[["n_countries"]]
     n_ages <- sim_params[["n_ages"]]
@@ -123,20 +125,50 @@ run_simulation <- function(simulation_flags, life_history_params,
     Xover=1/X
     Xover[X==0] <- 0
 
-    L1 <- (kronecker(matrix(1,1,maxIndex),X)*Kdelta*M1)%*%KC
-
     ## Beta calcualtion (global):
-    XX <- 1/gamma*L1
-    ev <- eigen(XX)
-    ev <- ev$values
-    Rstar <- max(abs(ev))
-    beta <- R0/Rstar
+    #L1 <- (kronecker(matrix(1,1,maxIndex),X)*Kdelta*M1)%*%KC
+    #XX <- 1/gamma*L1
+    #ev <- eigen(XX)
+    #ev <- ev$values
+    #Rstar <- max(abs(ev))
+    #beta <- R0/Rstar
+    
+    #Country-specific betas: ##DH added
+    n_classes <- n_ages * n_riskgroups
+    c_names <- levels(labels[,2])
+    c_pops <- labels[order(labels$Location),]
+    c_pops <- c_pops[,1]
+    c_pops <- matrix(c_pops, n_classes, n_countries, byrow=FALSE)
+    betaV <- matrix(0, n_countries, 1)
+    for (i in 1:n_countries){
+      NiClasses <- c_pops[,i]#Pop in each class
+      Ni <- sum(NiClasses)#Country population
+      Ci <- contactMatrix[[i]]#Country age-mix - =C for all?
+      Li <- 1/(Ni*gamma)*rep(NiClasses,1,n_classes)*Ci##DH travelMatrix[i,i]/...
+      ev <- eigen(Li)
+      ev <- ev$values
+      Rstar <- max(abs(ev))
+      betaV[i] <- R0/Rstar
+    }
+    betaV <- kronecker(matrix(1,n_classes,1), betaV)
+    ## Beta calcualtion (global):
+    #L1 <- (kronecker(matrix(1,1,maxIndex),X)*Kdelta*M1)%*%KC
+    #XX <- 1/gamma*rep(betaV,1,maxIndex)*L1
+    #ev <- eigen(XX)
+    #ev <- ev$values
+    #Rstar <- max(abs(ev))
+    #betaG <- R0/Rstar
+    #betaV <- betaV*betaG
+    #Always:
+    beta <- betaV
+    
 
     ## Convert to smaller time step rates
     beta <- beta/tdiv
     gamma <- gamma/tdiv
     
-    LD <- beta*(Kdelta*M1)%*%KC
+    #LD <- beta*(Kdelta*M1)%*%KC
+    LD <- (Kdelta*M1)%*%KC ##DH: no beta
 
     #### calculation of force of infection matrix (LD) ends here
     
@@ -325,11 +357,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## recalculate force of infection matrix if necessary
         if(seasonal){
           M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
-          LD <- beta*(Kdelta*M1Phi)%*%KC
+          #LD <- beta*(Kdelta*M1Phi)%*%KC
+          LD <- (Kdelta*M1Phi)%*%KC
         }
         
         ## Generate force of infection on each group/location
-        lambda <- LD%*%(I + IV)
+        lambda <- beta*(LD%*%(I + IV))
 
         ## Generate probability of infection from this
         P_infection <- 1 - exp(-lambda)
@@ -434,38 +467,38 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
 #' @export
 setup_populations <- function(popn_size, n_countries,
                               age_propns, risk_propns, risk_factors){
-
-    stopifnot(sum(age_propns) == 1, all(rowSums(risk_propns) == 1))
   
-    n_ages <- length(age_propns)
-    n_riskgroups <- ncol(risk_propns)
-    
-    ## Assuming the same population size for each country, the same age
-    ## distribution and the same risk proportions. Once we input real data,
-    ## we would input these matrices directly
-    country_popns <- rep(popn_size, n_countries)
-    country_popns <- t(matrix(rep(country_popns,n_ages),nrow=n_ages,byrow=TRUE)) ## Copy population size for each age group
-
-    ## Get proportion of population in each age group
-    age_propns_country <- matrix(rep(age_propns, n_countries),
-                                 nrow=n_countries,ncol=n_ages,byrow=TRUE)
-
-    ## Use proportion to get actual population size
-    age_groups <- country_popns * age_propns_country
-
-    ## Generate risk propns for each age group
-    ## Enumerate out risk groups to same dimension as countries
-    ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
-    risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
-
-    ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-    age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
-
-    ## Multiply together to get proportion of population in each location/age/risk group combo
-    X <- trunc(risk_matrix*age_group_risk)
-    
-    labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
-    return(list(X=X,labels=labels, "pop_size" = rep(popn_size, n_countries)))
+  stopifnot(sum(age_propns) == 1, all(rowSums(risk_propns) == 1))
+  
+  n_ages <- length(age_propns)
+  n_riskgroups <- ncol(risk_propns)
+  
+  ## Assuming the same population size for each country, the same age
+  ## distribution and the same risk proportions. Once we input real data,
+  ## we would input these matrices directly
+  country_popns <- rep(popn_size, n_countries)
+  country_popns <- t(matrix(rep(country_popns,n_ages),nrow=n_ages,byrow=TRUE)) ## Copy population size for each age group
+  
+  ## Get proportion of population in each age group
+  age_propns_country <- matrix(rep(age_propns, n_countries),
+                               nrow=n_countries,ncol=n_ages,byrow=TRUE)
+  
+  ## Use proportion to get actual population size
+  age_groups <- country_popns * age_propns_country
+  
+  ## Generate risk propns for each age group
+  ## Enumerate out risk groups to same dimension as countries
+  ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
+  risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
+  
+  ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
+  age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
+  
+  ## Multiply together to get proportion of population in each location/age/risk group combo
+  X <- trunc(risk_matrix*age_group_risk)
+  
+  labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
+  return(list(X=X,labels=labels, "pop_size" = rep(popn_size, n_countries)))
 }
 
 #' function to setup population sizes for each location, age, risk group, 
@@ -488,16 +521,21 @@ setup_populations <- function(popn_size, n_countries,
 #' size in each country.
 #' @export
 setup_populations_real_data <- function(demography_filename,
-                              risk_propns, risk_factors,
-                              n_riskgroups){
+                                        risk_propns, risk_factors,
+                                        n_riskgroups){
   
   n_riskgroups <- ncol(risk_propns)
   
   ## read in demographic data
   demographic_data <- read.csv(demography_filename,sep = ",")
+  
+  ## ensure proportions sum to 1 -- eliminate rounding errors
+  demographic_data[,ncol(demographic_data)] <- 1 - rowSums(demographic_data[,seq(3,ncol(demographic_data) - 1)])
+  ## alphabetise countries for consistency across data sets
+  demographic_data <- demographic_data[order(demographic_data$countryID),]
   pop_size <- demographic_data[,"N"]
   age_groups <- as.matrix(pop_size * demographic_data[,seq(3,ncol(demographic_data))])
-
+  
   ## Generate risk propns for each age group
   ## Enumerate out risk groups to same dimension as countries
   ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
@@ -527,6 +565,8 @@ setup_populations_real_data <- function(demography_filename,
 read_contact_data <- function(contact_filename){
   
   contact_data <- read.table(contact_filename,sep = ",",stringsAsFactors = FALSE,row.names = 1,header = TRUE)
+  # alphabetise
+  contact_data <- contact_data[order(rownames(contact_data)),]
   contact_data <- as.data.frame(t(contact_data))
   contact_data <- lapply(contact_data, function(x) matrix(x,nrow = sqrt(nrow(contact_data))))
   return(contact_data)
@@ -545,8 +585,10 @@ read_contact_data <- function(contact_filename){
 #' @return square travel matrix of side length n_countries (unnormalised)
 #' @export
 setup_travel_real_data <- function(travel_filename, pop_size, travel_params) {
-
+  
   travel_data <- read.table(travel_filename,sep = ",",stringsAsFactors = FALSE,header = TRUE)
+  # alphabetise for consistency between data sets
+  travel_data <- travel_data[order(colnames(travel_data)),order(colnames(travel_data))]
   travel_data <- as.matrix(travel_data)
   colnames(travel_data) <- NULL
   # normalise travel data to mean so that epsilon is more meaningful
@@ -567,6 +609,8 @@ read_latitude_data <- function(latitude_filename){
   
   latitude_data <- read.table(latitude_filename, sep = ",", header = TRUE)
   latitudes <- latitude_data$latitude
+  # alphabetise
+  latitudes <- latitudes[order(latitude_data$Location)]
   return(matrix(latitudes, ncol = 1))
   
 }

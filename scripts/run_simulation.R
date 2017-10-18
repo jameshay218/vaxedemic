@@ -2,7 +2,7 @@ library(reshape2)
 library(ggplot2)
 
 # wd <- "~/Global Burden/vaxedemic/" ## working directory ##DH - deleted "Documents/" - R is weird!
-wd <- "~/git_repos/vaxedemic/" ## Ada's Windows machine
+wd <- "~/Documents/vaxedemic/" 
 source(paste0(wd, "R/simulation.R"))
 source(paste0(wd, "R/setup.R"))
 source(paste0(wd, "R/helpers.R"))
@@ -20,10 +20,10 @@ vax_params <- list(efficacy = 1 - 1.2/1.8, propn_vax0 = 0)
 
 ## example parameters for vaccine production (see cum_vax_pool_func_closure)
 vax_production_params <- list(detection_delay = 0, production_delay = 0, 
-                              production_rate = 0, max_vax = 5e9)
+                              production_rate = 1e3, max_vax = 5e9)
 
 ## example parameters for vaccine allocation
-vax_allocation_params <- list(example = 1)
+vax_allocation_params <- list(priorities = NULL)
 
 ## SIMULATION OPTIONS
 simulation_flags <- list(ageMixing=TRUE,
@@ -116,7 +116,7 @@ if(simulation_flags[["real_data"]]) {
 
 X <- tmp$X
 labels <- tmp$labels
-browser()
+
 #construct vector of number of exposed individuals in each location, age, risk group 
 ## for now, can only seed in one location, age, risk group. Vectorise later
 seed_vec <- double(length(X))
@@ -207,20 +207,26 @@ cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
 # e.g. the people in the same country as people currently infected
 vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params, labels) {
     
-    ## create a function which sums a state vector across age and risk groups
-    sum_age_risk_func <- sum_age_risk_closure(labels)
+  ## create a function which sums a state vector across age and risk groups
+  sum_age_risk_func <- sum_age_risk_closure(labels)
+  distribute_vax_among_age_risk <- 
+    distribute_vax_among_age_risk_closure(vax_allocation_params$priorities, labels)
     
   ## vaccine allocation function defined here
   function(S, E, I, R, SV, EV, IV, RV, vax_pool) {
-    if(any(E > 0)) {
-      return(E / sum(E) * vax_pool) # incidence proportional to E
-    } else if(any(I > 0)){
-      return(I / sum(I) * vax_pool) # if no exposed unvaccinated left, allocate proportional to prevalence
-    } else if(any(S > 0)){
-      return(S / sum(S) * vax_pool) # if no infectious unvaccinated left, allocate proportional to susceptibles
+    
+    vax_pool <- floor(vax_pool)
+    # find incidence in each country
+    # incidence proportional to E
+    incidence_by_country <- sum_age_risk_func(E)
+    if(any(incidence_by_country > 0)) {
+      n_vax_allocated <- incidence_by_country / sum(incidence_by_country) * vax_pool
     } else {
-      return(S * 0) # allocate nothing
+      n_vax_allocated <- incidence_by_country * 0 # allocate nothing
     }
+
+    split_allocation <- distribute_vax_among_age_risk(n_vax_allocated, S, E, I, R)
+    return(split_allocation)
   }
 }
 

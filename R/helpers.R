@@ -6,9 +6,9 @@
 #' country, age and risk group) across age and risk groups
 #' @export
 sum_age_risk_closure <- function(labels) {
-    function(state) {
-        aggregate(state, by = list(labels$Location), FUN = sum)[,2]
-    }
+  function(state) {
+    aggregate(state, by = list(labels$Location), FUN = sum)[,2]
+  }
 }
 
 #' returns a function which, 
@@ -20,7 +20,7 @@ sum_age_risk_closure <- function(labels) {
 #'  If x vaccines are allocated to a country, and the unvaccinated population in
 #'  each age/risk group in that country is given by a vector p of length n_groups,
 #'  then the number of vaccines allocated to each age/risk group is
-#'  x * p * y. where y is a normalised version of priorities$Priority.
+#'  x * p * y / sum(p * y) where y is a normalised version of priorities$Priority.
 #'  For example, to prioritise risk/age group 1, y = [1,0,0,...].
 #'  For non-discriminatory distribution, y = [1,1,1,...] / n_groups.
 #'  For consistency with labels, 
@@ -35,35 +35,48 @@ sum_age_risk_closure <- function(labels) {
 #'  f returns a numeric vector of length n: the
 #'  number of vaccines allocated to each country, age, risk group
 distribute_vax_among_age_risk_closure <- function(priorities, labels) {
-    ## if priorities not given, default behaviour is non-discriminatory distribution
-    if(is.null(priorities)) {
-        n_groups <- length(unique(labels$Age)) * length(unique(labels$RiskGroup))
-        y_long_vec <- rep(1 / n_groups, nrow(labels))
-    } else {
-        ## sort priorities
-        priorities <- priorities[order(priorities$RiskGroup, priorities$Age),]
-        n_groups <- nrow(priorities)
-        n_countries <- round(nrow(labels) / n_groups)
-        y <- priorities$Priority / sum(priorities$Priority)
-        y_long_vec <- rep(y, each = n_countries)
-    }
+  
+  ## if priorities not given, default behaviour is non-discriminatory distribution
+  if(is.null(priorities)) {
+    n_groups <- length(unique(labels$Age)) * length(unique(labels$RiskGroup))
+    y_long_vec <- rep(1 / n_groups, nrow(labels))
+  } else {
+    ## sort priorities
+    priorities <- priorities[order(priorities$RiskGroup, priorities$Age),]
+    n_groups <- nrow(priorities)
+    n_countries <- round(nrow(labels) / n_groups)
+    y <- priorities$Priority / sum(priorities$Priority)
+    y_long_vec <- rep(y, each = n_countries)
+  }
+  
+  state_names <- c("S", "E", "I", "R")
+  n_states <- length(state_names)
+  ## non-discriminatory distribution among S, E, I, R
+  y_long_vec <- rep(y_long_vec, times = n_states)
+
+  sum_age_risk <- sum_age_risk_closure(labels)
+
+  f <- function(n_vax_allocated, S, E, I, R) {
     
-    state_names <- c("S", "E", "I", "R")
-    n_states <- length(state_names)
-    ## non-discriminatory distribution among S, E, I, R
-    y_long_vec <- rep(y_long_vec, times = n_states) / n_states
+    # ensure that an integer number of vaccines is allocated to each country
+    n_vax_allocated <- round_preserve_sum(n_vax_allocated)
     
-    f <- function(n_vax_allocated, S, E, I, R) {
-        vax_alloc <- rep(n_vax_allocated, times = n_groups * n_states)
-        vax_alloc <- vax_alloc * c(S, E, I, R) * y_long_vec
-        vax_alloc <- round_preserve_sum(vax_alloc)
-        # all the below line does is split the vaccine allocation vector into
-        # four equal parts
-        vax_alloc <- split(vax_alloc, ceiling(seq_along(vax_alloc) / n_states))
-        names(vax_alloc) <- state_names
-        return(vax_alloc)
-    }
-    f
+    # distribute vaccines between age and risk groups
+    vax_alloc <- rep(n_vax_allocated, times = n_groups * n_states)
+    normalisation_factor <- rep(sum_age_risk((S + E + I + R) * y_long_vec[seq_len(n_countries * n_groups)]), n_groups * n_states)
+    vax_alloc <- vax_alloc * c(S, E, I, R) * y_long_vec / normalisation_factor
+    
+    # round ensuring that the number of vaccines allocated to each country stays the same  
+    loc_idx <- lapply(seq_len(n_countries), function(x) seq(x, length(vax_alloc), by = n_countries))
+    vax_alloc <- lapply(loc_idx, function(x) round_preserve_sum(vax_alloc[x]))
+    vax_alloc <- as.numeric(matrix(unlist(vax_alloc), nrow = n_countries, byrow = TRUE))
+    
+    # split the vaccine allocation vector into S, E, I, R
+    vax_alloc <- split(vax_alloc, ceiling(seq_along(vax_alloc) / n_groups / n_countries))
+    names(vax_alloc) <- state_names
+    return(vax_alloc)
+  }
+  f
 }
 
 #' rounds a numeric vector probabilistically such that its sum (an integer) is preserved
@@ -71,16 +84,22 @@ distribute_vax_among_age_risk_closure <- function(priorities, labels) {
 #' @param vec numeric vector which sums to an integer
 #' @return numeric vector of the same length as vec: rounded vector
 round_preserve_sum <- function(vec) {
-    sum_vec <- sum(vec)
-    rounded_sum <- round(sum_vec)
-    if(!all.equal(rounded_sum, sum_vec)) {
-        stop("vector passed to round_preserve_sum does not sum to integer")
-    }
-    
-    n_round_up <- rounded_sum - sum(floor(vec))
-    round_up_idx <- sample.int(length(vec), size = n_round_up, replace = FALSE,
-                               prob = vec - floor(vec))
-    vec_out <- floor(vec)
-    vec_out[round_up_idx] <- ceiling(vec[round_up_idx])
-    vec_out
+  
+  # if vector already integers, do nothing
+  if(isTRUE(all.equal(vec, round(vec)))) {
+    return(vec)
+  }
+  
+  sum_vec <- sum(vec)
+  rounded_sum <- round(sum_vec)
+  if(!isTRUE(all.equal(rounded_sum, sum_vec))) {
+    stop("vector passed to round_preserve_sum does not sum to integer")
+  }
+  
+  n_round_up <- rounded_sum - sum(floor(vec))
+  round_up_idx <- sample.int(length(vec), size = n_round_up, replace = FALSE,
+                             prob = vec - floor(vec))
+  vec_out <- floor(vec)
+  vec_out[round_up_idx] <- ceiling(vec[round_up_idx])
+  vec_out
 }

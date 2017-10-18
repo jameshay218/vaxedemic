@@ -240,7 +240,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     
     ## initialise matrices to store simulation outputs
     Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-    SVmat <- EVmat <- IVmat <- RVmat <- Smat
+    SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- Smat
     
     Smat[,1] <- S0
     Emat[,1] <- E0
@@ -263,15 +263,6 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         stop("cumulative number of vaccines not a monotonically non-decreasing function")
     }
     
-    ## function that allocates vaccines proportionally to S, E, I, or R and rounds
-    alloc_minifunc_closure <- function(sum_SEIR, vax_alloc){
-        function(comp) {
-            alloc <- pmin(comp, round(comp / sum_SEIR * vax_alloc))
-            alloc[is.na(alloc)] <- 0
-            return(alloc)
-        }
-    }
-    
     for(i in 2:(tend+1)){
         
         ## check that current state is sensible
@@ -288,34 +279,32 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         #################       
         if(i %% vax_alloc_period == 0) {
             # allocate vaccines
-            vax_alloc <- round(vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool))
-            if(any(vax_alloc > 0)) {
-                # distribute vaccines proportionally among S, E, I, R
-                sum_SEIR <- S + E + I + R
+            vax_alloc <- 1
+            actual_alloc <- 0
+            sum_vax_alloc <- S * 0
+
+            while(!isTRUE(all.equal(vax_alloc, actual_alloc))) {
                 
-                alloc_minifunc <- alloc_minifunc_closure(sum_SEIR, vax_alloc)
-                E_alloc <- alloc_minifunc(E)
-                I_alloc <- alloc_minifunc(I)
-                R_alloc <- alloc_minifunc(R)
-                S_alloc <- pmin(S, vax_alloc - E_alloc - I_alloc - R_alloc)
-                S_alloc[is.na(S_alloc)] <- 0
-                
-                # actual number allocated after all the rounding
-                vax_alloc <- S_alloc + E_alloc + I_alloc + R_alloc
+                vax_alloc <- vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool)
+                actual_alloc <- Map(pmin, vax_alloc, list(S, E, I, R))
+                sum_vax_alloc <- sum_vax_alloc + actual_alloc$S + actual_alloc$E +
+                  actual_alloc$I + actual_alloc$R
                 
                 ## update current vax pool
-                vax_pool <- vax_pool - sum(vax_alloc)
+                vax_pool <- vax_pool - sum(unlist(actual_alloc))
                 
-                S <- S - S_alloc
-                E <- E - E_alloc
-                I <- I - I_alloc
-                R <- R - R_alloc
+                S <- S - actual_alloc$S
+                E <- E - actual_alloc$E
+                I <- I - actual_alloc$I
+                R <- R - actual_alloc$R
                 
-                SV <- SV + S_alloc
-                EV <- EV + E_alloc
-                IV <- IV + I_alloc
-                RV <- RV + R_alloc
+                SV <- SV + actual_alloc$S
+                EV <- EV + actual_alloc$E
+                IV <- IV + actual_alloc$I
+                RV <- RV + actual_alloc$R
             }
+            
+            vax_alloc_mat[,i] <- sum_vax_alloc
             
         }
         #################
@@ -393,10 +382,23 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## stop simulation if there are no more exposed/infectious individuals
         if(sum(E + I + EV + IV) == 0) {
             remaining_idx <- seq((i+1), ncol(Smat))
-            Smat[,remaining_idx] <- matrix(S, n_groups, length(remaining_idx))
-            Rmat[,remaining_idx] <- matrix(R, n_groups, length(remaining_idx))
-            SVmat[,remaining_idx] <- matrix(SV, n_groups, length(remaining_idx))
-            RVmat[,remaining_idx] <- matrix(RV, n_groups, length(remaining_idx))
+            
+            # make a function to fill in the remaining parts of the state matrix
+            # once we stop the simulation
+            
+            fill_remaining_closure <- function(n_groups, remaining_idx) {
+              f <- function(vec) {
+                matrix(vec, n_groups, length(remaining_idx))
+              }
+              f
+            }
+            
+            fill_remaining <- fill_remaining_closure(n_groups, remaining_idx)
+            
+            Smat[,remaining_idx] <- fill_remaining(S)
+            Rmat[,remaining_idx] <- fill_remaining(R)
+            SVmat[,remaining_idx] <- fill_remaining(SV)
+            RVmat[,remaining_idx] <- fill_remaining(RV)
             vax_pool_vec[remaining_idx] <- vax_pool
             break
         }
@@ -405,7 +407,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     ## put times as column names for readability of output
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
+    colnames(vax_alloc_mat) <- times
     
     return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec))
+                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec,
+                vax_alloc = vax_alloc_mat))
 }

@@ -7,7 +7,7 @@ source(paste0(wd, "R/setup.R"))
 
 ## LIFE HISTORY PARAMETER INPUTS
 ## R_0, recovery time and latent period
-life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
+life_history_params <- list(R0=1.1, TR=2.6, LP = 1.5)
 
 ## travel parameters: scaling of off-diagonals
 travel_params <- list(epsilon = 1e-3)
@@ -29,17 +29,17 @@ simulation_flags <- list(ageMixing=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
                          real_data = TRUE,
-                         country_specific_contact = TRUE,
+                         country_specific_contact = FALSE,
                          seasonal = FALSE,
-                         rng_seed = 1)
+                         rng_seed = 0)
 
 ## run simulation for tmax days
-tmax <- 360
+tmax <- 100
 ## tdiv timesteps per day
-tdiv <- 6 ##DH
+tdiv <- 24 ##DH
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
-vax_alloc_period <- 24 * 7 
+vax_alloc_period <- 24 * 7
 
 # set random number generation seed
 if(!is.null(simulation_flags[["rng_seed"]])) {
@@ -79,15 +79,15 @@ age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
 
 ## Seeding setting
 if(simulation_flags[["real_data"]]) {
-  seedCountries <- "Nigeria"
+  seedCountries <- "China"
 } else {
   seedCountries <- 1
 }
 
 ## number of exposed individuals in each seeded country
-seedSizes <- c(100)
+seedSizes <- c(20)
 ## which age group(s) to seed
-seedAges <- 2
+seedAges <- 3
 ## which risk group(s) to seed
 seedRiskGroups <- 1
 
@@ -233,6 +233,10 @@ res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_par
 
 ## plot stuff 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
+
+tend <- tmax*tdiv+1
+popTotal=sum(labels[,1])
+globalAttack <- sum(res$R[,tend] + res$RV[,tend])/popTotal
 
 I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
 I <- melt(I, id.vars=c("Location","Age","RiskGroup"))

@@ -285,7 +285,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
 
             while(!isTRUE(all.equal(vax_alloc, actual_alloc))) {
                 
-                vax_alloc <- vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool)
+                vax_alloc <- vax_allocation_func(S, E, I, R, vax_pool)
                 actual_alloc <- Map(pmin, vax_alloc, list(S, E, I, R))
                 sum_vax_alloc <- sum_vax_alloc + actual_alloc$S + actual_alloc$E +
                   actual_alloc$I + actual_alloc$R

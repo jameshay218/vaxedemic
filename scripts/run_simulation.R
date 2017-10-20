@@ -25,6 +25,56 @@ vax_production_params <- list(detection_delay = 0, production_delay = 0,
 ## example parameters for vaccine allocation
 vax_allocation_params <- list(priorities = NULL)
 
+## example user-specified vaccine allocation function
+# allocate vaccines according to absolute incidence in each location, then
+# allocate uniformly within each country (without discriminating between
+# ages/risk groups/infection statuses)
+# needs to take the arguments
+# sum_age_risk_func: a function which sums a vector across age and risk groups
+# (created automatically in the code)
+# travel_matrix: a square matrix with side length n_countries. 
+# travel_matrix[x,y] is the proportion of time an individual in location x spends
+# in location y
+# vax_allocation_params: list of parameters for vaccine allocation
+# S: numeric vector of length n. number of unvaccinated susceptibles
+# E: numeric vector of length n. number of unvaccinated exposed
+# I: numeric vector of length n. number of unvaccinated infectious
+# R: numeric vector of length n. number of unvaccinated recovered
+# vax_pool: numeric vector of length 1. number of vaccines available
+user_specified_vax_alloc_func <- function(sum_age_risk_func, 
+                                          travel_matrix,
+                                          vax_allocation_params,
+                                          S, E, I, R, vax_pool) {
+  # find incidence in each country
+  # incidence proportional to E
+  incidence_by_country <- sum_age_risk_func(E)
+  if(any(incidence_by_country > 0)) {
+    n_vax_allocated <- incidence_by_country / sum(incidence_by_country) * vax_pool
+  } else {
+    n_vax_allocated <- incidence_by_country * 0 # allocate nothing
+  }
+  return(n_vax_allocated)
+}
+
+# example function of vaccine production:
+# no vaccine produced until time vax_production_params[["detection_delay"]] + 
+# vax_production_params[["production_delay"]], then
+# constant production rate until max number of doses ever made reached,
+# then no production
+# needs to take the arguments
+# vax_production_params: list of parameters for vaccine production
+# t: scalar: time
+user_specified_cum_vax_pool_func <- function(vax_production_params, t) {
+  t_since_production <- t - (vax_production_params[["detection_delay"]] + 
+                               vax_production_params[["production_delay"]])
+  if(t_since_production < 0) {
+    0
+  } else {
+    min(vax_production_params[["max_vax"]],
+        t_since_production * vax_production_params[["production_rate"]])
+  }
+}
+
 ## SIMULATION OPTIONS
 simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
@@ -151,87 +201,12 @@ if(is.list(C1)) { # for country specific contact rates
   C3 <- C2*risk_matrix
 }
 
+## process the vaccine production function
+cum_vax_pool_func <- cum_vax_pool_func_closure(user_specified_cum_vax_pool_func, vax_production_params)
 
-## vaccination production curve
+## process the vaccine allocation function
 
-# a closure to make a function which returns a scalar:
-# the number of vaccines which have ever existed at time t
-# (may involve integrating the production rate curve if you want,
-# otherwise provide directly)
-# current example:
-# no vaccine produced until time vax_production_params[["detection_delay"]] + 
-# vax_production_params[["production_delay"]], then
-# constant production rate until max number of doses ever made reached,
-# then no production
-
-cum_vax_pool_func_closure <- function(vax_production_params) {
-  ## vaccine production function defined here
-  function(t) {
-    t_since_production <- t - (vax_production_params[["detection_delay"]] + 
-      vax_production_params[["production_delay"]])
-    if(t_since_production < 0) {
-      0
-    } else {
-      min(vax_production_params[["max_vax"]],
-          t_since_production * vax_production_params[["production_rate"]])
-    }
-  }
-}
-
-## make the vaccine production function using the above closure
-cum_vax_pool_func <- cum_vax_pool_func_closure(vax_production_params)
-
-## vaccine allocation strategy
-
-# a closure to make a function which returns a vector of length
-# n_countries * n_ages * n_risk_groups:
-# the number of vaccines to be allocated to each location, age, risk group
-# vaccine allocation is a function of the current state of the epidemic, the
-# rate of change of the epidemic (i.e. incidence etc.),
-# current vaccine pool size, the travel matrix and other parameters
-
-# probably can make independent of the vaccinated classes...
-
-# if non-integer outputted, main simulation will round the numbers down
-# this may cause problems because of the number of classes, might be that
-# no vaccines are ever allocated -- we'll see
-
-# current example:
-# allocate vaccines according to absolute incidence in each location/age/risk group
-# note unrealism because we would obviously want to allocate vaccines to everyone 
-# in the same country as the epidemic is occurring regardless of the age/risk group
-# in which the current infectious people are
-
-# to improve this, I've included the labels as an input for ease of coding, so that
-# we can easily figure out the elements in each vector corresponding to
-# e.g. the people in the same country as people currently infected
-vaccine_allocation_closure <- function(travel_matrix, vax_allocation_params, labels) {
-    
-  ## create a function which sums a state vector across age and risk groups
-  sum_age_risk_func <- sum_age_risk_closure(labels)
-  distribute_vax_among_age_risk <- 
-    distribute_vax_among_age_risk_closure(vax_allocation_params$priorities, labels)
-    
-  ## vaccine allocation function defined here
-  function(S, E, I, R, SV, EV, IV, RV, vax_pool) {
-    
-    vax_pool <- floor(vax_pool)
-    # find incidence in each country
-    # incidence proportional to E
-    incidence_by_country <- sum_age_risk_func(E)
-    if(any(incidence_by_country > 0)) {
-      n_vax_allocated <- incidence_by_country / sum(incidence_by_country) * vax_pool
-    } else {
-      n_vax_allocated <- incidence_by_country * 0 # allocate nothing
-    }
-
-    split_allocation <- distribute_vax_among_age_risk(n_vax_allocated, S, E, I, R)
-    return(split_allocation)
-  }
-}
-
-# make the vaccine alloation function using the above closure
-vax_allocation_func <- vaccine_allocation_closure(K, vax_allocation_params, labels)
+vax_allocation_func <- vaccine_allocation_closure(user_specified_vax_alloc_func, K, vax_allocation_params, labels)
 
 ## gather simulation parameters
 sim_params <- list(n_countries=n_countries,

@@ -50,7 +50,7 @@ setup_populations <- function(popn_size, n_countries,
     age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
     
     ## Multiply together to get proportion of population in each location/age/risk group combo
-    X <- trunc(risk_matrix*age_group_risk)
+    X <- round(risk_matrix*age_group_risk)
     
     labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
     return(list(X=X,labels=labels, "pop_size" = rep(popn_size, n_countries)))

@@ -143,7 +143,11 @@ run_simulation <- function(simulation_flags, life_history_params,
     for (i in 1:n_countries){
       NiClasses <- c_pops[,i]#Pop in each class
       Ni <- sum(NiClasses)#Country population
-      Ci <- contactMatrix[[i]]#Country age-mix - =C for all?
+      if(is.list(contactMatrix)) {
+        Ci <- contactMatrix[[i]]#Country age-mix - =C for all?
+      } else {
+        Ci <- contactMatrix
+      }
       Li <- 1/(Ni*gamma)*rep(NiClasses,1,n_classes)*Ci##DH travelMatrix[i,i]/...
       ev <- eigen(Li)
       ev <- ev$values

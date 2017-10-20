@@ -278,14 +278,25 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## VAX ALLOCATION
         #################       
         if(i %% vax_alloc_period == 0) {
-            # allocate vaccines
+            
+            # initialisation
             vax_alloc <- 1
             actual_alloc <- 0
             sum_vax_alloc <- S * 0
-
+            
+            # notes on while loop to follow
             while(!isTRUE(all.equal(vax_alloc, actual_alloc))) {
                 
+                # first pass at allocating vaccines.
+                # may allocate more vaccines to a location / age / risk group/ infection status
+                # combination than there are individuals in that combination
                 vax_alloc <- vax_allocation_func(S, E, I, R, vax_pool)
+                # the actual number of vaccines allocated is the smaller of the
+                # number of vaccines according to the algorithm and the actual
+                # number of individuals in the combination
+                # if the acutal number of vaccines allocated is less than that
+                # allocated by the algorithm, we will try to allocate the 
+                # remaining vaccines in the next iteration of the while loop
                 actual_alloc <- Map(pmin, vax_alloc, list(S, E, I, R))
                 sum_vax_alloc <- sum_vax_alloc + actual_alloc$S + actual_alloc$E +
                   actual_alloc$I + actual_alloc$R
@@ -293,6 +304,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
                 ## update current vax pool
                 vax_pool <- vax_pool - sum(unlist(actual_alloc))
                 
+                ## update the vaccination status of individuals
                 S <- S - actual_alloc$S
                 E <- E - actual_alloc$E
                 I <- I - actual_alloc$I

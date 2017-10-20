@@ -241,7 +241,7 @@ run_simulation <- function(simulation_flags, life_history_params,
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
                             cum_vax_pool_func, vax_allocation_func){
-
+    
     ## extract model parameters  
     gamma <- params[["gamma"]]
     sigma <- params[["sigma"]]
@@ -252,7 +252,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     KC <- params[["KC"]]
     Phi <- params[["Phi"]]
     seasonal <- params[["seasonal"]]
-
+    
     ## initialisevectors for current state of simulation
     S <- S0    
     E <- E0
@@ -262,7 +262,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     EV <- EV0
     IV <- IV0
     RV <- RV0
-
+    
     n_groups <- length(I0)
     
     ## calculate number of time steps
@@ -272,8 +272,8 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     
     ## initialise matrices to store simulation outputs
     Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-    SVmat <- EVmat <- IVmat <- RVmat <- Smat
-
+    SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- Smat
+    
     Smat[,1] <- S0
     Emat[,1] <- E0
     Imat[,1] <- I0
@@ -287,132 +287,132 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     vax_pool <- 0
     ## initialise vector to store number of vaccines over time
     vax_pool_vec <- double(length(times))
-
+    
     ## calculate the number of vaccines ever produced at each timestep
     cum_vax_pool <- vapply(times, cum_vax_pool_func, double(1))
     
     if(any(diff(cum_vax_pool) < 0)) {
-      stop("cumulative number of vaccines not a monotonically non-decreasing function")
+        stop("cumulative number of vaccines not a monotonically non-decreasing function")
     }
     
-    ## function that allocates vaccines proportionally to S, E, I, or R and rounds
-    alloc_minifunc_closure <- function(sum_SEIR, vax_alloc){
-      function(comp) {
-        alloc <- pmin(comp, round(comp / sum_SEIR * vax_alloc))
-        alloc[is.na(alloc)] <- 0
-        return(alloc)
-      }
-    }
-
     for(i in 2:(tend+1)){
-      
-      ## check that current state is sensible
-      stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
-                all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
-
-#################
-## VAX PRODUCTION
-#################            
+        
+        ## check that current state is sensible
+        stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
+                  all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
+        
+        #################
+        ## VAX PRODUCTION
+        #################            
         vax_pool <- vax_pool + cum_vax_pool[i] - cum_vax_pool[i - 1]
         
-#################
-## VAX ALLOCATION
-#################       
+        #################
+        ## VAX ALLOCATION
+        #################       
         if(i %% vax_alloc_period == 0) {
-          # allocate vaccines
-          vax_alloc <- round(vax_allocation_func(S, E, I, R, SV, EV, IV, RV, vax_pool))
-          if(any(vax_alloc > 0)) {
-            # distribute vaccines proportionally among S, E, I, R
-            sum_SEIR <- S + E + I + R
             
-            alloc_minifunc <- alloc_minifunc_closure(sum_SEIR, vax_alloc)
-            E_alloc <- alloc_minifunc(E)
-            I_alloc <- alloc_minifunc(I)
-            R_alloc <- alloc_minifunc(R)
-            S_alloc <- pmin(S, vax_alloc - E_alloc - I_alloc - R_alloc)
-            S_alloc[is.na(S_alloc)] <- 0
+            # initialisation
+            vax_alloc <- 1
+            actual_alloc <- 0
+            sum_vax_alloc <- S * 0
             
-            # actual number allocated after all the rounding
-            vax_alloc <- S_alloc + E_alloc + I_alloc + R_alloc
+            # notes on while loop to follow
+            while(!isTRUE(all.equal(vax_alloc, actual_alloc))) {
+                
+                # first pass at allocating vaccines.
+                # may allocate more vaccines to a location / age / risk group/ infection status
+                # combination than there are individuals in that combination
+                vax_alloc <- vax_allocation_func(S, E, I, R, vax_pool)
+                # the actual number of vaccines allocated is the smaller of the
+                # number of vaccines according to the algorithm and the actual
+                # number of individuals in the combination
+                # if the acutal number of vaccines allocated is less than that
+                # allocated by the algorithm, we will try to allocate the 
+                # remaining vaccines in the next iteration of the while loop
+                actual_alloc <- Map(pmin, vax_alloc, list(S, E, I, R))
+                sum_vax_alloc <- sum_vax_alloc + actual_alloc$S + actual_alloc$E +
+                  actual_alloc$I + actual_alloc$R
+                
+                ## update current vax pool
+                vax_pool <- vax_pool - sum(unlist(actual_alloc))
+                
+                ## update the vaccination status of individuals
+                S <- S - actual_alloc$S
+                E <- E - actual_alloc$E
+                I <- I - actual_alloc$I
+                R <- R - actual_alloc$R
+                
+                SV <- SV + actual_alloc$S
+                EV <- EV + actual_alloc$E
+                IV <- IV + actual_alloc$I
+                RV <- RV + actual_alloc$R
+            }
             
-            ## update current vax pool
-            vax_pool <- vax_pool - sum(vax_alloc)
+            vax_alloc_mat[,i] <- sum_vax_alloc
             
-            S <- S - S_alloc
-            E <- E - E_alloc
-            I <- I - I_alloc
-            R <- R - R_alloc
-            
-            SV <- SV + S_alloc
-            EV <- EV + E_alloc
-            IV <- IV + I_alloc
-            RV <- RV + R_alloc
-          }
-
         }
-#################
+        #################
         ## INFECTIONS
-#################
-
+        #################
+        
         ## recalculate force of infection matrix if necessary
         if(seasonal){
-          M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
-          #LD <- beta*(Kdelta*M1Phi)%*%KC
-          LD <- (Kdelta*M1Phi)%*%KC
+            M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
+            LD <- beta*(Kdelta*M1Phi)%*%KC
         }
         
         ## Generate force of infection on each group/location
-        lambda <- beta*(LD%*%(I + IV))
-
+        lambda <- LD%*%(I + IV)
+        
         ## Generate probability of infection from this
         P_infection <- 1 - exp(-lambda)
         P_infection_vax <- 1 - exp(-lambda*(1 - efficacy))
-
+        
         ## Simulate new infections for each location
         newInfections <- rbinom(n_groups, S, P_infection)
         newInfectionsVax <- rbinom(n_groups, SV, P_infection_vax)
-
+        
         ## Update populations
         S <- S - newInfections
         E <- E + newInfections
         SV <- SV - newInfectionsVax
         EV <- EV + newInfectionsVax
         
-#################
-## EXPOSED BECOMING INFECTIOUS
-#################
+        #################
+        ## EXPOSED BECOMING INFECTIOUS
+        #################
         ## Generate probability of exposed becoming infectious
         P_infectious <- 1 - exp(-sigma)
         
         ## Simulate new recoveries
         newInfectious <- rbinom(n_groups, E, P_infectious)
         newInfectiousVax <- rbinom(n_groups, EV, P_infectious)
-
+        
         ## Update populations
         E <- E - newInfectious
         I <- I + newInfectious
         EV <- EV - newInfectiousVax
         IV <- IV + newInfectiousVax
-
-#################
+        
+        #################
         ## RECOVERIES
-#################
+        #################
         ## Generate probability of recoveries
         P_recover <- 1 - exp(-gamma)
-
-## Simulate new recoveries
+        
+        ## Simulate new recoveries
         newRecoveries <- rbinom(n_groups, I, P_recover)
         newRecoveriesVax <- rbinom(n_groups, IV, P_recover)
-
+        
         ## Update populations
         I <- I - newRecoveries
         R <- R + newRecoveries
         IV <- IV - newRecoveriesVax
         RV <- RV + newRecoveriesVax
-
-#################
+        
+        #################
         ## SAVE RESULTS
-#################
+        #################
         Smat[,i] <- S
         Emat[,i] <- E
         Imat[,i] <- I
@@ -425,192 +425,35 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         
         ## stop simulation if there are no more exposed/infectious individuals
         if(sum(E + I + EV + IV) == 0) {
-          remaining_idx <- seq((i+1), ncol(Smat))
-          Smat[,remaining_idx] <- matrix(S, n_groups, length(remaining_idx))
-          Rmat[,remaining_idx] <- matrix(R, n_groups, length(remaining_idx))
-          SVmat[,remaining_idx] <- matrix(SV, n_groups, length(remaining_idx))
-          RVmat[,remaining_idx] <- matrix(RV, n_groups, length(remaining_idx))
-          vax_pool_vec[remaining_idx] <- vax_pool
-          break
+            remaining_idx <- seq((i+1), ncol(Smat))
+            
+            # make a function to fill in the remaining parts of the state matrix
+            # once we stop the simulation
+            
+            fill_remaining_closure <- function(n_groups, remaining_idx) {
+              f <- function(vec) {
+                matrix(vec, n_groups, length(remaining_idx))
+              }
+              f
+            }
+            
+            fill_remaining <- fill_remaining_closure(n_groups, remaining_idx)
+            
+            Smat[,remaining_idx] <- fill_remaining(S)
+            Rmat[,remaining_idx] <- fill_remaining(R)
+            SVmat[,remaining_idx] <- fill_remaining(SV)
+            RVmat[,remaining_idx] <- fill_remaining(RV)
+            vax_pool_vec[remaining_idx] <- vax_pool
+            break
         }
     }
     
     ## put times as column names for readability of output
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
-
+    colnames(vax_alloc_mat) <- times
+    
     return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec))
-}
-
-#' function to setup synthetic population sizes for each location, age, risk group, 
-#' and labels associated with these
-#' 
-#' @param popn_size numeric vector of length 1: population size of a country.
-#' assumed to be same across countries.
-#' @param n_countries numeric vector of length 1: number of countries
-#' @param age_propns numeric vector: proportion of individuals in each age group.
-#' assumed to be the same across countries.
-#' @param risk_propns numeric vector: proportion of individuals in each age group.
-#' assumed to be the same across countries and age groups.
-#' @param risk_factors numeric vector: degree of increased susceptibility 
-#' in each risk group.
-#' assumed to be the same across countries and age groups.
-#' @return list with the following elements:
-#' X: numeric vector of length n_groups = n_countries * n_ages * n_riskgroups
-#' containing the population sizes in each country, age, risk group
-#' labels: data frame containing three columns: the location, age, risk group
-#' corresponding to each element of X.
-#' nrow(labels) = length(X)
-#' pop_size: numeric vector of length n_countries containing the total population
-#' size in each country.
-#' @export
-setup_populations <- function(popn_size, n_countries,
-                              age_propns, risk_propns, risk_factors){
-  
-  stopifnot(sum(age_propns) == 1, all(rowSums(risk_propns) == 1))
-  
-  n_ages <- length(age_propns)
-  n_riskgroups <- ncol(risk_propns)
-  
-  ## Assuming the same population size for each country, the same age
-  ## distribution and the same risk proportions. Once we input real data,
-  ## we would input these matrices directly
-  country_popns <- rep(popn_size, n_countries)
-  country_popns <- t(matrix(rep(country_popns,n_ages),nrow=n_ages,byrow=TRUE)) ## Copy population size for each age group
-  
-  ## Get proportion of population in each age group
-  age_propns_country <- matrix(rep(age_propns, n_countries),
-                               nrow=n_countries,ncol=n_ages,byrow=TRUE)
-  
-  ## Use proportion to get actual population size
-  age_groups <- country_popns * age_propns_country
-  
-  ## Generate risk propns for each age group
-  ## Enumerate out risk groups to same dimension as countries
-  ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
-  risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
-  
-  ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-  age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
-  
-  ## Multiply together to get proportion of population in each location/age/risk group combo
-  X <- trunc(risk_matrix*age_group_risk)
-  
-  labels <- cbind(X,expand.grid("Location"=1:n_countries, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
-  return(list(X=X,labels=labels, "pop_size" = rep(popn_size, n_countries)))
-}
-
-#' function to setup population sizes for each location, age, risk group, 
-#' and labels associated with these, from data
-#' 
-#' @param demography_filename character vector of length 1: file where demographic
-#' data is located
-#' @param risk_propns numeric vector: proportion of individuals in each age group.
-#' assumed to be the same across countries and age groups.
-#' @param risk_factors numeric vector: degree of increased susceptibility 
-#' in each risk group.
-#' assumed to be the same across countries and age groups.
-#' @return list with the following elements:
-#' X: numeric vector of length n_groups = n_countries * n_ages * n_riskgroups
-#' containing the population sizes in each country, age, risk group
-#' labels: data frame containing three columns: the location, age, risk group
-#' corresponding to each element of X.
-#' nrow(labels) = length(X)
-#' pop_size: numeric vector of length n_countries containing the total population
-#' size in each country.
-#' @export
-setup_populations_real_data <- function(demography_filename,
-                                        risk_propns, risk_factors,
-                                        n_riskgroups){
-  
-  n_riskgroups <- ncol(risk_propns)
-  
-  ## read in demographic data
-  demographic_data <- read.csv(demography_filename,sep = ",")
-  
-  ## ensure proportions sum to 1 -- eliminate rounding errors
-  demographic_data[,ncol(demographic_data)] <- 1 - rowSums(demographic_data[,seq(3,ncol(demographic_data) - 1)])
-  ## alphabetise countries for consistency across data sets
-  demographic_data <- demographic_data[order(demographic_data$countryID),]
-  pop_size <- demographic_data[,"N"]
-  age_groups <- as.matrix(pop_size * demographic_data[,seq(3,ncol(demographic_data))])
-  
-  ## Generate risk propns for each age group
-  ## Enumerate out risk groups to same dimension as countries
-  ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
-  risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
-  
-  ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
-  age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
-  
-  ## Multiply together to get proportion of population in each location/age/risk group combo
-  X <- round(risk_matrix*age_group_risk)
-  
-  location_names <- demographic_data[,"countryID"]
-  labels <- cbind(X,expand.grid("Location"=location_names, "RiskGroup"=1:n_riskgroups,"Age"=1:n_ages))
-  return(list("X"=X,"labels"=labels, "pop_size" = pop_size))
-}
-
-#' function to construct contact matrix from data
-#' 
-#' @param contact_filename character vector of length 1: file where contact
-#' data is located
-#' @return list of length n_countries, of square contact matrices of side length
-#' n_ages * n_riskgroups.
-#' for each matrix, contactMatrix[i,j] denotes the amount of influence 
-#' an individual of type i has on an individual of type j, 
-#' where type includes age and risk groups.
-#' @export
-read_contact_data <- function(contact_filename){
-  
-  contact_data <- read.table(contact_filename,sep = ",",stringsAsFactors = FALSE,row.names = 1,header = TRUE)
-  # alphabetise
-  contact_data <- contact_data[order(rownames(contact_data)),]
-  contact_data <- as.data.frame(t(contact_data))
-  contact_data <- lapply(contact_data, function(x) matrix(x,nrow = sqrt(nrow(contact_data))))
-  return(contact_data)
-  
-}
-
-#' function to construct travel matrix from data
-#' 
-#' @param travel_filename character vector of length 1: file where travel
-#' data is located
-#' @param pop_size numeric vector of length n_countries: population size in each
-#' country
-#' @param travel_params named vector/list containing the element "epsilon":
-#' a numeric vector of length 1 which scales the off-diagonal terms of the 
-#' travel matrix.  Roughly, the ratio of off-diagonal to on-diagonal term size.
-#' @return square travel matrix of side length n_countries (unnormalised)
-#' @export
-setup_travel_real_data <- function(travel_filename, pop_size, travel_params) {
-  
-  travel_data <- read.table(travel_filename,sep = ",",stringsAsFactors = FALSE,header = TRUE)
-  # alphabetise for consistency between data sets
-  travel_data <- travel_data[order(colnames(travel_data)),order(colnames(travel_data))]
-  travel_data <- as.matrix(travel_data)
-  colnames(travel_data) <- NULL
-  # normalise travel data to mean so that epsilon is more meaningful
-  travel_data <- travel_data / mean(travel_data[travel_data != 0]) * mean(pop_size)
-  travel_matrix <- diag(pop_size) + travel_params[["epsilon"]] * travel_data
-  return(travel_matrix)
-  
-}
-
-#' function to construct latitude matrix from data
-#' 
-#' @param latitude_filename character vector of length 1: file where latitude
-#' data is located
-#' @return matrix with 1 column and nrow = n_countries.
-#' The latitude of each country in degrees.
-#' @export
-read_latitude_data <- function(latitude_filename){
-  
-  latitude_data <- read.table(latitude_filename, sep = ",", header = TRUE)
-  latitudes <- latitude_data$latitude
-  # alphabetise
-  latitudes <- latitudes[order(latitude_data$Location)]
-  return(matrix(latitudes, ncol = 1))
-  
+                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec,
+                vax_alloc = vax_alloc_mat))
 }

@@ -124,16 +124,9 @@ run_simulation <- function(simulation_flags, life_history_params,
     
     Xover=1/X
     Xover[X==0] <- 0
-
-    ## Beta calcualtion (global):
-    #L1 <- (kronecker(matrix(1,1,maxIndex),X)*Kdelta*M1)%*%KC
-    #XX <- 1/gamma*L1
-    #ev <- eigen(XX)
-    #ev <- ev$values
-    #Rstar <- max(abs(ev))
-    #beta <- R0/Rstar
     
     #Country-specific betas: ##DH added
+
     n_classes <- n_ages * n_riskgroups
     c_names <- levels(labels[,2])
     c_pops <- labels[order(labels$Location),]
@@ -155,23 +148,14 @@ run_simulation <- function(simulation_flags, life_history_params,
       betaV[i] <- R0/Rstar
     }
     betaV <- kronecker(matrix(1,n_classes,1), betaV)
-    ## Beta calcualtion (global):
-    #L1 <- (kronecker(matrix(1,1,maxIndex),X)*Kdelta*M1)%*%KC
-    #XX <- 1/gamma*rep(betaV,1,maxIndex)*L1
-    #ev <- eigen(XX)
-    #ev <- ev$values
-    #Rstar <- max(abs(ev))
-    #betaG <- R0/Rstar
-    #betaV <- betaV*betaG
-    #Always:
+
     beta <- betaV
-    
 
     ## Convert to smaller time step rates
     beta <- beta/tdiv
     gamma <- gamma/tdiv
     
-    #LD <- beta*(Kdelta*M1)%*%KC
+
     LD <- (Kdelta*M1)%*%KC ##DH: no beta
 
     #### calculation of force of infection matrix (LD) ends here
@@ -362,11 +346,11 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         ## recalculate force of infection matrix if necessary
         if(seasonal){
             M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
-            LD <- beta*(Kdelta*M1Phi)%*%KC
+            LD <- (Kdelta*M1Phi)%*%KC
         }
         
         ## Generate force of infection on each group/location
-        lambda <- LD%*%(I + IV)
+        lambda <- beta*LD%*%(I + IV)
         
         ## Generate probability of infection from this
         P_infection <- 1 - exp(-lambda)

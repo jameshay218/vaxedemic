@@ -8,7 +8,7 @@ source(paste0(wd, "R/helpers.R"))
 
 ## LIFE HISTORY PARAMETER INPUTS
 ## R_0, recovery time and latent period
-life_history_params <- list(R0=1.1, TR=2.6, LP = 1.5)
+life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
 
 ## travel parameters: scaling of off-diagonals
 travel_params <- list(epsilon = 1e-3)
@@ -79,7 +79,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = TRUE,
+                         real_data = FALSE,
                          country_specific_contact = FALSE,
                          seasonal = FALSE,
                          rng_seed = 0)

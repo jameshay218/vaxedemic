@@ -122,3 +122,18 @@ write.table(demographic_data,file = "unified/demographic_data_intersect.csv",sep
 write.table(contact_data,file = "unified/contact_data_intersect.csv",sep = ",", row.names = FALSE)
 write.table(flight_data,file = "unified/flight_data_intersect.csv",sep = ",", row.names = FALSE)
 write(countries_in_all_datasets, file = "unified/countries_intersect.csv", sep = ",")
+
+risk_group_data <- read.csv("data/at_risk_propns_baguelin2013.csv",
+                            stringsAsFactors = FALSE)
+
+upper_ages <- c(4, 14, 64, Inf)
+cumsum_select_ages <- 
+  vapply(upper_ages, function(x) colSums(risk_group_data[risk_group_data$upperAge <= x,]),
+         double(ncol(risk_group_data)))
+sum_select_ages <- apply(cumsum_select_ages, 1, diff)
+sum_select_ages <- as.data.frame(rbind(t(cumsum_select_ages[,1]), sum_select_ages))
+propn_atRisk <- sum_select_ages[["N_atRisk"]] / sum_select_ages[["N"]]
+
+risk_group_data <- data.frame(propn_atRisk, 1 - propn_atRisk)
+write.table(risk_group_data,file = "unified/risk_group_data.csv",sep = ",", 
+            row.names = FALSE, col.names = FALSE)

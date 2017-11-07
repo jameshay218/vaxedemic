@@ -2,13 +2,11 @@ library(reshape2)
 library(ggplot2)
 
 wd <- "~/Documents/vaxedemic/" 
-source(paste0(wd, "R/simulation.R"))
-source(paste0(wd, "R/setup.R"))
-source(paste0(wd, "R/helpers.R"))
+devtools::load_all(wd)
 
 ## LIFE HISTORY PARAMETER INPUTS
 ## R_0, recovery time and latent period
-life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5)
+life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5, case_fatality_ratio = c(1e-3,1e-2))
 
 ## travel parameters: scaling of off-diagonals
 travel_params <- list(epsilon = 1e-3)
@@ -79,8 +77,8 @@ simulation_flags <- list(ageMixing=TRUE,
                          riskGroups=TRUE,
                          normaliseTravel=TRUE,
                          spatialCoupling=TRUE,
-                         real_data = FALSE,
-                         country_specific_contact = FALSE,
+                         real_data = TRUE,
+                         country_specific_contact = TRUE,
                          seasonal = FALSE,
                          rng_seed = 0)
 
@@ -91,6 +89,7 @@ tdiv <- 24 ##DH
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
 vax_alloc_period <- 24 * 7
+n_riskgroups <- length(life_history_params$case_fatality_ratio)
 
 # set random number generation seed
 if(!is.null(simulation_flags[["rng_seed"]])) {
@@ -99,14 +98,24 @@ if(!is.null(simulation_flags[["rng_seed"]])) {
 
 if(simulation_flags[["real_data"]]) {
   ## get number of countries and ages from files
-  demography_filename <- paste0(wd, "data/unified/demographic_data_intersect.csv")
-  contact_filename <- paste0(wd, "data/unified/contact_data_intersect.csv")
+  demography_filename <- paste0(wd, "data/demographic_data_intersect.csv")
+  contact_filename <- paste0(wd, "data/contact_data_intersect.csv")
 
-  travel_filename <- paste0(wd, "data/unified/flight_data_intersect.csv")
-  latitude_filename <- paste0(wd, "data/unified/latitudes_intersect.csv")
+  travel_filename <- paste0(wd, "data/flight_data_intersect.csv")
+  latitude_filename <- paste0(wd, "data/latitudes_intersect.csv")
+  risk_filename <- paste0(wd, "data/risk_group_data.csv")
+    
   tmp <- read.csv(demography_filename, sep = ",")
   n_countries <- nrow(tmp)
   n_ages <- ncol(tmp) - 2
+  risk_propns <- as.matrix(read.csv(risk_filename, sep = ",", header = FALSE))
+  if(nrow(risk_propns) != n_ages) {
+    stop("number of age groups inconsistent between data sets")
+  }
+  if(ncol(risk_propns) !=n_riskgroups) {
+    stop("number of risk groups inconsistent between data sets")
+  }
+  
 } else {
   ## SETUP FAKE COUNTRY DATA
   popn_size <- 100000
@@ -115,18 +124,23 @@ if(simulation_flags[["real_data"]]) {
   age_propns <- rep(1/n_ages, n_ages)
   age_propns <- c(5,14,45,16)/80
   n_countries <- 10
+
+  risk_propns <- rep(1/n_riskgroups,n_riskgroups) ## Assume risk groups are uniformly distributed
+  risk_propns <- matrix(rep(risk_propns,each=n_ages),ncol=n_riskgroups) ## Assume that proportion of ages in each risk group are the same for all ages
 }
 
 ## Setup risk groups
-n_riskgroups <- 2
 
-risk_propns <- rep(1/n_riskgroups,n_riskgroups) ## Assume risk groups are uniformly distributed
-risk_propns <- matrix(rep(risk_propns,each=n_ages),ncol=n_riskgroups) ## Assume that proportion of ages in each risk group are the same for all ages
 risk_factors <- rep(1, n_riskgroups) ## Assume that each risk group has same modifier
 
 ## Enumerate out risk factors for each age group
 age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
                                          ncol=n_riskgroups)
+
+case_fatality_ratio_vec <- expand.grid("Location"=seq_len(n_countries), 
+                                      "case_fatality_ratio" = life_history_params$case_fatality_ratio,
+                                      "Age"=seq_len(n_ages))
+case_fatality_ratio_vec <- case_fatality_ratio_vec$case_fatality_ratio
 
 ## Seeding setting
 if(simulation_flags[["real_data"]]) {
@@ -215,14 +229,18 @@ sim_params <- list(n_countries=n_countries,
 
 ## run simulation
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
-                      X, C3, K, latitudes, cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
+                      case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
+                      cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
 
 ## plot stuff 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 
-tend <- tmax*tdiv+1
-popTotal=sum(labels[,1])
-globalAttack <- sum(res$R[,tend] + res$RV[,tend])/popTotal
+tend <- ncol(res$S)
+deaths <- X - res$S[,tend] - res$SV[,tend] - res$E[,tend] - res$EV[,tend] -
+  res$I[,tend] - res$IV[,tend] - res$R[,tend] - res$RV[,tend]
+
+popTotal <- sum(X)
+globalAttack <- sum(res$R[,tend] + res$RV[,tend] + deaths)/popTotal
 
 I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
 I <- melt(I, id.vars=c("Location","Age","RiskGroup"))

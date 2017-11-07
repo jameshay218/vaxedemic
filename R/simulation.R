@@ -10,6 +10,8 @@
 #' @param sim_params list with the numeric elements n_countries, n_ages,
 #' n_riskgroups and seed_vec.  The last of these is a vector specifying the 
 #' initial number of exposed individuals in each location, age and risk group
+#' @param case_fatality_ratio_vec vector of case fatality ratio in each location, age, risk group:
+#' length n_countries * n_ages * n_riskgroups
 #' @param X vector of population size in each location, age, risk group:
 #' length n_countries * n_ages * n_riskgroups
 #' @param contactMatrix either a square matrix with side length n_ages * n_riskgroups,
@@ -34,7 +36,7 @@
 #' @export
 run_simulation <- function(simulation_flags, life_history_params,
                            vax_params, sim_params,
-                           X,
+                           case_fatality_ratio_vec, X, labels,
                            contactMatrix,
                            travelMatrix,
                            latitudes,
@@ -175,7 +177,8 @@ run_simulation <- function(simulation_flags, life_history_params,
     ## gather model parameters
     modelParameters <- list("gamma"=gamma, "sigma" = sigma, "efficacy" = efficacy,
                          "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
-                         "Phi" = Phi, "seasonal" = seasonal)
+                         "Phi" = Phi, "seasonal" = seasonal, 
+                         "case_fatality_ratio" = case_fatality_ratio_vec)
     ## run simulation
     result <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
@@ -233,6 +236,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     ## extract model parameters  
     gamma <- params[["gamma"]]
     sigma <- params[["sigma"]]
+    case_fatality_ratio <- params[["case_fatality_ratio"]]
     efficacy <- params[["efficacy"]]
     beta <- params[["beta"]]
     M1 <- params[["M1"]]
@@ -383,20 +387,23 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         IV <- IV + newInfectiousVax
         
         #################
-        ## RECOVERIES
+        ## RECOVERIES AND DEATHS
         #################
-        ## Generate probability of recoveries
-        P_recover <- 1 - exp(-gamma)
+        ## Generate probability of removal
+        P_removal <- 1 - exp(-gamma)
         
         ## Simulate new recoveries
-        newRecoveries <- rbinom(n_groups, I, P_recover)
-        newRecoveriesVax <- rbinom(n_groups, IV, P_recover)
+        newRemovals <- rbinom(n_groups, I, P_removal)
+        newRemovalsVax <- rbinom(n_groups, IV, P_removal)
+
+        newRecovered <- rbinom(n_groups, newRemovals, 1 - case_fatality_ratio)
+        newRecoveredVax <- rbinom(n_groups, newRemovalsVax, 1 - case_fatality_ratio)
         
         ## Update populations
-        I <- I - newRecoveries
-        R <- R + newRecoveries
-        IV <- IV - newRecoveriesVax
-        RV <- RV + newRecoveriesVax
+        I <- I - newRemovals
+        R <- R + newRecovered
+        IV <- IV - newRemovalsVax
+        RV <- RV + newRecoveredVax
         
         #################
         ## SAVE RESULTS

@@ -1,5 +1,6 @@
 context("helpers")
 
+# this test is too stochastic
 # test_that("round_preserve_sum works", {
 #   n <- 10
 #   vec <- runif(n, min = 0, max = 5)
@@ -150,6 +151,7 @@ test_that("distribute_vax_among_age_risk_closure works", {
 })
 
 
+# need to revisit this test -- doesn't work
   # # single country, more than one age/risk group, people all in S, priority is specified
   # 
   # priorities_base <- expand.grid("RiskGroup"=seq_len(n_riskgroups),"Age"=seq_len(n_ages))

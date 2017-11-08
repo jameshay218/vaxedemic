@@ -209,3 +209,106 @@ cum_vax_pool_func_closure <- function(user_specified_cum_vax_pool_func, vax_prod
   }
   f
 }
+
+#' run the simulation and get a vector of the number of deaths and recovereds
+#' in each country/age/risk group
+#' 
+#' for code testing purposes.
+#' 
+#' @param simulation_flags named vector (or list) with the logical elements "normaliseTravel"
+#' and "seasonal"
+#' @param life_history_params named vector (or list) with the numeric elements
+#' "R0", "TR" (time to recovery) and "LP" (latent period)
+#' @param vax_params named vector (or list) with the numeric elements "efficacy"
+#' and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
+#' across location, age and risk groups)
+#' @param sim_params list with the numeric elements n_countries, n_ages,
+#' n_riskgroups and seed_vec.  The last of these is a vector specifying the 
+#' initial number of exposed individuals in each location, age and risk group
+#' @param case_fatality_ratio_vec vector of case fatality ratio in each location, age, risk group:
+#' length n_countries * n_ages * n_riskgroups
+#' @param X vector of population size in each location, age, risk group:
+#' length n_countries * n_ages * n_riskgroups
+#' @param contactMatrix either a square matrix with side length n_ages * n_riskgroups,
+#' or a list of such matrices, of length n_countries.  
+#' If a single matrix, the contact matrix is assumed to be constant across countries.
+#' contactMatrix[i,j] denotes the amount of influence an individual of type i
+#' has on an individual of type j, where type includes age and risk groups.
+#' @param travelMatrix a square matrix with side length n_countries.
+#' travelMatrix[i,j] denotes the proportion of time an individual in country i
+#' spends in country j.  If simulation_flags[["normaliseTravel"]] == TRUE,
+#' the code will row normalise travelMatrix for you.
+#' @param latitudes a matrix with 1 column and n_countries rows, giving the latitude
+#' of each country in degrees.
+#' @param cum_vax_pool_func a function of time which gives the numebr of vaccines
+#' ever produced at that time
+#' @param vax_allocation_func a function of the current state of the simulation which
+#' gives the number of vaccines to allocate to each location, age, risk group
+#' @param tmax the number of days for which to run the simulation
+#' @param tdiv the number of timesteps per day
+#' @param vax_alloc_period allocate vaccines once every this many timesteps
+#' @return list containing the number of deaths and recovereds
+#' in each country/age/risk group
+run_and_get_deaths_recovered <- function(simulation_flags, life_history_params, vax_params, sim_params,
+                                         case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
+                                         cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period) {
+  
+  res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
+                        case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
+                        cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
+  
+  tend <- ncol(res$S)
+  deaths <- as.numeric(X - res$S[,tend] - res$SV[,tend] - res$E[,tend] - res$EV[,tend] -
+                         res$I[,tend] - res$IV[,tend] - res$R[,tend] - res$RV[,tend])
+  recovered <- unname(res$R[,tend] + res$RV[,tend])
+  list("deaths" = deaths, "recovered" = recovered)
+  
+}
+
+#' Britton2010 10.1016/j.mbs.2010.01.006
+calc_approx_final_size_distribution <- function(R_0, pop_size) {
+  z_star <- calc_final_size_propn_deterministic(R_0)
+  mu <- z_star * pop_size
+  sigma <- sqrt(pop_size * z_star * (1 - z_star) * (1 + (1 - z_star) * R_0^2)) / 
+    (1 - (1 - z_star) * R_0)
+  list("mu" = mu, "sigma" = sigma)
+}
+
+calc_final_size_propn_deterministic <- function(R_0) {
+  final_size_equation <- function(z) {
+    1 - z - exp(-R_0 * z)
+  }
+  
+  epsilon <- 1e-10
+  uniroot(final_size_equation, c(epsilon, 1 - epsilon))$root
+}
+
+parallel_wrapper <- function(X, FUN, ...) {
+  if(.Platform$OS.type == "unix") {
+    parallel::mclapply(X, FUN, ...)
+  } else {
+    # Windows option untested
+    cluster <- makePSOCKcluster(length(X))
+    parallel::parLapply(cluster, X, FUN, ...)
+  }
+}
+
+two_tailed_p_value <- function(q, mu, sigma) {
+  p <- pnorm(q, mu, sigma)
+  p <- min(p, 1 - p)
+  2 * p
+}
+
+z_test <- function(q, mu, sigma) {
+  p_values <- vapply(q, function(q) two_tailed_p_value(q, mu, sigma), double(1))
+  n_tests <- length(q)
+  list("min_p" = min(p_values), "n_tests" = n_tests)
+} 
+
+print_z_test_result <- function(z_test_result, n_tests = 1) {
+  format_results <- function(x) {
+    formatC(x, format = "e", digits = 2)
+  }
+  print(paste0("z test p-value = ", format_results(z_test_result$min_p)))
+  print(paste0("z test n_tests = ", z_test_result$n_tests * n_tests))
+}

@@ -245,6 +245,8 @@ tend <- ncol(res$S)
 deaths <- X - res$S[,tend] - res$SV[,tend] - res$E[,tend] - res$EV[,tend] -
   res$I[,tend] - res$IV[,tend] - res$R[,tend] - res$RV[,tend]
 
+worldwide_deaths <- sum(deaths)
+
 popTotal <- sum(X)
 globalAttack <- sum(res$R[,tend] + res$RV[,tend] + deaths)/popTotal
 

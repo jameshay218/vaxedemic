@@ -1,8 +1,9 @@
 library(reshape2)
 library(ggplot2)
 
-wd <- "~/Documents/vaxedemic/" 
+wd <- "C:/Users/Caroline Walters/Documents/vaxedemic" 
 devtools::load_all(wd)
+wd <- "C:/Users/Caroline Walters/Documents/vaxedemic/"
 
 ## LIFE HISTORY PARAMETER INPUTS
 ## R_0, recovery time and latent period

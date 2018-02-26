@@ -33,11 +33,15 @@ vax_allocation_params <- list(priorities = NULL)
 # travel_matrix[x,y] is the proportion of time an individual in location x spends
 # in location y
 # vax_allocation_params: list of parameters for vaccine allocation
-# S: numeric vector of length n. number of unvaccinated susceptibles
+# S: numeric vector of length n. number of unvaccinated susceptibles.
+# n is number of locations * number of age groups * number of risk groups
 # E: numeric vector of length n. number of unvaccinated exposed
 # I: numeric vector of length n. number of unvaccinated infectious
 # R: numeric vector of length n. number of unvaccinated recovered
 # vax_pool: numeric vector of length 1. number of vaccines available
+# needs to return
+# n_vax_allocated: numeric vector of length n_countries.  number of vaccines
+# allocated to each country
 user_specified_vax_alloc_func <- function(sum_age_risk_func, 
                                           travel_matrix,
                                           vax_allocation_params,
@@ -61,6 +65,7 @@ user_specified_vax_alloc_func <- function(sum_age_risk_func,
 # needs to take the arguments
 # vax_production_params: list of parameters for vaccine production
 # t: scalar: time
+# needs to return a scalar: the number of vaccines ever produced up to time t
 user_specified_cum_vax_pool_func <- function(vax_production_params, t) {
   t_since_production <- t - (vax_production_params[["detection_delay"]] + 
                                vax_production_params[["production_delay"]])

@@ -335,7 +335,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
                   actual_alloc$I + actual_alloc$R
                 
                 ## update current vax pool
-                vax_pool <- vax_pool - sum(unlist(actual_alloc))
+                alloc_this_round <- sum(unlist(actual_alloc))
+                if (alloc_this_round == 0 && vax_pool >= 1) {
+                  stop("stopping as no vaccine allocated despite vaccine being in the pool -- will cause infinite loop")
+                }
+                
+                vax_pool <- vax_pool - alloc_this_round
                 
                 ## update the vaccination status of individuals
                 S <- S - actual_alloc$S

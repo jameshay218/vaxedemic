@@ -1,5 +1,7 @@
 library(reshape2)
 library(ggplot2)
+library(Matrix)
+library(data.table)
 
 wd <- "~/Documents/vaxedemic/" 
 devtools::load_all(wd)
@@ -86,6 +88,12 @@ simulation_flags <- list(ageMixing=TRUE,
 tmax <- 100
 ## tdiv timesteps per day
 tdiv <- 24 ##DH
+
+## Seasonality resolution
+# 1 -> tmax*tdiv
+# 12 -> tmax*tdiv/12
+seasonality_resolution <- 1
+
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
 vax_alloc_period <- 24 * 7
@@ -225,13 +233,24 @@ vax_allocation_func <- vaccine_allocation_closure(user_specified_vax_alloc_func,
 sim_params <- list(n_countries=n_countries,
                    n_ages=n_ages,
                    n_riskgroups=n_riskgroups,
-                   seed_vec = seed_vec)
+                   seed_vec = seed_vec,
+                   seasonality_resolution=seasonality_resolution)
 
 ## run simulation
+simulation_flags$seasonal <- TRUE
+tmax <- 365
+sim_params$seasonality_resolution <- tmax*tdiv/12
+#sim_params$seasonality_resolution <- 1
+Rprof(tmp <- tempfile(), line.profiling=TRUE)
+system.time(
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
                       cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
-
+)
+Rprof()
+summaryRprof(tmp, lines="show")
+library(proftools)
+plotProfileCallGraph(readProfileData(tmp),score = "total")
 ## plot stuff 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 
@@ -249,16 +268,23 @@ I$RiskGroup <- as.factor(I$RiskGroup)
 I$variable <- as.numeric(I$variable)
 times <- seq(0,tmax,by=1/tdiv)
 I$variable <- times[I$variable]
-I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=sum)
+#I_aggregated <- aggregate(I[,"value"], I[,c("variable","Location","Age")], FUN=sum)
+I <- data.table(I)
+setkey(I, "variable","Location","Age")
+I_aggregated <- I[,x:=sum(value),by=key(I)]
+N <- data.table(aggregate(data=labels, X~Location + Age,FUN=sum))
+#N <- aggregate(data=labels, X~Location + Age,FUN=sum)
+N <- N[N$Location %in% unique(I_aggregated$Location),]
 
-N <- aggregate(data=labels, X~Location + Age,FUN=sum)
-I_aggregated <- merge(I_aggregated,N,id.vars=c("Location","Age"))
+I_aggregated <- merge(I_aggregated,N,by=c("Location","Age"))
 
-p1 <- ggplot(I_aggregated,aes(x=variable,y=x/X,col=Age)) +
+p_normal <- ggplot(I_aggregated[I_aggregated$Location %in% unique(I_aggregated$Location)[1:20],],aes(x=variable,y=x/X,col=Age)) +
     geom_line() +
     facet_wrap(~Location) +
     theme_bw()
-
+pdf("monthly.pdf")
+plot(p_normal)
+dev.off()
 # p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
 
 # to do: make plot of vaccines allocated (SV + EV + IV + RV) over time by country

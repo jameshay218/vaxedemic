@@ -15,3 +15,4 @@ the same vector but as an nx1 matrix
 \description{
 Given a vector of proportions in each age group, converts this to a matrix
 }
+

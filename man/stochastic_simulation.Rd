@@ -10,3 +10,4 @@ stochastic_simulation(S, I, R, beta, gamma, Kdelta, K1, Mm1, div, ndays,
 \description{
 Wow
 }
+

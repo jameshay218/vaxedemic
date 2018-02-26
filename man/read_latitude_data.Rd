@@ -17,3 +17,4 @@ The latitude of each country in degrees.
 \description{
 function to construct latitude matrix from data
 }
+

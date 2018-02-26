@@ -238,6 +238,56 @@ res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_par
                       case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
                       cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
 
+# Function to run the simulation and output the worldwide number of deaths and 
+#  global attack rate. This is just to get some initial output. Code much 
+#  better than this should be written.
+test_sim_res <- function(simulation_flags, life_history_params,
+                                 vax_params, sim_params,
+                                 case_fatality_ratio_vec, X, labels,
+                                 contactMatrix,
+                                 travelMatrix,
+                                 latitudes,
+                                 cum_vax_pool_func,
+                                 vax_allocation_func,
+                                 tmax=100,tdiv=24, vax_alloc_period = 24 * 7){
+  
+  res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
+                        case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
+                        cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
+  
+  deaths <- X - res$S[,tend] - res$SV[,tend] - res$E[,tend] - res$EV[,tend] -
+            res$I[,tend] - res$IV[,tend] - res$R[,tend] - res$RV[,tend]
+  
+  worldwide_deaths <- sum(deaths)
+  
+  popTotal <- sum(X)
+  globalAttack <- sum(res$R[,tend] + res$RV[,tend] + deaths)/popTotal
+  
+  res_vec <- c("worldwide deaths" = worldwide_deaths, 
+                   "global attack" = globalAttack)
+  
+  return(res_vec)
+  
+}
+
+# Using replicate to run the simulation many times, then find the mean worldwide 
+#  deaths and mean global attack rate.  It's gonna be slow...
+multiple_test_sim <- function(number_of_runs){
+  replicate(number_of_runs, 
+                          test_sim_res(simulation_flags, life_history_params, vax_params, sim_params,
+                                               case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
+                                               cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period))
+
+}
+
+multiple_test_sim_res <- multiple_test_sim(2)
+average_res <- apply(multiple_test_sim_res, 1, mean)
+names(average_res) <- c("average worldwide deaths", "average global attack")
+
+
+
+
+
 ## plot stuff 
 plot_labels <- expand.grid("Time"=seq(0,tmax,by=1/tdiv),"Location"=1:n_countries,"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
 

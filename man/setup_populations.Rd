@@ -37,3 +37,4 @@ size in each country.
 function to setup synthetic population sizes for each location, age, risk group, 
 and labels associated with these
 }
+

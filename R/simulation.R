@@ -8,7 +8,7 @@
 #' and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
 #' across location, age and risk groups)
 #' @param sim_params list with the numeric elements n_countries, n_ages,
-#' n_riskgroups and seed_vec.  The last of these is a vector specifying the 
+#' n_riskgroups,  seed_vec and simulation_resolution.  The seed_vec is a vector specifying the 
 #' initial number of exposed individuals in each location, age and risk group
 #' @param case_fatality_ratio_vec vector of case fatality ratio in each location, age, risk group:
 #' length n_countries * n_ages * n_riskgroups
@@ -45,7 +45,6 @@ run_simulation <- function(simulation_flags, life_history_params,
                            tmax=100,tdiv=24, vax_alloc_period = 24 * 7){
   
     #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
-    
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
     seasonal <- simulation_flags[["seasonal"]]
     
@@ -62,7 +61,8 @@ run_simulation <- function(simulation_flags, life_history_params,
     n_countries <- sim_params[["n_countries"]]
     n_ages <- sim_params[["n_ages"]]
     n_riskgroups <- sim_params[["n_riskgroups"]]
-
+    season_res <- sim_params[["seasonality_resolution"]]
+    
     maxIndex <- n_countries*n_ages*n_riskgroups
     groupsPerLoc <- n_ages*n_riskgroups
     
@@ -82,15 +82,14 @@ run_simulation <- function(simulation_flags, life_history_params,
     ## for each location, age, risk group
     if(seasonal){
       beta1 <- Beta1(latitudes,n_countries)
-      B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv),beta1)
+      B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv/season_res),beta1)
       timevec <- seq(1/tdiv,tmax,by=1/tdiv)
-      timevec <- t(timevec)
       wave <- sin((timevec-tdelay)*2*pi/365)
+      wave <- t(colMeans(matrix(wave, nrow=season_res)))
       Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
     } else {
       Phi <- 1
     }
-    
     ## row normalise travel matrix
     if(normaliseTravel){
         Krow <- rowSums(travelMatrix)
@@ -232,7 +231,6 @@ run_simulation <- function(simulation_flags, life_history_params,
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
                             cum_vax_pool_func, vax_allocation_func){
-    
     ## extract model parameters  
     gamma <- params[["gamma"]]
     sigma <- params[["sigma"]]
@@ -241,29 +239,40 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     beta <- params[["beta"]]
     M1 <- params[["M1"]]
     Kdelta <- params[["Kdelta"]]
-    KC <- params[["KC"]]
+    KC <- Matrix(params[["KC"]])
     Phi <- params[["Phi"]]
     seasonal <- params[["seasonal"]]
-    
+
     ## initialisevectors for current state of simulation
-    S <- S0    
+    S <- S0
     E <- E0
     I <- I0
     R <- R0
-    SV <- SV0    
+    SV <- SV0
     EV <- EV0
     IV <- IV0
     RV <- RV0
+
     
     n_groups <- length(I0)
     
     ## calculate number of time steps
     tend <- tmax*tdiv
+    message(cat("Number of steps to take: ", tend, sep="\t"))
     ## make vector of simulation times
     times <- seq(0,tmax,by=1/tdiv)
+
+    ## If we have seasonality, find the resolution
+    ## of the seasonality vector. We re-calculate seasonal impact on FOI
+    ## every season_res iterations
+    print(dim(Phi))
+    if(is.matrix(Phi)){
+        season_res <- tend/ncol(Phi)
+    }
     
     ## initialise matrices to store simulation outputs
     Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
+    #Smat <- Emat <- Imat <- Rmat <- Matrix(0, n_groups, length(times))
     SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- Smat
     
     Smat[,1] <- S0
@@ -288,7 +297,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     }
     
     for(i in 2:(tend+1)){
-        
+        if(i %%100 == 0)  message(cat("Tstep: ", i, sep="\t"))
         ## check that current state is sensible
         stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
                   all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
@@ -351,13 +360,13 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         #################
         ## INFECTIONS
         #################
-        
         ## recalculate force of infection matrix if necessary
-        if(seasonal){
-            M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i-1]))
-            LD <- (Kdelta*M1Phi)%*%KC
+        if(seasonal && ((i-2) %% season_res) == 0){
+            M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,(i-2)/season_res +1]))
+            #LD <- (Kdelta*M1Phi)%*%KC
+            LD <- Matrix(Kdelta*M1Phi)
+            LD <- as.matrix(LD%*%KC)
         }
-        
         ## Generate force of infection on each group/location
         lambda <- beta*LD%*%(I + IV)
         

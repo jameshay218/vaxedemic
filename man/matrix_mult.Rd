@@ -17,3 +17,4 @@ the multiplied matrix
 \description{
 Uses RcppEigen to multiply two matrices quickly
 }
+

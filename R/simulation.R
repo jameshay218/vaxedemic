@@ -265,7 +265,6 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     ## If we have seasonality, find the resolution
     ## of the seasonality vector. We re-calculate seasonal impact on FOI
     ## every season_res iterations
-    print(dim(Phi))
     if(is.matrix(Phi)){
         season_res <- tend/ncol(Phi)
     }

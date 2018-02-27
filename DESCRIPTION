@@ -15,7 +15,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    Matrix,
+    Matrix
+Imports:
     data.table
 LinkingTo: Rcpp,
     RcppArmadillo,

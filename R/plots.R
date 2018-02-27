@@ -1,3 +1,29 @@
+#' Simple plot
+#'
+#' Simple plot of simulation outputs
+#' @import data.table
+#' @export
+model_plot_simple <- function(res, labels, n_countries){
+    times <- as.numeric(colnames(res$I))
+    I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
+    I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
+    I$Age <- as.factor(I$Age)
+    I$RiskGroup <- as.factor(I$RiskGroup)
+    I$variable <- as.numeric(I$variable)
+    I$variable <- times[I$variable]
+    I <- data.table(I)
+    I_aggregated <- I[,x:=sum(value),by=list(variable,Location,Age)]
+    N <- data.table(aggregate(data=labels, X~Location + Age,FUN=sum))
+    N <- N[N$Location %in% unique(I_aggregated$Location),]
+    I_aggregated <- merge(I_aggregated,N,by=c("Location","Age"))
+      
+    ggplot(I_aggregated[I_aggregated$Location %in% unique(I_aggregated$Location)[n_countries],],aes(x=variable,y=x/X,col=Age)) +
+        geom_line() +
+        facet_wrap(~Location) +
+        theme_bw()
+}
+
+
 #' Model visualisations - MAIN FUNCTION
 #'
 #' TO DO: 1) need to make sure that the denominator is correct and that we are grouping correctly; 
@@ -12,13 +38,13 @@
 #' @param latitudeFile the full file path to the clean country latitude file
 #' @param regionFile the full file path to the clean country by region file
 #' @param vitalFile the full file path to the clean country demography (ie. needs "N") file
+#' @import(data.table)
 #' @export
 model_plots <- function(res, n_ages, n_riskgroups, 
-                        countryFile="~/Documents/vaxedemic/data/unified/countries_intersect.csv", 
-                        latitudeFile="~/Documents/vaxedemic/data/JH_cleaning/CLEAN/latitudes_clean.csv", 
-                        regionFile="~/Documents/vaxedemic/data/JH_cleaning/CLEAN/regions_clean.csv", 
-                        vitalFile="~/Documents/vaxedemic/data/unified/demographic_data_intersect.csv"){
-  
+                        countryFile="data/countries_intersect.csv", 
+                        latitudeFile="data/latitudes_intersect.csv", 
+                        regionFile="data/regions_clean.csv", 
+                        vitalFile="data/demographic_data_intersect.csv"){
   ## This was from development
   #data <- readRDS("~/Documents/vaxedemic_tmp/results.rds")
   #list2env(data, globalenv())
@@ -36,19 +62,24 @@ model_plots <- function(res, n_ages, n_riskgroups,
   
   plot_labels <- expand.grid("Location"=unique(countries[,1]),"Age"=1:n_ages,"RiskGroup"=1:n_riskgroups)
   
+  
   compartment_names <- c("S","E","I","R","SV","EV","IV","RV")
   all_popns <- list(res$S,res$E,res$I,res$R,res$SV,res$EV,res$IV,res$RV)
+  all_popns <- lapply(all_popns, data.table)
+  
+  return(list(all_popns,plot_labels,compartment_names,regionDat,latitudeDat,vitalDat))
+  
   melted_pops <- lapply(all_popns, function(x){
     x <- cbind(x, plot_labels)
-    x <- reshape2::melt(x, value.name="y",id.vars=c("Location","Age","RiskGroup"),as.is=TRUE)
+    x <- melt(x, value.name="y",id=c("Location","Age","RiskGroup"),as.is=TRUE)
     x$variable <- as.numeric(as.character(x$variable))
     x$Age <- as.factor(x$Age)
     x$RiskGroup <- as.factor(x$RiskGroup)
     x
   })
-  
-  for(i in 1:length(melted_pops)) melted_pops[[i]]$compartment <- compartment_names[i]
-  popns <- do.call("rbind",melted_pops)
+
+  for(i in 1:length(melted_pops)) melted_pops[[i]][,compartment:=compartment_names[i]]
+  popns <- rbindlist(melted_pops)
   popns <- data.table(popns)
   regionDat <- data.table(regionDat)
   latitudeDat <- data.table(latitudeDat)
@@ -57,32 +88,30 @@ model_plots <- function(res, n_ages, n_riskgroups,
   popns <- merge(popns, regionDat[,c("Location","region")], by="Location")
   popns <- merge(popns, latitudeDat[,c("Location","latitude")],by="Location")
   popns <- merge(popns, vitalDat[,c("Location","N")],by="Location")
-  #popns <- popns[popns$Location %in% c("China","United_Kingdom","Australia"),]
+  popns <- popns[popns$Location %in% c("China","United_Kingdom","Australia"),]
   #ggplot(popns) + stat_summary(aes(x=variable,y=y,col=compartment),fun.y= sum, geom="line") + facet_wrap(~region, scales = "free_y")
   
   ## Group by IV and I, as well as by risk group and country
   region_popns <- as.data.frame(popns[popns$compartment %in% c("IV","I"),
                                       j=list(y=sum(y,na.rm=TRUE)),by=c("Age","region","variable")])
-  
-  region_N <- as.data.frame(wow[,j=list(N=sum(as.numeric(N))),by=region])
+  tmp <- unique(popns[,c("region","N")])
+  region_N <- as.data.frame(tmp[,j=list(regionN=sum(as.numeric(N))),by=region])
   region_popns <- merge(region_popns, region_N,by="region")
   
   p1 <- ggplot(region_popns) + 
-    geom_line(aes(x=variable,y=y/N,col=Age)) + 
+    geom_line(aes(x=variable,y=y/regionN,col=Age)) + 
     facet_wrap(~region,nrow=1) + 
     theme_bw()
   
   
   by_latitude <- as.data.frame(popns[popns$compartment %in% c("IV","I"),
-                                     j=list(y=sum(y,na.rm=TRUE)),by=c("Location","Age","variable","latitude","region")])
-  by_latitude <- merge(by_latitude, region_N,by="region")
+                                     j=list(y=sum(y,na.rm=TRUE)),by=c("Location","Age","variable","latitude","region","N")])
   by_latitude$propn <- by_latitude$y/by_latitude$N
   tmp <- unique(by_latitude[,c("Location","latitude")])
   my_latitudes <- order(tmp$latitude)
   by_latitude$Location <- factor(by_latitude$Location, levels=tmp$Location[my_latitudes])
   
-  
-  p2 <- ggplot(by_latitude,aes(x=variable,y=Location,fill=propn),stat="identity") + 
+  p2 <- ggplot(by_latitude,aes(x=variable,y=Location,fill=logP),stat="identity") + 
     geom_tile() + 
     scale_fill_gradient(low="blue",high="red") +
     facet_wrap(~region,scales="free_y", nrow=2)

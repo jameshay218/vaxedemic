@@ -7,7 +7,7 @@
 run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
   case_fatality_ratio_vec, X, labels, contactMatrix, travelMatrix, latitudes,
   cum_vax_pool_func, vax_allocation_func, tmax = 100, tdiv = 24,
-  vax_alloc_period = 24 * 7)
+  vax_alloc_period = 24 * 7, n_runs = 1)
 }
 \arguments{
 \item{simulation_flags}{named vector (or list) with the logical elements "normaliseTravel"

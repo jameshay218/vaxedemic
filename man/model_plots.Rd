@@ -5,9 +5,9 @@
 \title{Model visualisations - MAIN FUNCTION}
 \usage{
 model_plots(res, n_ages, n_riskgroups,
-  countryFile = "~/Documents/vaxedemic/data/unified/countries_intersect.csv",
-  latitudeFile = "~/Documents/vaxedemic/data/JH_cleaning/CLEAN/latitudes_clean.csv",
-  regionFile = "~/Documents/vaxedemic/data/JH_cleaning/CLEAN/regions_clean.csv",
+  countryFile = "~/Documents/vaxedemic/data/countries_intersect.csv",
+  latitudeFile = "~/Documents/vaxedemic/data/latitudes_intersect.csv",
+  regionFile = "~/Documents/vaxedemic/data/regions_clean.csv",
   vitalFile = "~/Documents/vaxedemic/data/unified/demographic_data_intersect.csv")
 }
 \arguments{

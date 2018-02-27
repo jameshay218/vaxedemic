@@ -4,20 +4,21 @@
 ## corresponding location names
 ####################################################
 
-topwd <- "~/Documents/vaxedemic/data/JH_cleaning/"
+topwd <- "~/Documents/vaxedemic/raw_data/JH_cleaning/"
 setwd(topwd)
 
 ## All the datasets we consider
-wto <- read.csv("WTO_countries.csv",stringsAsFactors = FALSE)
-oag <- read.csv("OAG_countries.csv",stringsAsFactors = FALSE)
-huang2013 <- read.csv("huang2013_countries.csv",stringsAsFactors = FALSE)
-demography <- read.csv("demography_countries.csv",stringsAsFactors = FALSE)
-contacts <- read.csv("contact_countries.csv",stringsAsFactors = FALSE)
+data_names <- c("WTO", "OAG", "huang2013", "demography", "contact", "coverage")
 
-colnames(wto) <- colnames(oag) <- colnames(huang2013) <-
-  colnames(demography) <- colnames(contacts) <-c("originalID","Location","Data")
+read_data <- function(data_name) {
+  filename <- paste0(data_name, "_countries.csv")
+  my_df <- read.csv(filename,stringsAsFactors = FALSE)
+  colnames(my_df) <- c("originalID","Location","Data")
+  my_df
+}
 
-all_countries <- rbind(wto,oag,huang2013,demography,contacts)
+all_countries <- lapply(data_names, read_data)
+all_countries <- do.call(rbind, all_countries)
 all_countries <- all_countries[order(all_countries$originalID),]
 colnames(all_countries) <- c("originalID","Location","Data")
 

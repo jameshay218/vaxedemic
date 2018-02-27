@@ -1,255 +1,355 @@
-Correct,Location,originalID,Data,correctID
-Afghanistan,Afghanistan,1,demography,1
-Afghanistan,Afghanistan,1,Huang2013,1
-Afghanistan,Afghanistan,1,OAG,1
-Afghanistan,Afghanistan,1,WTO,1
-Albania,Albania,1,contacts,2
-Albania,Albania,2,demography,2
-Albania,Albania,2,Huang2013,2
-Albania,Albania,2,OAG,2
-Albania,Albania,2,WTO,2
-Algeria,Algeria,2,contacts,3
-Algeria,Algeria,3,demography,3
-Algeria,Algeria,3,Huang2013,3
-Algeria,Algeria,3,OAG,3
-Algeria,Algeria,3,WTO,3
-American_Samoa,American_Samoa,4,OAG,4
-American_Samoa,American_Samoa,4,WTO,4
-American_Samoa,American Samoa,4,latitudes,4
-Andorra,Andorra,3,contacts,5
-Andorra,Andorra,5,OAG,5
-Andorra,Andorra,5,WTO,5
-Angola,Angola,4,demography,6
-Angola,Angola,4,Huang2013,6
-Angola,Angola,6,OAG,6
-Angola,Angola,6,WTO,6
-Anguilla,Anguilla,7,latitudes,7
-Antarctica,Antarctica,8,latitudes,8
-Antigua_Barbuda,Antigua and Barbuda,4,contacts,9
-Antigua_Barbuda,Antigua and Barbuda,5,demography,9
-Antigua_Barbuda,Antigua_Barbuda,7,OAG,9
-Antigua_Barbuda,Antigua_Barbuda,7,WTO,9
-Antigua_Barbuda,Antigua and Barbuda,9,latitudes,9
-Argentina,Argentina,5,contacts,10
-Argentina,Argentina,5,Huang2013,10
-Argentina,Argentina,6,demography,10
-Argentina,Argentina,8,OAG,10
-Argentina,Argentina,8,WTO,10
-Argentina,Argentina,10,latitudes,10
-Armenia,Armenia,6,contacts,11
-Armenia,Armenia,6,Huang2013,11
-Armenia,Armenia,7,demography,11
-Armenia,Armenia,9,OAG,11
-Armenia,Armenia,9,WTO,11
-Armenia,Armenia,11,latitudes,11
-Aruba,Aruba,7,Huang2013,12
-Aruba,Aruba,8,demography,12
-Aruba,Aruba,10,OAG,12
-Aruba,Aruba,10,WTO,12
-Aruba,Aruba,12,latitudes,12
-Australia,Australia,7,contacts,13
-Australia,Australia,8,Huang2013,13
-Australia,Australia,9,demography,13
-Australia,Australia,11,OAG,13
-Australia,Australia,11,WTO,13
-Australia,Australia,13,latitudes,13
-Austria,Austria,8,contacts,14
-Austria,Austria,9,Huang2013,14
-Austria,Austria,10,demography,14
-Austria,Austria,12,OAG,14
-Austria,Austria,12,WTO,14
-Austria,Austria,14,latitudes,14
-Azerbaijan,Azerbaijan,9,contacts,15
-Azerbaijan,Azerbaijan,10,Huang2013,15
-Azerbaijan,Azerbaijan,11,demography,15
-Azerbaijan,Azerbaijan,13,OAG,15
-Azerbaijan,Azerbaijan,13,WTO,15
-Azerbaijan,Azerbaijan,15,latitudes,15
-Bahamas,Bahamas,10,contacts,16
-Bahamas,Bahamas,11,Huang2013,16
-Bahamas,Bahamas,12,demography,16
-Bahamas,The_Bahamas,191,OAG,16
-Bahamas,The_Bahamas,192,WTO,16
-Bahamas,Bahamas,16,latitudes,16
-Bahrain,Bahrain,11,contacts,17
-Bahrain,Bahrain,13,demography,17
-Bahrain,Bahrain,14,OAG,17
-Bahrain,Bahrain,14,WTO,17
-Bahrain,Bahrain,17,latitudes,17
-Bangladesh,Bangladesh,12,contacts,18
-Bangladesh,Bangladesh,12,Huang2013,18
-Bangladesh,Bangladesh,14,demography,18
-Bangladesh,Bangladesh,15,OAG,18
-Bangladesh,Bangladesh,15,WTO,18
-Bangladesh,Bangladesh,18,latitudes,18
-Barbados,Barbados,15,demography,19
-Barbados,Barbados,16,OAG,19
-Barbados,Barbados,16,WTO,19
-Barbados,Barbados,19,latitudes,19
-Belarus,Belarus,13,contacts,20
-Belarus,Belarus,13,Huang2013,20
-Belarus,Belarus,16,demography,20
-Belarus,Belarus,17,OAG,20
-Belarus,Belarus,17,WTO,20
-Belarus,Belarus,20,latitudes,20
-Belgium,Belgium,14,contacts,21
-Belgium,Belgium,14,Huang2013,21
-Belgium,Belgium,17,demography,21
-Belgium,Belgium,18,OAG,21
-Belgium,Belgium,18,WTO,21
-Belgium,Belgium,21,latitudes,21
-Belize,Belize,15,contacts,22
-Belize,Belize,18,demography,22
-Belize,Belize,19,OAG,22
-Belize,Belize,19,WTO,22
-Belize,Belize,22,latitudes,22
-Benin,Benin,15,Huang2013,23
-Benin,Benin,16,contacts,23
-Benin,Benin,19,demography,23
-Benin,Benin,20,OAG,23
-Benin,Benin,20,WTO,23
-Benin,Benin,23,latitudes,23
-Bermuda,Bermuda,21,OAG,24
-Bermuda,Bermuda,21,WTO,24
-Bermuda,Bermuda,24,latitudes,24
-Bhutan,Bhutan,17,contacts,25
-Bhutan,Bhutan,20,demography,25
-Bhutan,Bhutan,22,OAG,25
-Bhutan,Bhutan,22,WTO,25
-Bhutan,Bhutan,25,latitudes,25
-Bolivia,Bolivia,16,Huang2013,26
-Bolivia,Bolivia (Plurinational State of,18,contacts,26
-Bolivia,Bolivia (Plurinational State of),21,demography,26
-Bolivia,Bolivia,23,OAG,26
-Bolivia,Bolivia,23,WTO,26
-Bolivia,Bolivia,26,latitudes,26
-Bosnia_Herzegovina,Bosnia and Herzegovina,17,Huang2013,27
-Bosnia_Herzegovina,Bosnia and Herzegovina,19,contacts,27
-Bosnia_Herzegovina,Bosnia and Herzegovina,22,demography,27
-Bosnia_Herzegovina,Bosnia_Gerzegovina,24,OAG,27
-Bosnia_Herzegovina,Bosnia_Herzegovina,24,WTO,27
-Bosnia_Herzegovina,Bosnia and Herzegovina,27,latitudes,27
-Botswana,Botswana,18,Huang2013,28
-Botswana,Botswana,20,contacts,28
-Botswana,Botswana,23,demography,28
-Botswana,Botswana,25,OAG,28
-Botswana,Botswana,25,WTO,28
-Botswana,Botswana,28,latitudes,28
-Bouvet_Island,Bouvet Island,29,latitudes,29
-Brazil,Brazil,19,Huang2013,30
-Brazil,Brazil,21,contacts,30
-Brazil,Brazil,24,demography,30
-Brazil,Brazil,26,OAG,30
-Brazil,Brazil,26,WTO,30
-Brazil,Brazil,30,latitudes,30
-British_Indian_Ocean_Territory,British Indian Ocean Territory,31,latitudes,31
-Brunei,Brunei Darussalam,22,contacts,32
-Brunei,Brunei Darussalam,25,demography,32
-Brunei,Brunei,NA,database,32
-Brunei,Brunei,NA,database,32
-Brunei,Brunei,33,latitudes,32
-Bulgaria,Bulgaria,20,Huang2013,33
-Bulgaria,Bulgaria,23,contacts,33
-Bulgaria,Bulgaria,26,demography,33
-Bulgaria,Bulgaria,27,OAG,33
-Bulgaria,Bulgaria,27,WTO,33
-Bulgaria,Bulgaria,34,latitudes,33
-Burkina_Faso,Burkina Faso,21,Huang2013,34
-Burkina_Faso,Burkina Faso,24,contacts,34
-Burkina_Faso,Burkina Faso,27,demography,34
-Burkina_Faso,Burkina_Faso,28,OAG,34
-Burkina_Faso,Burkina_Faso,28,WTO,34
-Burkina_Faso,Burkina Faso,35,latitudes,34
-Burma,Burma,22,Huang2013,35
-Burma,Burma,29,OAG,35
-Burma,Burma,29,WTO,35
-Burundi,Burundi,23,Huang2013,36
-Burundi,Burundi,28,demography,36
-Burundi,Burundi,30,OAG,36
-Burundi,Burundi,30,WTO,36
-Burundi,Burundi,36,latitudes,36
-Cambodia,Cambodia,24,Huang2013,37
-Cambodia,Cambodia,26,contacts,37
-Cambodia,Cambodia,30,demography,37
-Cambodia,Cambodia,31,OAG,37
-Cambodia,Cambodia,31,WTO,37
-Cambodia,Cambodia,37,latitudes,37
-Cameroon,Cameroon,25,Huang2013,38
-Cameroon,Cameroon,27,contacts,38
-Cameroon,Cameroon,31,demography,38
-Cameroon,Cameroon,32,OAG,38
-Cameroon,Cameroon,32,WTO,38
-Cameroon,Cameroon,38,latitudes,38
-Canada,Canada,26,Huang2013,39
-Canada,Canada,28,contacts,39
-Canada,Canada,32,demography,39
-Canada,Canada,33,OAG,39
-Canada,Canada,33,WTO,39
-Canada,Canada,39,latitudes,39
-Cape_Verde,Cabo Verde,25,contacts,40
-Cape_Verde,Cape Verde,27,Huang2013,40
-Cape_Verde,Cabo Verde,29,demography,40
-Cape_Verde,Cape_Verde,34,OAG,40
-Cape_Verde,Cape_Verde,34,WTO,40
-Cape_Verde,Cape Verde,40,latitudes,40
-Cayman_Islands,Cayman_Islands,35,OAG,41
-Cayman_Islands,Cayman_Islands,35,WTO,41
-Cayman_Islands,Cayman Islands,41,latitudes,41
-Central_African_Republic,Central African Republic,28,Huang2013,42
-Central_African_Republic,Central African Republic,33,demography,42
-Central_African_Republic,Centr_African_Rep,36,OAG,42
-Central_African_Republic,Centr_African_Rep,36,WTO,42
-Central_African_Republic,Central_African_Republic,NA,database,42
-Central_African_Republic,Central_African_Republic,NA,database,42
-Central_African_Republic,Central African Republic,42,latitudes,42
-Chad,Chad,29,Huang2013,43
-Chad,Chad,34,demography,43
-Chad,Chad,37,OAG,43
-Chad,Chad,37,WTO,43
-Chad,Chad,43,latitudes,43
-Channel_Islands,Channel Islands,35,demography,44
-Channel_Islands,Channel_Islands,NA,database,44
-Channel_Islands,Channel_Islands,NA,database,44
-Chile,Chile,29,contacts,45
-Chile,Chile,30,Huang2013,45
-Chile,Chile,36,demography,45
-Chile,Chile,38,OAG,45
-Chile,Chile,38,WTO,45
-Chile,Chile,44,latitudes,45
-China,China,30,contacts,46
-China,China,31,Huang2013,46
-China,China,37,demography,46
-China,China,39,OAG,46
-China,China,39,WTO,46
-China,China,45,latitudes,46
-Christmas_Island,Christmas Island,46,latitudes,47
-Cocos_Islands,Cocos [Keeling] Islands,47,latitudes,48
-Colombia,Colombia,31,contacts,49
-Colombia,Colombia,32,Huang2013,49
-Colombia,Colombia,40,OAG,49
-Colombia,Colombia,40,WTO,49
-Colombia,Colombia,41,demography,49
-Colombia,Colombia,48,latitudes,49
-Comoros,Comoros,33,Huang2013,50
-Comoros,Comoros,41,OAG,50
-Comoros,Comoros,41,WTO,50
-Comoros,Comoros,42,demography,50
-Comoros,Comoros,49,latitudes,50
-Cook_Islands,Cook Islands,36,Huang2013,51
-Cook_Islands,Cook_Islands,NA,database,51
-Cook_Islands,Cook_Islands,NA,database,51
-Cook_Islands,Cook Islands,52,latitudes,51
-Costa_Rica,Costa Rica,33,contacts,52
-Costa_Rica,Costa Rica,37,Huang2013,52
-Costa_Rica,Costa Rica,44,demography,52
-Costa_Rica,Costa_Rica,44,OAG,52
-Costa_Rica,Costa_Rica,44,WTO,52
-Costa_Rica,Costa Rica,53,latitudes,52
-Cote_dIvore,Cote d'Ivoire,38,Huang2013,53
-Cote_dIvore,Côte d'Ivoire,45,demography,53
-Cote_dIvore,Cote_dIvore,45,OAG,53
-Cote_dIvore,Cote_dIvore,45,WTO,53
-Cote_dIvore,Côte d'Ivoire,54,latitudes,53
+"Correct","Location","originalID","Data","correctID"
+"Afghanistan","Afghanistan",1,"coverage",1
+"Afghanistan","Afghanistan",1,"demography",1
+"Afghanistan","Afghanistan",1,"Huang2013",1
+"Afghanistan","Afghanistan",1,"OAG",1
+"Afghanistan","Afghanistan",1,"WTO",1
+"Albania","Albania",1,"contacts",2
+"Albania","Albania",2,"coverage",2
+"Albania","Albania",2,"demography",2
+"Albania","Albania",2,"Huang2013",2
+"Albania","Albania",2,"OAG",2
+"Albania","Albania",3,"regions",2
+"Albania","Albania",2,"WTO",2
+"Algeria","Algeria",2,"contacts",3
+"Algeria","Algeria",3,"coverage",3
+"Algeria","Algeria",3,"demography",3
+"Algeria","Algeria",3,"Huang2013",3
+"Algeria","Algeria",3,"OAG",3
+"Algeria","Algeria",4,"regions",3
+"Algeria","Algeria",3,"WTO",3
+"American_Samoa","American Samoa",4,"latitudes",4
+"American_Samoa","American_Samoa",4,"OAG",4
+"American_Samoa","American Samoa",5,"regions",4
+"American_Samoa","American_Samoa",4,"WTO",4
+"Andorra","Andorra",3,"contacts",5
+"Andorra","Andorra",4,"coverage",5
+"Andorra","Andorra",5,"OAG",5
+"Andorra","Andorra",6,"regions",5
+"Andorra","Andorra",5,"WTO",5
+"Angola","Angola",5,"coverage",6
+"Angola","Angola",4,"demography",6
+"Angola","Angola",4,"Huang2013",6
+"Angola","Angola",6,"OAG",6
+"Angola","Angola",7,"regions",6
+"Angola","Angola",6,"WTO",6
+"Anguilla","Anguilla",7,"latitudes",7
+"Anguilla","Anguilla",8,"regions",7
+"Antarctica","Antarctica",8,"latitudes",8
+"Antarctica","Antarctica",9,"regions",8
+"Antigua_Barbuda","Antigua and Barbuda",4,"contacts",9
+"Antigua_Barbuda","Antigua_Barbuda",6,"coverage",9
+"Antigua_Barbuda","Antigua and Barbuda",5,"demography",9
+"Antigua_Barbuda","Antigua and Barbuda",9,"latitudes",9
+"Antigua_Barbuda","Antigua_Barbuda",7,"OAG",9
+"Antigua_Barbuda","Antigua and Barbuda",10,"regions",9
+"Antigua_Barbuda","Antigua_Barbuda",7,"WTO",9
+"Argentina","Argentina",5,"contacts",10
+"Argentina","Argentina",7,"coverage",10
+"Argentina","Argentina",6,"demography",10
+"Argentina","Argentina",5,"Huang2013",10
+"Argentina","Argentina",10,"latitudes",10
+"Argentina","Argentina",8,"OAG",10
+"Argentina","Argentina",11,"regions",10
+"Argentina","Argentina",8,"WTO",10
+"Armenia","Armenia",6,"contacts",11
+"Armenia","Armenia",8,"coverage",11
+"Armenia","Armenia",7,"demography",11
+"Armenia","Armenia",6,"Huang2013",11
+"Armenia","Armenia",11,"latitudes",11
+"Armenia","Armenia",9,"OAG",11
+"Armenia","Armenia",12,"regions",11
+"Armenia","Armenia",9,"WTO",11
+"Aruba","Aruba",8,"demography",12
+"Aruba","Aruba",7,"Huang2013",12
+"Aruba","Aruba",12,"latitudes",12
+"Aruba","Aruba",10,"OAG",12
+"Aruba","Aruba",13,"regions",12
+"Aruba","Aruba",10,"WTO",12
+"Australia","Australia",7,"contacts",13
+"Australia","Australia",9,"coverage",13
+"Australia","Australia",9,"demography",13
+"Australia","Australia",8,"Huang2013",13
+"Australia","Australia",13,"latitudes",13
+"Australia","Australia",11,"OAG",13
+"Australia","Australia",14,"regions",13
+"Australia","Australia",11,"WTO",13
+"Austria","Austria",8,"contacts",14
+"Austria","Austria",10,"coverage",14
+"Austria","Austria",10,"demography",14
+"Austria","Austria",9,"Huang2013",14
+"Austria","Austria",14,"latitudes",14
+"Austria","Austria",12,"OAG",14
+"Austria","Austria",15,"regions",14
+"Austria","Austria",12,"WTO",14
+"Azerbaijan","Azerbaijan",9,"contacts",15
+"Azerbaijan","Azerbaijan",11,"coverage",15
+"Azerbaijan","Azerbaijan",11,"demography",15
+"Azerbaijan","Azerbaijan",10,"Huang2013",15
+"Azerbaijan","Azerbaijan",15,"latitudes",15
+"Azerbaijan","Azerbaijan",13,"OAG",15
+"Azerbaijan","Azerbaijan",16,"regions",15
+"Azerbaijan","Azerbaijan",13,"WTO",15
+"Bahamas","Bahamas",10,"contacts",16
+"Bahamas","Bahamas",12,"coverage",16
+"Bahamas","Bahamas",12,"demography",16
+"Bahamas","Bahamas",11,"Huang2013",16
+"Bahamas","Bahamas",16,"latitudes",16
+"Bahamas","The_Bahamas",191,"OAG",16
+"Bahamas","Bahamas",17,"regions",16
+"Bahamas","The_Bahamas",192,"WTO",16
+"Bahrain","Bahrain",11,"contacts",17
+"Bahrain","Bahrain",13,"coverage",17
+"Bahrain","Bahrain",13,"demography",17
+"Bahrain","Bahrain",17,"latitudes",17
+"Bahrain","Bahrain",14,"OAG",17
+"Bahrain","Bahrain",18,"regions",17
+"Bahrain","Bahrain",14,"WTO",17
+"Bangladesh","Bangladesh",12,"contacts",18
+"Bangladesh","Bangladesh",14,"coverage",18
+"Bangladesh","Bangladesh",14,"demography",18
+"Bangladesh","Bangladesh",12,"Huang2013",18
+"Bangladesh","Bangladesh",18,"latitudes",18
+"Bangladesh","Bangladesh",15,"OAG",18
+"Bangladesh","Bangladesh",19,"regions",18
+"Bangladesh","Bangladesh",15,"WTO",18
+"Barbados","Barbados",15,"coverage",19
+"Barbados","Barbados",15,"demography",19
+"Barbados","Barbados",19,"latitudes",19
+"Barbados","Barbados",16,"OAG",19
+"Barbados","Barbados",20,"regions",19
+"Barbados","Barbados",16,"WTO",19
+"Belarus","Belarus",13,"contacts",20
+"Belarus","Belarus",16,"coverage",20
+"Belarus","Belarus",16,"demography",20
+"Belarus","Belarus",13,"Huang2013",20
+"Belarus","Belarus",20,"latitudes",20
+"Belarus","Belarus",17,"OAG",20
+"Belarus","Belarus",21,"regions",20
+"Belarus","Belarus",17,"WTO",20
+"Belgium","Belgium",14,"contacts",21
+"Belgium","Belgium",17,"coverage",21
+"Belgium","Belgium",17,"demography",21
+"Belgium","Belgium",14,"Huang2013",21
+"Belgium","Belgium",21,"latitudes",21
+"Belgium","Belgium",18,"OAG",21
+"Belgium","Belgium",22,"regions",21
+"Belgium","Belgium",18,"WTO",21
+"Belize","Belize",15,"contacts",22
+"Belize","Belize",18,"coverage",22
+"Belize","Belize",18,"demography",22
+"Belize","Belize",22,"latitudes",22
+"Belize","Belize",19,"OAG",22
+"Belize","Belize",23,"regions",22
+"Belize","Belize",19,"WTO",22
+"Benin","Benin",16,"contacts",23
+"Benin","Benin",19,"coverage",23
+"Benin","Benin",19,"demography",23
+"Benin","Benin",15,"Huang2013",23
+"Benin","Benin",23,"latitudes",23
+"Benin","Benin",20,"OAG",23
+"Benin","Benin",24,"regions",23
+"Benin","Benin",20,"WTO",23
+"Bermuda","Bermuda",24,"latitudes",24
+"Bermuda","Bermuda",21,"OAG",24
+"Bermuda","Bermuda",25,"regions",24
+"Bermuda","Bermuda",21,"WTO",24
+"Bhutan","Bhutan",17,"contacts",25
+"Bhutan","Bhutan",20,"coverage",25
+"Bhutan","Bhutan",20,"demography",25
+"Bhutan","Bhutan",25,"latitudes",25
+"Bhutan","Bhutan",22,"OAG",25
+"Bhutan","Bhutan",26,"regions",25
+"Bhutan","Bhutan",22,"WTO",25
+"Bolivia","Bolivia (Plurinational State of",18,"contacts",26
+"Bolivia","Bolivia",21,"coverage",26
+"Bolivia","Bolivia (Plurinational State of)",21,"demography",26
+"Bolivia","Bolivia",16,"Huang2013",26
+"Bolivia","Bolivia",26,"latitudes",26
+"Bolivia","Bolivia",23,"OAG",26
+"Bolivia","Bolivia (Plurinational State of)",27,"regions",26
+"Bolivia","Bolivia",23,"WTO",26
+"Bosnia_Herzegovina","Bosnia and Herzegovina",19,"contacts",27
+"Bosnia_Herzegovina","Bosnia_Herzegovina",22,"coverage",27
+"Bosnia_Herzegovina","Bosnia and Herzegovina",22,"demography",27
+"Bosnia_Herzegovina","Bosnia and Herzegovina",17,"Huang2013",27
+"Bosnia_Herzegovina","Bosnia and Herzegovina",27,"latitudes",27
+"Bosnia_Herzegovina","Bosnia_Gerzegovina",24,"OAG",27
+"Bosnia_Herzegovina","Bosnia and Herzegovina",29,"regions",27
+"Bosnia_Herzegovina","Bosnia_Herzegovina",24,"WTO",27
+"Botswana","Botswana",20,"contacts",28
+"Botswana","Botswana",23,"coverage",28
+"Botswana","Botswana",23,"demography",28
+"Botswana","Botswana",18,"Huang2013",28
+"Botswana","Botswana",28,"latitudes",28
+"Botswana","Botswana",25,"OAG",28
+"Botswana","Botswana",30,"regions",28
+"Botswana","Botswana",25,"WTO",28
+"Bouvet_Island","Bouvet_Island",NA,"database",29
+"Bouvet_Island","Bouvet Island",29,"latitudes",29
+"Bouvet_Island","Bouvet Island",31,"regions",29
+"Brazil","Brazil",21,"contacts",30
+"Brazil","Brazil",24,"coverage",30
+"Brazil","Brazil",24,"demography",30
+"Brazil","Brazil",19,"Huang2013",30
+"Brazil","Brazil",30,"latitudes",30
+"Brazil","Brazil",26,"OAG",30
+"Brazil","Brazil",32,"regions",30
+"Brazil","Brazil",26,"WTO",30
+"British_Indian_Ocean_Territory","British_Indian_Ocean_Territory",NA,"database",31
+"British_Indian_Ocean_Territory","British Indian Ocean Territory",31,"latitudes",31
+"British_Indian_Ocean_Territory","British Indian Ocean Territory",33,"regions",31
+"Brunei","Brunei Darussalam",22,"contacts",32
+"Brunei","Brunei_Darussalam",25,"coverage",32
+"Brunei","Brunei",NA,"database",32
+"Brunei","Brunei",NA,"database",32
+"Brunei","Brunei Darussalam",25,"demography",32
+"Brunei","Brunei",33,"latitudes",32
+"Brunei","Brunei Darussalam",34,"regions",32
+"Bulgaria","Bulgaria",23,"contacts",33
+"Bulgaria","Bulgaria",26,"coverage",33
+"Bulgaria","Bulgaria",26,"demography",33
+"Bulgaria","Bulgaria",20,"Huang2013",33
+"Bulgaria","Bulgaria",34,"latitudes",33
+"Bulgaria","Bulgaria",27,"OAG",33
+"Bulgaria","Bulgaria",35,"regions",33
+"Bulgaria","Bulgaria",27,"WTO",33
+"Burkina_Faso","Burkina Faso",24,"contacts",34
+"Burkina_Faso","Burkina_Faso",27,"coverage",34
+"Burkina_Faso","Burkina Faso",27,"demography",34
+"Burkina_Faso","Burkina Faso",21,"Huang2013",34
+"Burkina_Faso","Burkina Faso",35,"latitudes",34
+"Burkina_Faso","Burkina_Faso",28,"OAG",34
+"Burkina_Faso","Burkina Faso",36,"regions",34
+"Burkina_Faso","Burkina_Faso",28,"WTO",34
+"Burma","Burma",22,"Huang2013",35
+"Burma","Burma",29,"OAG",35
+"Burma","Burma",29,"WTO",35
+"Burundi","Burundi",28,"coverage",36
+"Burundi","Burundi",28,"demography",36
+"Burundi","Burundi",23,"Huang2013",36
+"Burundi","Burundi",36,"latitudes",36
+"Burundi","Burundi",30,"OAG",36
+"Burundi","Burundi",37,"regions",36
+"Burundi","Burundi",30,"WTO",36
+"Cambodia","Cambodia",26,"contacts",37
+"Cambodia","Cambodia",29,"coverage",37
+"Cambodia","Cambodia",30,"demography",37
+"Cambodia","Cambodia",24,"Huang2013",37
+"Cambodia","Cambodia",37,"latitudes",37
+"Cambodia","Cambodia",31,"OAG",37
+"Cambodia","Cambodia",38,"regions",37
+"Cambodia","Cambodia",31,"WTO",37
+"Cameroon","Cameroon",27,"contacts",38
+"Cameroon","Cameroon",30,"coverage",38
+"Cameroon","Cameroon",31,"demography",38
+"Cameroon","Cameroon",25,"Huang2013",38
+"Cameroon","Cameroon",38,"latitudes",38
+"Cameroon","Cameroon",32,"OAG",38
+"Cameroon","Cameroon",39,"regions",38
+"Cameroon","Cameroon",32,"WTO",38
+"Canada","Canada",28,"contacts",39
+"Canada","Canada",31,"coverage",39
+"Canada","Canada",32,"demography",39
+"Canada","Canada",26,"Huang2013",39
+"Canada","Canada",39,"latitudes",39
+"Canada","Canada",33,"OAG",39
+"Canada","Canada",40,"regions",39
+"Canada","Canada",33,"WTO",39
+"Cape_Verde","Cabo Verde",25,"contacts",40
+"Cape_Verde","Cape_Verde",32,"coverage",40
+"Cape_Verde","Cabo Verde",29,"demography",40
+"Cape_Verde","Cape Verde",27,"Huang2013",40
+"Cape_Verde","Cape Verde",40,"latitudes",40
+"Cape_Verde","Cape_Verde",34,"OAG",40
+"Cape_Verde","Cabo Verde",41,"regions",40
+"Cape_Verde","Cape_Verde",34,"WTO",40
+"Cayman_Islands","Cayman Islands",41,"latitudes",41
+"Cayman_Islands","Cayman_Islands",35,"OAG",41
+"Cayman_Islands","Cayman Islands",42,"regions",41
+"Cayman_Islands","Cayman_Islands",35,"WTO",41
+"Central_African_Republic","Central_African_Republic",33,"coverage",42
+"Central_African_Republic","Central_African_Republic",NA,"database",42
+"Central_African_Republic","Central_African_Republic",NA,"database",42
+"Central_African_Republic","Central African Republic",33,"demography",42
+"Central_African_Republic","Central African Republic",28,"Huang2013",42
+"Central_African_Republic","Central African Republic",42,"latitudes",42
+"Central_African_Republic","Centr_African_Rep",36,"OAG",42
+"Central_African_Republic","Central African Republic",43,"regions",42
+"Central_African_Republic","Centr_African_Rep",36,"WTO",42
+"Chad","Chad",34,"coverage",43
+"Chad","Chad",34,"demography",43
+"Chad","Chad",29,"Huang2013",43
+"Chad","Chad",43,"latitudes",43
+"Chad","Chad",37,"OAG",43
+"Chad","Chad",44,"regions",43
+"Chad","Chad",37,"WTO",43
+"Channel_Islands","Channel_Islands",NA,"database",44
+"Channel_Islands","Channel_Islands",NA,"database",44
+"Channel_Islands","Channel Islands",35,"demography",44
+"Chile","Chile",29,"contacts",45
+"Chile","Chile",35,"coverage",45
+"Chile","Chile",36,"demography",45
+"Chile","Chile",30,"Huang2013",45
+"Chile","Chile",44,"latitudes",45
+"Chile","Chile",38,"OAG",45
+"Chile","Chile",45,"regions",45
+"Chile","Chile",38,"WTO",45
+"China","China",30,"contacts",46
+"China","China",36,"coverage",46
+"China","China",37,"demography",46
+"China","China",31,"Huang2013",46
+"China","China",45,"latitudes",46
+"China","China",39,"OAG",46
+"China","China",46,"regions",46
+"China","China",39,"WTO",46
+"Christmas_Island","Christmas_Island",NA,"database",47
+"Christmas_Island","Christmas Island",46,"latitudes",47
+"Christmas_Island","Christmas Island",47,"regions",47
+"Cocos_Islands","Cocos_Islands",NA,"database",48
+"Cocos_Islands","Cocos [Keeling] Islands",47,"latitudes",48
+"Cocos_Islands","Cocos (Keeling) Islands",48,"regions",48
+"Colombia","Colombia",31,"contacts",49
+"Colombia","Colombia",37,"coverage",49
+"Colombia","Colombia",41,"demography",49
+"Colombia","Colombia",32,"Huang2013",49
+"Colombia","Colombia",48,"latitudes",49
+"Colombia","Colombia",40,"OAG",49
+"Colombia","Colombia",49,"regions",49
+"Colombia","Colombia",40,"WTO",49
+"Comoros","Comoros",38,"coverage",50
+"Comoros","Comoros",42,"demography",50
+"Comoros","Comoros",33,"Huang2013",50
+"Comoros","Comoros",49,"latitudes",50
+"Comoros","Comoros",41,"OAG",50
+"Comoros","Comoros",50,"regions",50
+"Comoros","Comoros",41,"WTO",50
+"Cook_Islands","Cook_Islands",NA,"database",51
+"Cook_Islands","Cook_Islands",NA,"database",51
+"Cook_Islands","Cook Islands",36,"Huang2013",51
+"Cook_Islands","Cook Islands",52,"latitudes",51
+"Cook_Islands","Cook Islands",53,"regions",51
+"Costa_Rica","Costa Rica",33,"contacts",52
+"Costa_Rica","Costa_Rica",40,"coverage",52
+"Costa_Rica","Costa Rica",44,"demography",52
+"Costa_Rica","Costa Rica",37,"Huang2013",52
+"Costa_Rica","Costa Rica",53,"latitudes",52
+"Costa_Rica","Costa_Rica",44,"OAG",52
+"Costa_Rica","Costa Rica",54,"regions",52
+"Costa_Rica","Costa_Rica",44,"WTO",52
+"Cote_dIvore","Côte_d’Ivoire",41,"coverage",53
+"Cote_dIvore","Cote dIvoire,38,Huang2013,53
+Cote_dIvore,Côte dIvoire",45,"demography",53
+"Cote_dIvore","Cote_dIvore",45,"OAG",53
+"Cote_dIvore","Cote_dIvore",45,"WTO",53
+"Croatia","Croatia",42,"coverage",54
+"Cuba","Cuba",43,"coverage",55
+"Cyprus","Cyprus",44,"coverage",57
+"Czech_Republic","Czech_Republic",45,"coverage",58
+"Democratic_Peoples_Republic_of_Korea","DPR_of_Korea",50,"coverage",59
+"Democratic_Peoples_Republic_of_Korea","Democratic_Peoples_Republic_of_Korea",NA,"database",59
+"Democratic_Peoples_Republic_of_Korea","Democratic_Peoples_Republic_of_Korea",NA,"database",59
+"Cote_dIvore","Côte dIvoire,54,latitudes,53
 Croatia,Croatia,34,contacts,54
 Croatia,Croatia,39,Huang2013,54
 Croatia,Croatia,46,demography,54
@@ -275,1036 +375,11 @@ Czech_Republic,Czech_Republic,49,OAG,58
 Czech_Republic,Czech_Republic,49,WTO,58
 Czech_Republic,Czechia,50,demography,58
 Czech_Republic,Czech Republic,58,latitudes,58
-Democratic_Peoples_Republic_of_Korea,Dem. People's Republic of Korea,52,demography,59
-Democratic_Peoples_Republic_of_Korea,North Korea,113,Huang2013,59
-Democratic_Peoples_Republic_of_Korea,NKorea,144,OAG,59
-Democratic_Peoples_Republic_of_Korea,NKorea,144,WTO,59
-Democratic_Peoples_Republic_of_Korea,Democratic_Peoples_Republic_of_Korea,NA,database,59
-Democratic_Peoples_Republic_of_Korea,Democratic_Peoples_Republic_of_Korea,NA,database,59
-Democratic_Peoples_Republic_of_Korea,North Korea,163,latitudes,59
-Democratic_Republic_ of_the_ Congo,Congo (Kinshasa),35,Huang2013,60
-Democratic_Republic_ of_the_ Congo,Congo_Dem_Rep,43,WTO,60
-Democratic_Republic_ of_the_ Congo,Democratic Republic of the Congo,51,demography,60
-Democratic_Republic_ of_the_ Congo,Democratic_Republic_ of_the_ Congo,NA,database,60
-Democratic_Republic_ of_the_ Congo,Democratic_Republic_ of_the_ Congo,NA,database,60
-Democratic_Republic_ of_the_ Congo,Congo [DRC],50,latitudes,60
-Denmark,Denmark,37,contacts,61
-Denmark,Denmark,42,Huang2013,61
-Denmark,Denmark,50,OAG,61
-Denmark,Denmark,50,WTO,61
-Denmark,Denmark,53,demography,61
-Denmark,Denmark,59,latitudes,61
-Djibouti,Djibouti,43,Huang2013,62
-Djibouti,Djibouti,51,OAG,62
-Djibouti,Djibouti,51,WTO,62
-Djibouti,Djibouti,54,demography,62
-Djibouti,Djibouti,60,latitudes,62
-Dominica,Dominica,52,OAG,63
-Dominica,Dominica,52,WTO,63
-Dominica,Dominica,61,latitudes,63
-Dominican_Republic,Dominican Republic,38,contacts,64
-Dominican_Republic,Dominican Republic,44,Huang2013,64
-Dominican_Republic,Dominican_Republic,53,OAG,64
-Dominican_Republic,Dominican_Republic,53,WTO,64
-Dominican_Republic,Dominican Republic,55,demography,64
-Dominican_Republic,Dominican Republic,62,latitudes,64
-East_Timor,East Timor,45,Huang2013,65
-East_Timor,East_Timor,NA,database,65
-East_Timor,East_Timor,NA,database,65
-Ecuador,Ecuador,39,contacts,66
-Ecuador,Ecuador,46,Huang2013,66
-Ecuador,Ecuador,54,OAG,66
-Ecuador,Ecuador,54,WTO,66
-Ecuador,Ecuador,56,demography,66
-Ecuador,Ecuador,63,latitudes,66
-Egypt,Egypt,40,contacts,67
-Egypt,Egypt,47,Huang2013,67
-Egypt,Egypt,55,OAG,67
-Egypt,Egypt,55,WTO,67
-Egypt,Egypt,57,demography,67
-Egypt,Egypt,64,latitudes,67
-El_Salvador,El Salvador,41,contacts,68
-El_Salvador,El_Salvador,56,OAG,68
-El_Salvador,El_Salvador,56,WTO,68
-El_Salvador,El Salvador,58,demography,68
-El_Salvador,El Salvador,65,latitudes,68
-Equatorial_Guinea,Equatorial Guinea,48,Huang2013,69
-Equatorial_Guinea,Equatorial_Guinea,57,OAG,69
-Equatorial_Guinea,Equatorial_Guinea,57,WTO,69
-Equatorial_Guinea,Equatorial Guinea,59,demography,69
-Equatorial_Guinea,Equatorial Guinea,66,latitudes,69
-Eritrea,Eritrea,49,Huang2013,70
-Eritrea,Eritrea,58,OAG,70
-Eritrea,Eritrea,58,WTO,70
-Eritrea,Eritrea,60,demography,70
-Eritrea,Eritrea,67,latitudes,70
-Estonia,Estonia,42,contacts,71
-Estonia,Estonia,50,Huang2013,71
-Estonia,Estonia,59,OAG,71
-Estonia,Estonia,59,WTO,71
-Estonia,Estonia,61,demography,71
-Estonia,Estonia,68,latitudes,71
-Ethiopia,Ethiopia,43,contacts,72
-Ethiopia,Ethiopia,51,Huang2013,72
-Ethiopia,Ethiopia,60,OAG,72
-Ethiopia,Ethiopia,60,WTO,72
-Ethiopia,Ethiopia,62,demography,72
-Ethiopia,Ethiopia,69,latitudes,72
-Falkland_Islands,Falkland Islands [Islas Malvinas],70,latitudes,73
-Faroe_Islands,Faroe_Islands,61,OAG,74
-Faroe_Islands,Faroe_Islands,61,WTO,74
-Faroe_Islands,Faroe Islands,71,latitudes,74
-Fiji,Fiji,44,contacts,75
-Fiji,Fiji,52,Huang2013,75
-Fiji,Fiji,62,OAG,75
-Fiji,Fiji,62,WTO,75
-Fiji,Fiji,63,demography,75
-Fiji,Fiji,72,latitudes,75
-Finland,Finland,45,contacts,76
-Finland,Finland,53,Huang2013,76
-Finland,Finland,63,OAG,76
-Finland,Finland,63,WTO,76
-Finland,Finland,64,demography,76
-Finland,Finland,73,latitudes,76
-France,France,46,contacts,77
-France,France,54,Huang2013,77
-France,France,64,OAG,77
-France,France,64,WTO,77
-France,France,65,demography,77
-France,France,74,latitudes,77
-French_Guiana,French_Guiana,65,OAG,78
-French_Guiana,French_Guiana,65,WTO,78
-French_Guiana,French Guiana,66,demography,78
-French_Guiana,French Guiana,75,latitudes,78
-French_Polynesia,French Polynesia,55,Huang2013,79
-French_Polynesia,French_Polynesia,66,OAG,79
-French_Polynesia,French_Polynesia,66,WTO,79
-French_Polynesia,French Polynesia,67,demography,79
-French_Polynesia,French Polynesia,76,latitudes,79
-French_Southern_Territories,French Southern Territories,77,latitudes,80
-Gabon,Gabon,56,Huang2013,81
-Gabon,Gabon,67,OAG,81
-Gabon,Gabon,67,WTO,81
-Gabon,Gabon,68,demography,81
-Gabon,Gabon,78,latitudes,81
-Gambia,Gambia,68,OAG,82
-Gambia,Gambia,68,WTO,82
-Gambia,Gambia,69,demography,82
-Gambia,Gambia,79,latitudes,82
-Gaza_Strip,Gaza Strip,80,latitudes,83
-Georgia,Georgia,47,contacts,84
-Georgia,Georgia,57,Huang2013,84
-Georgia,Georgia,69,OAG,84
-Georgia,Georgia,69,WTO,84
-Georgia,Georgia,70,demography,84
-Georgia,Georgia,81,latitudes,84
-Germany,Germany,48,contacts,85
-Germany,Germany,58,Huang2013,85
-Germany,Germany,70,OAG,85
-Germany,Germany,70,WTO,85
-Germany,Germany,71,demography,85
-Germany,Germany,82,latitudes,85
-Ghana,Ghana,49,contacts,86
-Ghana,Ghana,59,Huang2013,86
-Ghana,Ghana,71,OAG,86
-Ghana,Ghana,71,WTO,86
-Ghana,Ghana,72,demography,86
-Ghana,Ghana,83,latitudes,86
-Gibraltar,Gibraltar,72,OAG,87
-Gibraltar,Gibraltar,72,WTO,87
-Gibraltar,Gibraltar,84,latitudes,87
-Greece,Greece,50,contacts,88
-Greece,Greece,60,Huang2013,88
-Greece,Greece,73,demography,88
-Greece,Greece,73,OAG,88
-Greece,Greece,73,WTO,88
-Greece,Greece,85,latitudes,88
-Greenland,Greenland,74,OAG,89
-Greenland,Greenland,74,WTO,89
-Greenland,Greenland,86,latitudes,89
-Grenada,Grenada,74,demography,90
-Grenada,Grenada,75,OAG,90
-Grenada,Grenada,75,WTO,90
-Grenada,Grenada,87,latitudes,90
-Guadeloupe,Guadeloupe,61,Huang2013,91
-Guadeloupe,Guadeloupe,75,demography,91
-Guadeloupe,Guadeloupe,76,OAG,91
-Guadeloupe,Guadeloupe,76,WTO,91
-Guadeloupe,Guadeloupe,88,latitudes,91
-Guam,Guam,62,Huang2013,92
-Guam,Guam,76,demography,92
-Guam,Guam,77,OAG,92
-Guam,Guam,77,WTO,92
-Guam,Guam,89,latitudes,92
-Guatemala,Guatemala,51,contacts,93
-Guatemala,Guatemala,63,Huang2013,93
-Guatemala,Guatemala,77,demography,93
-Guatemala,Guatemala,78,OAG,93
-Guatemala,Guatemala,78,WTO,93
-Guatemala,Guatemala,90,latitudes,93
-Guernsey,Guernsey,79,OAG,94
-Guernsey,Guernsey,79,WTO,94
-Guernsey,Guernsey,91,latitudes,94
-Guinea,Guinea,52,contacts,95
-Guinea,Guinea,64,Huang2013,95
-Guinea,Guinea,78,demography,95
-Guinea,Guinea,80,OAG,95
-Guinea,Guinea,80,WTO,95
-Guinea,Guinea,92,latitudes,95
-Guinea-Bissau,Guinea-Bissau,79,demography,96
-Guinea-Bissau,Guinea-Bissau,81,OAG,96
-Guinea-Bissau,Guinea-Bissau,81,WTO,96
-Guinea-Bissau,Guinea-Bissau,93,latitudes,96
-Guyana,Guyana,53,contacts,97
-Guyana,Guyana,65,Huang2013,97
-Guyana,Guyana,80,demography,97
-Guyana,Guyana,82,OAG,97
-Guyana,Guyana,82,WTO,97
-Guyana,Guyana,94,latitudes,97
-Haiti,Haiti,54,contacts,98
-Haiti,Haiti,66,Huang2013,98
-Haiti,Haiti,81,demography,98
-Haiti,Haiti,83,OAG,98
-Haiti,Haiti,83,WTO,98
-Haiti,Haiti,95,latitudes,98
-Heard_and_McDonald_Islands,Heard Island and McDonald Islands,96,latitudes,99
-Honduras,Honduras,55,contacts,100
-Honduras,Honduras,67,Huang2013,100
-Honduras,Honduras,82,demography,100
-Honduras,Honduras,84,OAG,100
-Honduras,Honduras,84,WTO,100
-Honduras,Honduras,97,latitudes,100
-Hong_Kong,"China, Hong Kong SAR",38,demography,101
-Hong_Kong,"Hong Kong SAR, China",56,contacts,101
-Hong_Kong,Hong Kong,68,Huang2013,101
-Hong_Kong,Hong_Kong,85,OAG,101
-Hong_Kong,Hong_Kong,85,WTO,101
-Hong_Kong,Hong Kong,98,latitudes,101
-Hungary,Hungary,57,contacts,102
-Hungary,Hungary,69,Huang2013,102
-Hungary,Hungary,83,demography,102
-Hungary,Hungary,86,OAG,102
-Hungary,Hungary,86,WTO,102
-Hungary,Hungary,99,latitudes,102
-Iceland,Iceland,58,contacts,103
-Iceland,Iceland,70,Huang2013,103
-Iceland,Iceland,84,demography,103
-Iceland,Iceland,87,OAG,103
-Iceland,Iceland,87,WTO,103
-Iceland,Iceland,100,latitudes,103
-India,India,59,contacts,104
-India,India,71,Huang2013,104
-India,India,85,demography,104
-India,India,88,OAG,104
-India,India,88,WTO,104
-India,India,101,latitudes,104
-Indonesia,Indonesia,60,contacts,105
-Indonesia,Indonesia,72,Huang2013,105
-Indonesia,Indonesia,86,demography,105
-Indonesia,Indonesia,89,OAG,105
-Indonesia,Indonesia,89,WTO,105
-Indonesia,Indonesia,102,latitudes,105
-Iran,Iran (Islamic Republic of),61,contacts,106
-Iran,Iran,73,Huang2013,106
-Iran,Iran (Islamic Republic of),87,demography,106
-Iran,Iran,90,OAG,106
-Iran,Iran,90,WTO,106
-Iran,Iran,103,latitudes,106
-Iraq,Iraq,62,contacts,107
-Iraq,Iraq,74,Huang2013,107
-Iraq,Iraq,88,demography,107
-Iraq,Iraq,91,OAG,107
-Iraq,Iraq,91,WTO,107
-Iraq,Iraq,104,latitudes,107
-Ireland,Ireland,63,contacts,108
-Ireland,Ireland,75,Huang2013,108
-Ireland,Ireland,89,demography,108
-Ireland,Ireland,92,OAG,108
-Ireland,Ireland,92,WTO,108
-Ireland,Ireland,105,latitudes,108
-Isle_of_Man,Isle_of_Man,93,OAG,109
-Isle_of_Man,Isle_of_Man,93,WTO,109
-Isle_of_Man,Isle of Man,106,latitudes,109
-Israel,Israel,64,contacts,110
-Israel,Israel,76,Huang2013,110
-Israel,Israel,90,demography,110
-Israel,Israel,94,OAG,110
-Israel,Israel,94,WTO,110
-Israel,Israel,107,latitudes,110
-Italy,Italy,65,contacts,111
-Italy,Italy,77,Huang2013,111
-Italy,Italy,91,demography,111
-Italy,Italy,95,OAG,111
-Italy,Italy,95,WTO,111
-Italy,Italy,108,latitudes,111
-Jamaica,Jamaica,66,contacts,112
-Jamaica,Jamaica,78,Huang2013,112
-Jamaica,Jamaica,92,demography,112
-Jamaica,Jamaica,96,OAG,112
-Jamaica,Jamaica,96,WTO,112
-Jamaica,Jamaica,109,latitudes,112
-Japan,Japan,67,contacts,113
-Japan,Japan,79,Huang2013,113
-Japan,Japan,93,demography,113
-Japan,Japan,97,OAG,113
-Japan,Japan,97,WTO,113
-Japan,Japan,110,latitudes,113
-Jersey,Jersey,98,OAG,114
-Jersey,Jersey,98,WTO,114
-Jersey,Jersey,111,latitudes,114
-Jordan,Jordan,68,contacts,115
-Jordan,Jordan,80,Huang2013,115
-Jordan,Jordan,94,demography,115
-Jordan,Jordan,99,OAG,115
-Jordan,Jordan,99,WTO,115
-Jordan,Jordan,112,latitudes,115
-Kazakhstan,Kazakhstan,69,contacts,116
-Kazakhstan,Kazakhstan,81,Huang2013,116
-Kazakhstan,Kazakhstan,95,demography,116
-Kazakhstan,Kazakhstan,100,OAG,116
-Kazakhstan,Kazakhstan,100,WTO,116
-Kazakhstan,Kazakhstan,113,latitudes,116
-Kenya,Kenya,70,contacts,117
-Kenya,Kenya,82,Huang2013,117
-Kenya,Kenya,96,demography,117
-Kenya,Kenya,101,OAG,117
-Kenya,Kenya,101,WTO,117
-Kenya,Kenya,114,latitudes,117
-Kiribati,Kiribati,71,contacts,118
-Kiribati,Kiribati,97,demography,118
-Kiribati,Kiribati,102,OAG,118
-Kiribati,Kiribati,102,WTO,118
-Kiribati,Kiribati,115,latitudes,118
-Kosovo,Kosovo,116,latitudes,119
-Kuwait,Kuwait,72,contacts,120
-Kuwait,Kuwait,98,demography,120
-Kuwait,Kuwait,103,OAG,120
-Kuwait,Kuwait,103,WTO,120
-Kuwait,Kuwait,117,latitudes,120
-Kyrgyzstan,Kyrgyzstan,73,contacts,121
-Kyrgyzstan,Kyrgyzstan,83,Huang2013,121
-Kyrgyzstan,Kyrgyzstan,99,demography,121
-Kyrgyzstan,Kyrgyzstan,104,OAG,121
-Kyrgyzstan,Kyrgyzstan,104,WTO,121
-Kyrgyzstan,Kyrgyzstan,118,latitudes,121
-Laos,Lao People's Democratic Republi,74,contacts,122
-Laos,Laos,84,Huang2013,122
-Laos,Lao People's Democratic Republic,100,demography,122
-Laos,Laos,105,OAG,122
-Laos,Laos,105,WTO,122
-Laos,Laos,119,latitudes,122
-Latvia,Latvia,75,contacts,123
-Latvia,Latvia,85,Huang2013,123
-Latvia,Latvia,101,demography,123
-Latvia,Latvia,106,OAG,123
-Latvia,Latvia,106,WTO,123
-Latvia,Latvia,120,latitudes,123
-Lebanon,Lebanon,76,contacts,124
-Lebanon,Lebanon,86,Huang2013,124
-Lebanon,Lebanon,102,demography,124
-Lebanon,Lebanon,107,OAG,124
-Lebanon,Lebanon,107,WTO,124
-Lebanon,Lebanon,121,latitudes,124
-Lesotho,Lesotho,77,contacts,125
-Lesotho,Lesotho,87,Huang2013,125
-Lesotho,Lesotho,103,demography,125
-Lesotho,Lesotho,108,OAG,125
-Lesotho,Lesotho,108,WTO,125
-Lesotho,Lesotho,122,latitudes,125
-Liberia,Liberia,78,contacts,126
-Liberia,Liberia,88,Huang2013,126
-Liberia,Liberia,104,demography,126
-Liberia,Liberia,109,OAG,126
-Liberia,Liberia,109,WTO,126
-Liberia,Liberia,123,latitudes,126
-Libya,Libya,89,Huang2013,127
-Libya,Libya,105,demography,127
-Libya,Libya,110,OAG,127
-Libya,Libya,110,WTO,127
-Libya,Libya,124,latitudes,127
-Liechtenstein,Liechtenstein,111,OAG,128
-Liechtenstein,Liechtenstein,111,WTO,128
-Liechtenstein,Liechtenstein,125,latitudes,128
-Lithuania,Lithuania,79,contacts,129
-Lithuania,Lithuania,90,Huang2013,129
-Lithuania,Lithuania,106,demography,129
-Lithuania,Lithuania,112,OAG,129
-Lithuania,Lithuania,112,WTO,129
-Lithuania,Lithuania,126,latitudes,129
-Luxembourg,Luxembourg,80,contacts,130
-Luxembourg,Luxembourg,107,demography,130
-Luxembourg,Luxembourg,113,OAG,130
-Luxembourg,Luxembourg,113,WTO,130
-Luxembourg,Luxembourg,127,latitudes,130
-Macao,"China, Macao SAR",39,demography,131
-Macao,Macau,91,Huang2013,131
-Macao,Macao,114,OAG,131
-Macao,Macao,114,WTO,131
-Macao,Macau,128,latitudes,131
-Macedonia,Macedonia,92,Huang2013,132
-Macedonia,Macedonia,115,OAG,132
-Macedonia,Macedonia,115,WTO,132
-Macedonia,TFYR of Macedonia,133,contacts,132
-Macedonia,TFYR Macedonia,177,demography,132
-Macedonia,Macedonia [FYROM],129,latitudes,132
-Madagascar,Madagascar,93,Huang2013,133
-Madagascar,Madagascar,108,demography,133
-Madagascar,Madagascar,116,OAG,133
-Madagascar,Madagascar,116,WTO,133
-Madagascar,Madagascar,130,latitudes,133
-Malawi,Malawi,94,Huang2013,134
-Malawi,Malawi,109,demography,134
-Malawi,Malawi,117,OAG,134
-Malawi,Malawi,117,WTO,134
-Malawi,Malawi,131,latitudes,134
-Malaysia,Malaysia,81,contacts,135
-Malaysia,Malaysia,95,Huang2013,135
-Malaysia,Malaysia,110,demography,135
-Malaysia,Malaysia,118,OAG,135
-Malaysia,Malaysia,118,WTO,135
-Malaysia,Malaysia,132,latitudes,135
-Maldives,Maldives,82,contacts,136
-Maldives,Maldives,96,Huang2013,136
-Maldives,Maldives,111,demography,136
-Maldives,Maldives,119,OAG,136
-Maldives,Maldives,119,WTO,136
-Maldives,Maldives,133,latitudes,136
-Mali,Mali,97,Huang2013,137
-Mali,Mali,112,demography,137
-Mali,Mali,120,OAG,137
-Mali,Mali,120,WTO,137
-Mali,Mali,134,latitudes,137
-Malta,Malta,83,contacts,138
-Malta,Malta,98,Huang2013,138
-Malta,Malta,113,demography,138
-Malta,Malta,121,OAG,138
-Malta,Malta,121,WTO,138
-Malta,Malta,135,latitudes,138
-Marshall_Islands,Marshall_Islands,122,OAG,139
-Marshall_Islands,Marshall_Islands,122,WTO,139
-Marshall_Islands,Marshall Islands,136,latitudes,139
-Martinique,Martinique,114,demography,140
-Martinique,Martinique,123,OAG,140
-Martinique,Martinique,123,WTO,140
-Martinique,Martinique,137,latitudes,140
-Mauritania,Mauritania,84,contacts,141
-Mauritania,Mauritania,99,Huang2013,141
-Mauritania,Mauritania,115,demography,141
-Mauritania,Mauritania,124,OAG,141
-Mauritania,Mauritania,124,WTO,141
-Mauritania,Mauritania,138,latitudes,141
-Mauritius,Mauritius,85,contacts,142
-Mauritius,Mauritius,116,demography,142
-Mauritius,Mauritius,125,OAG,142
-Mauritius,Mauritius,125,WTO,142
-Mauritius,Mauritius,139,latitudes,142
-Mayotte,Mayotte,117,demography,143
-Mayotte,Mayotte,140,latitudes,143
-Mexico,Mexico,86,contacts,144
-Mexico,Mexico,100,Huang2013,144
-Mexico,Mexico,118,demography,144
-Mexico,Mexico,126,OAG,144
-Mexico,Mexico,126,WTO,144
-Mexico,Mexico,141,latitudes,144
-Micronesia,Micronesia (Fed. States of),119,demography,145
-Micronesia,Micronesia,127,OAG,145
-Micronesia,Micronesia,127,WTO,145
-Micronesia,Micronesia,142,latitudes,145
-Moldova,Moldova,101,Huang2013,146
-Moldova,Moldova,128,OAG,146
-Moldova,Moldova,128,WTO,146
-Moldova,Republic of Moldova,146,demography,146
-Moldova,Moldova,143,latitudes,146
-Monaco,Monaco,87,contacts,147
-Monaco,Monaco,129,OAG,147
-Monaco,Monaco,129,WTO,147
-Monaco,Monaco,144,latitudes,147
-Mongolia,Mongolia,88,contacts,148
-Mongolia,Mongolia,102,Huang2013,148
-Mongolia,Mongolia,120,demography,148
-Mongolia,Mongolia,130,OAG,148
-Mongolia,Mongolia,130,WTO,148
-Mongolia,Mongolia,145,latitudes,148
-Montenegro,Montenegro,89,contacts,149
-Montenegro,Montenegro,103,Huang2013,149
-Montenegro,Montenegro,121,demography,149
-Montenegro,Montenegro,146,latitudes,149
-Montserrat,Montserrat,131,OAG,150
-Montserrat,Montserrat,131,WTO,150
-Montserrat,Montserrat,147,latitudes,150
-Morocco,Morocco,90,contacts,151
-Morocco,Morocco,104,Huang2013,151
-Morocco,Morocco,122,demography,151
-Morocco,Morocco,132,OAG,151
-Morocco,Morocco,132,WTO,151
-Morocco,Morocco,148,latitudes,151
-Mozambique,Mozambique,91,contacts,152
-Mozambique,Mozambique,105,Huang2013,152
-Mozambique,Mozambique,123,demography,152
-Mozambique,Mozambique,133,OAG,152
-Mozambique,Mozambique,133,WTO,152
-Mozambique,Mozambique,149,latitudes,152
-Myanmar,Myanmar,124,demography,153
-Myanmar,Myanmar [Burma],150,latitudes,153
-Namibia,Namibia,92,contacts,154
-Namibia,Namibia,106,Huang2013,154
-Namibia,Namibia,125,demography,154
-Namibia,Namibia,134,OAG,154
-Namibia,Namibia,134,WTO,154
-Namibia,Namibia,151,latitudes,154
-Nauru,Nauru,152,latitudes,155
-Nepal,Nepal,93,contacts,156
-Nepal,Nepal,107,Huang2013,156
-Nepal,Nepal,126,demography,156
-Nepal,Nepal,135,OAG,156
-Nepal,Nepal,135,WTO,156
-Nepal,Nepal,153,latitudes,156
-Netherlands,Netherlands,94,contacts,157
-Netherlands,Netherlands,108,Huang2013,157
-Netherlands,Netherlands,127,demography,157
-Netherlands,Netherlands,136,OAG,157
-Netherlands,Netherlands,136,WTO,157
-Netherlands,Netherlands,154,latitudes,157
-Netherlands_Antilles,Netherlands_Antilles,137,OAG,158
-Netherlands_Antilles,Netherlands_Antilles,137,WTO,158
-Netherlands_Antilles,Netherlands Antilles,155,latitudes,158
-New_Caledonia,New Caledonia,128,demography,159
-New_Caledonia,New_Caledonia,138,OAG,159
-New_Caledonia,New_Caledonia,138,WTO,159
-New_Caledonia,New Caledonia,156,latitudes,159
-New_Zealand,New Zealand,95,contacts,160
-New_Zealand,New Zealand,109,Huang2013,160
-New_Zealand,New Zealand,129,demography,160
-New_Zealand,New_Zealand,140,OAG,160
-New_Zealand,New_Zealand,140,WTO,160
-New_Zealand,New Zealand,157,latitudes,160
-Nicaragua,Nicaragua,96,contacts,161
-Nicaragua,Nicaragua,110,Huang2013,161
-Nicaragua,Nicaragua,130,demography,161
-Nicaragua,Nicaragua,141,OAG,161
-Nicaragua,Nicaragua,141,WTO,161
-Nicaragua,Nicaragua,158,latitudes,161
-Niger,Niger,97,contacts,162
-Niger,Niger,111,Huang2013,162
-Niger,Niger,131,demography,162
-Niger,Niger,142,OAG,162
-Niger,Niger,142,WTO,162
-Niger,Niger,159,latitudes,162
-Nigeria,Nigeria,98,contacts,163
-Nigeria,Nigeria,112,Huang2013,163
-Nigeria,Nigeria,132,demography,163
-Nigeria,Nigeria,143,OAG,163
-Nigeria,Nigeria,143,WTO,163
-Nigeria,Nigeria,160,latitudes,163
-Niue,Niue,161,latitudes,164
-Norfolk_Island,Norfolk Island,162,latitudes,165
-Northern_Mariana_Islands,Northern_Mariana_Islands,145,OAG,166
-Northern_Mariana_Islands,Northern_Mariana_Islands,145,WTO,166
-Northern_Mariana_Islands,Northern Mariana Islands,164,latitudes,166
-Norway,Norway,114,Huang2013,167
-Norway,Norway,133,demography,167
-Norway,Norway,146,OAG,167
-Norway,Norway,146,WTO,167
-Norway,Norway,165,latitudes,167
-Oman,Oman,99,contacts,168
-Oman,Oman,115,Huang2013,168
-Oman,Oman,134,demography,168
-Oman,Oman,147,OAG,168
-Oman,Oman,147,WTO,168
-Oman,Oman,166,latitudes,168
-Pakistan,Pakistan,100,contacts,169
-Pakistan,Pakistan,116,Huang2013,169
-Pakistan,Pakistan,135,demography,169
-Pakistan,Pakistan,148,OAG,169
-Pakistan,Pakistan,148,WTO,169
-Pakistan,Pakistan,167,latitudes,169
-Palau,Palau,149,OAG,170
-Palau,Palau,149,WTO,170
-Palau,Palau,168,latitudes,170
-Palestinian_Territories,Palest_Territory,150,OAG,171
-Palestinian_Territories,Palest_Territory,150,WTO,171
-Palestinian_Territories,Palestinian_Territories,NA,database,171
-Palestinian_Territories,Palestinian_Territories,NA,database,171
-Palestinian_Territories,Palestinian Territories,169,latitudes,171
-Panama,Panama,101,contacts,172
-Panama,Panama,117,Huang2013,172
-Panama,Panama,136,demography,172
-Panama,Panama,151,OAG,172
-Panama,Panama,151,WTO,172
-Panama,Panama,170,latitudes,172
-Papua New Guinea,Papua New Guinea,118,Huang2013,173
-Papua New Guinea,Papua New Guinea,137,demography,173
-Papua New Guinea,New_Guinea,139,OAG,173
-Papua New Guinea,New_Guinea,139,WTO,173
-Papua New Guinea,Papua New Guinea,171,latitudes,173
-Paraguay,Paraguay,102,contacts,174
-Paraguay,Paraguay,119,Huang2013,174
-Paraguay,Paraguay,138,demography,174
-Paraguay,Paraguay,152,OAG,174
-Paraguay,Paraguay,152,WTO,174
-Paraguay,Paraguay,172,latitudes,174
-Peru,Peru,103,contacts,175
-Peru,Peru,120,Huang2013,175
-Peru,Peru,139,demography,175
-Peru,Peru,153,OAG,175
-Peru,Peru,153,WTO,175
-Peru,Peru,173,latitudes,175
-Philippines,Philippines,104,contacts,176
-Philippines,Philippines,121,Huang2013,176
-Philippines,Philippines,140,demography,176
-Philippines,Philippines,154,OAG,176
-Philippines,Philippines,154,WTO,176
-Philippines,Philippines,174,latitudes,176
-Pitcairn_Islands,Pitcairn Islands,175,latitudes,177
-Poland,Poland,105,contacts,178
-Poland,Poland,122,Huang2013,178
-Poland,Poland,141,demography,178
-Poland,Poland,155,OAG,178
-Poland,Poland,155,WTO,178
-Poland,Poland,176,latitudes,178
-Portugal,Portugal,106,contacts,179
-Portugal,Portugal,123,Huang2013,179
-Portugal,Portugal,142,demography,179
-Portugal,Portugal,156,OAG,179
-Portugal,Portugal,156,WTO,179
-Portugal,Portugal,177,latitudes,179
-Puerto_Rico,Puerto Rico,124,Huang2013,180
-Puerto_Rico,Puerto Rico,143,demography,180
-Puerto_Rico,Puerto_Rico,157,OAG,180
-Puerto_Rico,Puerto_Rico,157,WTO,180
-Puerto_Rico,Puerto Rico,178,latitudes,180
-Qatar,Qatar,107,contacts,181
-Qatar,Qatar,125,Huang2013,181
-Qatar,Qatar,144,demography,181
-Qatar,Qatar,158,WTO,181
-Qatar,Qatar,179,latitudes,181
-Republic_of_Congo,Congo,32,contacts,182
-Republic_of_Congo,Congo (Brazzaville),34,Huang2013,182
-Republic_of_Congo,Congo_Brazzaville,42,OAG,182
-Republic_of_Congo,Congo_Brazzaville,42,WTO,182
-Republic_of_Congo,Congo,43,demography,182
-Republic_of_Congo,Republic_of_Congo,NA,database,182
-Republic_of_Congo,Republic_of_Congo,NA,database,182
-Republic_of_Congo,Congo [Republic],51,latitudes,182
-Republic_of_Korea,Republic of Korea,108,contacts,183
-Republic_of_Korea,South Korea,141,Huang2013,183
-Republic_of_Korea,Republic of Korea,145,demography,183
-Republic_of_Korea,Skorea,171,OAG,183
-Republic_of_Korea,Skorea,172,WTO,183
-Republic_of_Korea,Republic_of_Korea,NA,database,183
-Republic_of_Korea,Republic_of_Korea,NA,database,183
-Republic_of_Korea,South Korea,204,latitudes,183
-Reunion,Reunion,126,Huang2013,184
-Reunion,Réunion,147,demography,184
-Reunion,Reunion,158,OAG,184
-Reunion,Reunion,159,WTO,184
-Reunion,Réunion,180,latitudes,184
-Romania,Romania,109,contacts,185
-Romania,Romania,127,Huang2013,185
-Romania,Romania,148,demography,185
-Romania,Romania,159,OAG,185
-Romania,Romania,160,WTO,185
-Romania,Romania,181,latitudes,185
-Russia,Russian Federation,110,contacts,186
-Russia,Russia,128,Huang2013,186
-Russia,Russian Federation,149,demography,186
-Russia,Russia,160,OAG,186
-Russia,Russia,161,WTO,186
-Russia,Russia,182,latitudes,186
-Rwanda,Rwanda,111,contacts,187
-Rwanda,Rwanda,129,Huang2013,187
-Rwanda,Rwanda,150,demography,187
-Rwanda,Rwanda,161,OAG,187
-Rwanda,Rwanda,162,WTO,187
-Rwanda,Rwanda,183,latitudes,187
-Saint_Helena,Saint Helena,184,latitudes,188
-Saint_Kitts_and_Nevis,St_Kitts__Nevis,178,OAG,189
-Saint_Kitts_and_Nevis,St_Kitts__Nevis,179,WTO,189
-Saint_Kitts_and_Nevis,Saint_Kitts_and_Nevis,NA,database,189
-Saint_Kitts_and_Nevis,Saint_Kitts_and_Nevis,NA,database,189
-Saint_Kitts_and_Nevis,Saint Kitts and Nevis,185,latitudes,189
-Saint_Lucia,Saint Lucia,112,contacts,190
-Saint_Lucia,Saint Lucia,151,demography,190
-Saint_Lucia,St_Lucia,179,OAG,190
-Saint_Lucia,St_Lucia,180,WTO,190
-Saint_Lucia,Saint_Lucia,NA,database,190
-Saint_Lucia,Saint_Lucia,NA,database,190
-Saint_Lucia,Saint Lucia,186,latitudes,190
-Saint_Pierre_and_Miquelon,Saint Pierre and Miquelon,187,latitudes,191
-Saint_Vincent_and_the_Grenadines,Saint Vincent and the Grenadines,152,demography,192
-Saint_Vincent_and_the_Grenadines,St_Vincent_The_Grenadines,180,OAG,192
-Saint_Vincent_and_the_Grenadines,St_Vincent_The_Grenadines,181,WTO,192
-Saint_Vincent_and_the_Grenadines,Saint_Vincent_and_the_Grenadines,NA,database,192
-Saint_Vincent_and_the_Grenadines,Saint_Vincent_and_the_Grenadines,NA,database,192
-Saint_Vincent_and_the_Grenadines,Saint Vincent and the Grenadines,188,latitudes,192
-Samoa,Samoa,113,contacts,193
-Samoa,Samoa,153,demography,193
-Samoa,Samoa,162,OAG,193
-Samoa,Samoa,163,WTO,193
-Samoa,Samoa,189,latitudes,193
-San_Marino,San_Marino,163,OAG,194
-San_Marino,San_Marino,164,WTO,194
-San_Marino,San Marino,190,latitudes,194
-Sao_Tome_and_Principe,Sao Tome and Principe ,114,contacts,195
-Sao_Tome_and_Principe,Sao Tome and Principe,130,Huang2013,195
-Sao_Tome_and_Principe,Sao Tome and Principe,154,demography,195
-Sao_Tome_and_Principe,Sao_Tome_Principe,164,OAG,195
-Sao_Tome_and_Principe,Sao_Tome_Principe,165,WTO,195
-Sao_Tome_and_Principe,Sao_Tome_and_Principe,NA,database,195
-Sao_Tome_and_Principe,Sao_Tome_and_Principe,NA,database,195
-Sao_Tome_and_Principe,São Tomé and Príncipe,191,latitudes,195
-Saudi_Arabia,Saudi Arabia,115,contacts,196
-Saudi_Arabia,Saudi Arabia,131,Huang2013,196
-Saudi_Arabia,Saudi Arabia,155,demography,196
-Saudi_Arabia,Saudi_Arabia,165,OAG,196
-Saudi_Arabia,Saudi_Arabia,166,WTO,196
-Saudi_Arabia,Saudi Arabia,192,latitudes,196
-Senegal,Senegal,116,contacts,197
-Senegal,Senegal,132,Huang2013,197
-Senegal,Senegal,156,demography,197
-Senegal,Senegal,166,OAG,197
-Senegal,Senegal,167,WTO,197
-Senegal,Senegal,193,latitudes,197
-Serbia,Serbia,117,contacts,198
-Serbia,Serbia,133,Huang2013,198
-Serbia,Serbia,157,demography,198
-Serbia,Serbia,167,OAG,198
-Serbia,Serbia,168,WTO,198
-Serbia,Serbia,194,latitudes,198
-Seychelles,Seychelles,118,contacts,199
-Seychelles,Seychelles,158,demography,199
-Seychelles,Seychelles,168,OAG,199
-Seychelles,Seychelles,169,WTO,199
-Seychelles,Seychelles,195,latitudes,199
-Sierra_Leone,Sierra Leone,119,contacts,200
-Sierra_Leone,Sierra Leone,134,Huang2013,200
-Sierra_Leone,Sierra Leone,159,demography,200
-Sierra_Leone,Sierra_Leone,169,OAG,200
-Sierra_Leone,Sierra_Leone,170,WTO,200
-Sierra_Leone,Sierra Leone,196,latitudes,200
-Singapore,Singapore,120,contacts,201
-Singapore,Singapore,135,Huang2013,201
-Singapore,Singapore,160,demography,201
-Singapore,Singapore,170,OAG,201
-Singapore,Singapore,171,WTO,201
-Singapore,Singapore,197,latitudes,201
-Slovakia,Slovakia,121,contacts,202
-Slovakia,Slovakia,136,Huang2013,202
-Slovakia,Slovakia,161,demography,202
-Slovakia,Slovakia,172,OAG,202
-Slovakia,Slovakia,173,WTO,202
-Slovakia,Slovakia,198,latitudes,202
-Slovenia,Slovenia,122,contacts,203
-Slovenia,Slovenia,137,Huang2013,203
-Slovenia,Slovenia,162,demography,203
-Slovenia,Slovenia,173,OAG,203
-Slovenia,Slovenia,174,WTO,203
-Slovenia,Slovenia,199,latitudes,203
-Solomon_Islands,Solomon Islands,123,contacts,204
-Solomon_Islands,Solomon Islands,138,Huang2013,204
-Solomon_Islands,Solomon Islands,163,demography,204
-Solomon_Islands,Solomon_Islands,NA,database,204
-Solomon_Islands,Solomon_Islands,NA,database,204
-Solomon_Islands,Solomon Islands,200,latitudes,204
-Somalia,Somalia,139,Huang2013,205
-Somalia,Somalia,164,demography,205
-Somalia,Somalia,174,OAG,205
-Somalia,Somalia,175,WTO,205
-Somalia,Somalia,201,latitudes,205
-South_Africa,South Africa,124,contacts,206
-South_Africa,South Africa,140,Huang2013,206
-South_Africa,South Africa,165,demography,206
-South_Africa,South_Africa,175,OAG,206
-South_Africa,South_Africa,176,WTO,206
-South_Africa,South Africa,202,latitudes,206
-South_Georgia_and_the_South_Sandwich_Islands,South Georgia and the South Sandwich Islands,203,latitudes,207
-South_Sudan,South Sudan,166,demography,208
-South_Sudan,South_Sudan,NA,database,208
-South_Sudan,South_Sudan,NA,database,208
-Spain,Spain,125,contacts,209
-Spain,Spain,142,Huang2013,209
-Spain,Spain,167,demography,209
-Spain,Spain,176,OAG,209
-Spain,Spain,177,WTO,209
-Spain,Spain,205,latitudes,209
-Sri_Lanka,Sri Lanka,126,contacts,210
-Sri_Lanka,Sri Lanka,143,Huang2013,210
-Sri_Lanka,Sri Lanka,168,demography,210
-Sri_Lanka,Sri_Lanka,177,OAG,210
-Sri_Lanka,Sri_Lanka,178,WTO,210
-Sri_Lanka,Sri Lanka,206,latitudes,210
-State_of_Palestine,State of Palestine,169,demography,211
-State_of_Palestine,State_of_Palestine,NA,database,211
-State_of_Palestine,State_of_Palestine,NA,database,211
-Sudan,Sudan,144,Huang2013,212
-Sudan,Sudan,170,demography,212
-Sudan,Sudan,181,OAG,212
-Sudan,Sudan,182,WTO,212
-Sudan,Sudan,207,latitudes,212
-Suriname,Suriname,127,contacts,213
-Suriname,Suriname,145,Huang2013,213
-Suriname,Suriname,171,demography,213
-Suriname,Suriname,182,OAG,213
-Suriname,Suriname,183,WTO,213
-Suriname,Suriname,208,latitudes,213
-Svalbard_and_Jan_Mayen,Svalbard and Jan Mayen,209,latitudes,214
-Swaziland,Swaziland,146,Huang2013,215
-Swaziland,Swaziland,172,demography,215
-Swaziland,Swaziland,183,OAG,215
-Swaziland,Swaziland,184,WTO,215
-Swaziland,Swaziland,210,latitudes,215
-Sweden,Sweden,128,contacts,216
-Sweden,Sweden,147,Huang2013,216
-Sweden,Sweden,173,demography,216
-Sweden,Sweden,184,OAG,216
-Sweden,Sweden,185,WTO,216
-Sweden,Sweden,211,latitudes,216
-Switzerland,Switzerland,129,contacts,217
-Switzerland,Switzerland,148,Huang2013,217
-Switzerland,Switzerland,174,demography,217
-Switzerland,Switzerland,185,OAG,217
-Switzerland,Switzerland,186,WTO,217
-Switzerland,Switzerland,212,latitudes,217
-Syrian_Arab_Republic,Syrian Arab Republic,130,contacts,218
-Syrian_Arab_Republic,Syria,149,Huang2013,218
-Syrian_Arab_Republic,Syrian Arab Republic,175,demography,218
-Syrian_Arab_Republic,Syria,186,OAG,218
-Syrian_Arab_Republic,Syria,187,WTO,218
-Syrian_Arab_Republic,Syrian_Arab_Republic,NA,database,218
-Syrian_Arab_Republic,Syrian_Arab_Republic,NA,database,218
-Syrian_Arab_Republic,Syria,213,latitudes,218
-Taiwan,"China, Taiwan Province of China",40,demography,219
-Taiwan,Taiwan,131,contacts,219
-Taiwan,Taiwan,150,Huang2013,219
-Taiwan,Taiwan,187,OAG,219
-Taiwan,Taiwan,188,WTO,219
-Taiwan,Taiwan,214,latitudes,219
-Tajikistan,Tajikistan,132,contacts,220
-Tajikistan,Tajikistan,151,Huang2013,220
-Tajikistan,Tajikistan,176,demography,220
-Tajikistan,Tajikistan,188,OAG,220
-Tajikistan,Tajikistan,189,WTO,220
-Tajikistan,Tajikistan,215,latitudes,220
-Tanzania,United Republic of Tanzania,143,contacts,221
-Tanzania,Tanzania,152,Huang2013,221
-Tanzania,Tanzania,189,OAG,221
-Tanzania,Tanzania,190,WTO,221
-Tanzania,United Republic of Tanzania,190,demography,221
-Tanzania,Tanzania,216,latitudes,221
-Thailand,Thailand,134,contacts,222
-Thailand,Thailand,153,Huang2013,222
-Thailand,Thailand,178,demography,222
-Thailand,Thailand,190,OAG,222
-Thailand,Thailand,191,WTO,222
-Thailand,Thailand,217,latitudes,222
-Timor_Leste,Timor-Leste,135,contacts,223
-Timor_Leste,Timor-Leste,179,demography,223
-Timor_Leste,Timor_Leste,192,OAG,223
-Timor_Leste,Timor_Leste,193,WTO,223
-Timor_Leste,Timor-Leste,218,latitudes,223
-Togo,Togo,154,Huang2013,224
-Togo,Togo,180,demography,224
-Togo,Togo,193,OAG,224
-Togo,Togo,194,WTO,224
-Togo,Togo,219,latitudes,224
-Tokelau,Tokelau,220,latitudes,225
-Tonga,Tonga,136,contacts,226
-Tonga,Tonga,181,demography,226
-Tonga,Tonga,194,OAG,226
-Tonga,Tonga,195,WTO,226
-Tonga,Tonga,221,latitudes,226
-Trinidad_and_Tobago,Trinidad and Tobago,182,demography,227
-Trinidad_and_Tobago,Trinidad_Tobago,195,OAG,227
-Trinidad_and_Tobago,Trinidad_Tobago,196,WTO,227
-Trinidad_and_Tobago,Trinidad_and_Tobago,NA,database,227
-Trinidad_and_Tobago,Trinidad_and_Tobago,NA,database,227
-Trinidad_and_Tobago,Trinidad and Tobago,222,latitudes,227
-Tunisia,Tunisia,137,contacts,228
-Tunisia,Tunisia,155,Huang2013,228
-Tunisia,Tunisia,183,demography,228
-Tunisia,Tunisia,196,OAG,228
-Tunisia,Tunisia,197,WTO,228
-Tunisia,Tunisia,223,latitudes,228
-Turkey,Turkey,138,contacts,229
-Turkey,Turkey,156,Huang2013,229
-Turkey,Turkey,184,demography,229
-Turkey,Turkey,197,OAG,229
-Turkey,Turkey,198,WTO,229
-Turkey,Turkey,224,latitudes,229
-Turkmenistan,Turkmenistan,157,Huang2013,230
-Turkmenistan,Turkmenistan,185,demography,230
-Turkmenistan,Turkmenistan,198,OAG,230
-Turkmenistan,Turkmenistan,199,WTO,230
-Turkmenistan,Turkmenistan,225,latitudes,230
-Turks_Caicos_Islands,Turks_Caicos_Islands,199,OAG,231
-Turks_Caicos_Islands,Turks_Caicos_Islands,200,WTO,231
-Turks_Caicos_Islands,Turks and Caicos Islands,226,latitudes,231
-Tuvalu,Tuvalu,200,OAG,232
-Tuvalu,Tuvalu,201,WTO,232
-Tuvalu,Tuvalu,227,latitudes,232
-Uganda,Uganda,139,contacts,233
-Uganda,Uganda,158,Huang2013,233
-Uganda,Uganda,186,demography,233
-Uganda,Uganda,201,OAG,233
-Uganda,Uganda,202,WTO,233
-Uganda,Uganda,230,latitudes,233
-Ukraine,Ukraine,140,contacts,234
-Ukraine,Ukraine,159,Huang2013,234
-Ukraine,Ukraine,187,demography,234
-Ukraine,Ukraine,202,OAG,234
-Ukraine,Ukraine,203,WTO,234
-Ukraine,Ukraine,231,latitudes,234
-United_Arab_Emirates,United Arab Emirates,141,contacts,235
-United_Arab_Emirates,United Arab Emirates,160,Huang2013,235
-United_Arab_Emirates,United Arab Emirates,188,demography,235
-United_Arab_Emirates,United_Arab_Emirates,203,OAG,235
-United_Arab_Emirates,United_Arab_Emirates,204,WTO,235
-United_Arab_Emirates,United Arab Emirates,232,latitudes,235
-United_Kingdom,United Kingdom of Great Britain,142,contacts,236
-United_Kingdom,United Kingdom,161,Huang2013,236
-United_Kingdom,United Kingdom,189,demography,236
-United_Kingdom,United_Kingdom,204,OAG,236
-United_Kingdom,United_Kingdom,205,WTO,236
-United_Kingdom,United Kingdom,233,latitudes,236
-Uruguay,Uruguay,145,contacts,237
-Uruguay,Uruguay,163,Huang2013,237
-Uruguay,Uruguay,193,demography,237
-Uruguay,Uruguay,205,OAG,237
-Uruguay,Uruguay,206,WTO,237
-Uruguay,Uruguay,235,latitudes,237
-USA,United States of America,144,contacts,238
-USA,United States,162,Huang2013,238
-USA,United States of America,191,demography,238
-USA,USA,206,OAG,238
-USA,USA,207,WTO,238
-USA,United States,234,latitudes,238
-US_minor_outlying_islands,U.S. Minor Outlying Islands,228,latitudes,239
-Uzbekistan,Uzbekistan,146,contacts,240
-Uzbekistan,Uzbekistan,164,Huang2013,240
-Uzbekistan,Uzbekistan,194,demography,240
-Uzbekistan,Uzbekistan,207,OAG,240
-Uzbekistan,Uzbekistan,208,WTO,240
-Uzbekistan,Uzbekistan,236,latitudes,240
-Vanuatu,Vanuatu,147,contacts,241
-Vanuatu,Vanuatu,195,demography,241
-Vanuatu,Vanuatu,208,OAG,241
-Vanuatu,Vanuatu,209,WTO,241
-Vanuatu,Vanuatu,237,latitudes,241
-Vatican_City,Vatican City,238,latitudes,242
-Venezuela,Venezuela (Bolivarian Republic ,148,contacts,243
-Venezuela,Venezuela,165,Huang2013,243
-Venezuela,Venezuela (Bolivarian Republic of),196,demography,243
-Venezuela,Venezuela,209,OAG,243
-Venezuela,Venezuela,210,WTO,243
-Venezuela,Venezuela,239,latitudes,243
-Vietnam,Viet Nam,149,contacts,244
-Vietnam,Vietnam,166,Huang2013,244
-Vietnam,Viet Nam,197,demography,244
-Vietnam,Vietnam,210,OAG,244
-Vietnam,Vietnam,211,WTO,244
-Vietnam,Vietnam,240,latitudes,244
-Virgin_Islands_UK,Virgin_Islands_UK,211,OAG,245
-Virgin_Islands_UK,Virgin_Islands_UK,212,WTO,245
-Virgin_Islands_UK,British Virgin Islands,32,latitudes,245
-Virgin_Islands_US,United States Virgin Islands,192,demography,246
-Virgin_Islands_US,Virgin_Islands_US,212,OAG,246
-Virgin_Islands_US,Virgin_Islands_US,213,WTO,246
-Virgin_Islands_US,U.S. Virgin Islands,229,latitudes,246
-Wallis_and_Futuna,Wallis and Futuna,241,latitudes,247
-Western_Sahara,Western Sahara,167,Huang2013,248
-Western_Sahara,Western Sahara,198,demography,248
-Western_Sahara,Western_Sahara,NA,database,248
-Western_Sahara,Western_Sahara,NA,database,248
-Western_Sahara,Western Sahara,242,latitudes,248
-Yemen,Yemen,150,contacts,249
-Yemen,Yemen,168,Huang2013,249
-Yemen,Yemen,199,demography,249
-Yemen,Yemen,213,OAG,249
-Yemen,Yemen,214,WTO,249
-Yemen,Yemen,243,latitudes,249
-Zambia,Zambia,151,contacts,250
-Zambia,Zambia,169,Huang2013,250
-Zambia,Zambia,200,demography,250
-Zambia,Zambia,214,OAG,250
-Zambia,Zambia,215,WTO,250
-Zambia,Zambia,244,latitudes,250
-Zimbabwe,Zimbabwe,152,contacts,251
-Zimbabwe,Zimbabwe,170,Huang2013,251
-Zimbabwe,Zimbabwe,201,demography,251
-Zimbabwe,Zimbabwe,215,OAG,251
-Zimbabwe,Zimbabwe,216,WTO,251
-Zimbabwe,Zimbabwe,245,latitudes,251
-Bouvet_Island,Bouvet_Island,NA,database,29
-British_Indian_Ocean_Territory,British_Indian_Ocean_Territory,NA,database,31
-Christmas_Island,Christmas_Island,NA,database,47
-Cocos_Islands,Cocos_Islands,NA,database,48
-Falkland_Islands,Falkland_Islands,NA,database,73
-French_Southern_Territories,French_Southern_Territories,NA,database,80
-Gaza_Strip,Gaza_Strip,NA,database,83
-Heard_and_McDonald_Islands,Heard_and_McDonald_Islands,NA,database,99
-Norfolk_Island,Norfolk_Island,NA,database,165
-Pitcairn_Islands,Pitcairn_Islands,NA,database,177
-Saint_Helena,Saint_Helena,NA,database,188
-Saint_Pierre_and_Miquelon,Saint_Pierre_and_Miquelon,NA,database,191
-South_Georgia_and_the_South_Sandwich_Islands,South_Georgia_and_the_South_Sandwich_Islands,NA,database,207
-Svalbard_and_Jan_Mayen,Svalbard_and_Jan_Mayen,NA,database,214
-US_minor_outlying_islands,US_minor_outlying_islands,NA,database,239
-Vatican_City,Vatican_City,NA,database,242
-Wallis_and_Futuna,Wallis_and_Futuna,NA,database,247
-Aland_Islands,Åland Islands,2,regions,NA
-Albania,Albania,3,regions,2
-Algeria,Algeria,4,regions,3
-American_Samoa,American Samoa,5,regions,4
-Andorra,Andorra,6,regions,5
-Angola,Angola,7,regions,6
-Anguilla,Anguilla,8,regions,7
-Antarctica,Antarctica,9,regions,8
-Antigua_Barbuda,Antigua and Barbuda,10,regions,9
-Argentina,Argentina,11,regions,10
-Armenia,Armenia,12,regions,11
-Aruba,Aruba,13,regions,12
-Australia,Australia,14,regions,13
-Austria,Austria,15,regions,14
-Azerbaijan,Azerbaijan,16,regions,15
-Bahamas,Bahamas,17,regions,16
-Bahrain,Bahrain,18,regions,17
-Bangladesh,Bangladesh,19,regions,18
-Barbados,Barbados,20,regions,19
-Belarus,Belarus,21,regions,20
-Belgium,Belgium,22,regions,21
-Belize,Belize,23,regions,22
-Benin,Benin,24,regions,23
-Bermuda,Bermuda,25,regions,24
-Bhutan,Bhutan,26,regions,25
-Bolivia,Bolivia (Plurinational State of),27,regions,26
-Bonaire_SaintEustatius_Saba,"Bonaire, Sint Eustatius and Saba",28,regions,NA
-Bosnia_Herzegovina,Bosnia and Herzegovina,29,regions,27
-Botswana,Botswana,30,regions,28
-Bouvet_Island,Bouvet Island,31,regions,29
-Brazil,Brazil,32,regions,30
-British_Indian_Ocean_Territory,British Indian Ocean Territory,33,regions,31
-Brunei,Brunei Darussalam,34,regions,32
-Bulgaria,Bulgaria,35,regions,33
-Burkina_Faso,Burkina Faso,36,regions,34
-Burundi,Burundi,37,regions,36
-Cape_Verde,Cabo Verde,41,regions,40
-Cambodia,Cambodia,38,regions,37
-Cameroon,Cameroon,39,regions,38
-Canada,Canada,40,regions,39
-Cayman_Islands,Cayman Islands,42,regions,41
-Central_African_Republic,Central African Republic,43,regions,42
-Chad,Chad,44,regions,43
-Chile,Chile,45,regions,45
-China,China,46,regions,46
-Christmas_Island,Christmas Island,47,regions,47
-Cocos_Islands,Cocos (Keeling) Islands,48,regions,48
-Colombia,Colombia,49,regions,49
-Comoros,Comoros,50,regions,50
-Republic_of_Congo,Congo,51,regions,182
-Democratic_Republic_ of_the_ Congo,Congo (Democratic Republic of the),52,regions,60
-Cook_Islands,Cook Islands,53,regions,51
-Costa_Rica,Costa Rica,54,regions,52
-Cote_dIvore,Côte d'Ivoire,55,regions,53
+Democratic_Peoples_Republic_of_Korea,Dem. Peoples Republic of Korea",52,"demography",59
+"Democratic_Peoples_Republic_of_Korea","North Korea",113,"Huang2013",59
+"Democratic_Peoples_Republic_of_Korea","North Korea",163,"latitudes",59
+"Democratic_Peoples_Republic_of_Korea","NKorea",144,"OAG",59
+"Cote_dIvore","Côte dIvoire,55,regions,53
 Croatia,Croatia,56,regions,54
 Cuba,Cuba,57,regions,55
 Curacao,Curaçao,58,regions,56
@@ -1367,135 +442,1254 @@ Jordan,Jordan,114,regions,115
 Kazakhstan,Kazakhstan,115,regions,116
 Kenya,Kenya,116,regions,117
 Kiribati,Kiribati,117,regions,118
-Democratic_Peoples_Republic_of_Korea,Korea (Democratic People's Republic of),118,regions,59
-Republic_of_Korea,Korea (Republic of),119,regions,183
-Kuwait,Kuwait,120,regions,120
-Kyrgyzstan,Kyrgyzstan,121,regions,121
-Laos,Lao People's Democratic Republic,122,regions,122
-Latvia,Latvia,123,regions,123
-Lebanon,Lebanon,124,regions,124
-Lesotho,Lesotho,125,regions,125
-Liberia,Liberia,126,regions,126
-Libya,Libya,127,regions,127
-Liechtenstein,Liechtenstein,128,regions,128
-Lithuania,Lithuania,129,regions,129
-Luxembourg,Luxembourg,130,regions,130
-Macao,Macao,131,regions,131
-Macedonia,Macedonia (the former Yugoslav Republic of),132,regions,132
-Madagascar,Madagascar,133,regions,133
-Malawi,Malawi,134,regions,134
-Malaysia,Malaysia,135,regions,135
-Maldives,Maldives,136,regions,136
-Mali,Mali,137,regions,137
-Malta,Malta,138,regions,138
-Marshall_Islands,Marshall Islands,139,regions,139
-Martinique,Martinique,140,regions,140
-Mauritania,Mauritania,141,regions,141
-Mauritius,Mauritius,142,regions,142
-Mayotte,Mayotte,143,regions,143
-Mexico,Mexico,144,regions,144
-Micronesia,Micronesia (Federated States of),145,regions,145
-Moldova,Moldova (Republic of),146,regions,146
-Monaco,Monaco,147,regions,147
-Mongolia,Mongolia,148,regions,148
-Montenegro,Montenegro,149,regions,149
-Montserrat,Montserrat,150,regions,150
-Morocco,Morocco,151,regions,151
-Mozambique,Mozambique,152,regions,152
-Myanmar,Myanmar,153,regions,153
-Namibia,Namibia,154,regions,154
-Nauru,Nauru,155,regions,155
-Nepal,Nepal,156,regions,156
-Netherlands,Netherlands,157,regions,157
-New_Caledonia,New Caledonia,158,regions,159
-New_Zealand,New Zealand,159,regions,160
-Nicaragua,Nicaragua,160,regions,161
-Niger,Niger,161,regions,162
-Nigeria,Nigeria,162,regions,163
-Niue,Niue,163,regions,164
-Norfolk_Island,Norfolk Island,164,regions,165
-Northern_Mariana_Islands,Northern Mariana Islands,165,regions,166
-Norway,Norway,166,regions,167
-Oman,Oman,167,regions,168
-Pakistan,Pakistan,168,regions,169
-Palau,Palau,169,regions,170
-Palestinian_Territories,"Palestine, State of",170,regions,171
-Panama,Panama,171,regions,172
-Papua New Guinea,Papua New Guinea,172,regions,173
-Paraguay,Paraguay,173,regions,174
-Peru,Peru,174,regions,175
-Philippines,Philippines,175,regions,176
-Pitcairn_Islands,Pitcairn,176,regions,177
-Poland,Poland,177,regions,178
-Portugal,Portugal,178,regions,179
-Puerto_Rico,Puerto Rico,179,regions,180
-Qatar,Qatar,180,regions,181
-Reunion,Réunion,181,regions,184
-Romania,Romania,182,regions,185
-Russia,Russian Federation,183,regions,186
-Rwanda,Rwanda,184,regions,187
-Saint_Barthelemy,Saint Barthélemy,185,regions,NA
-Saint_Helena,"Saint Helena, Ascension and Tristan da Cunha",186,regions,188
-Saint_Kitts_and_Nevis,Saint Kitts and Nevis,187,regions,189
-Saint_Lucia,Saint Lucia,188,regions,190
-Saint_Martin,Saint Martin (French part),189,regions,NA
-Saint_Pierre_and_Miquelon,Saint Pierre and Miquelon,190,regions,191
-Saint_Vincent_and_the_Grenadines,Saint Vincent and the Grenadines,191,regions,192
-Samoa,Samoa,192,regions,193
-San_Marino,San Marino,193,regions,194
-Sao_Tome_and_Principe,Sao Tome and Principe,194,regions,195
-Saudi_Arabia,Saudi Arabia,195,regions,196
-Senegal,Senegal,196,regions,197
-Serbia,Serbia,197,regions,198
-Seychelles,Seychelles,198,regions,199
-Sierra_Leone,Sierra Leone,199,regions,200
-Singapore,Singapore,200,regions,201
-Saint_Maarten,Sint Maarten (Dutch part),201,regions,NA
-Slovakia,Slovakia,202,regions,202
-Slovenia,Slovenia,203,regions,203
-Solomon_Islands,Solomon Islands,204,regions,204
-Somalia,Somalia,205,regions,205
-South_Africa,South Africa,206,regions,206
-South_Georgia_and_the_South_Sandwich_Islands,South Georgia and the South Sandwich Islands,207,regions,207
-South_Sudan,South Sudan,208,regions,208
-Spain,Spain,209,regions,209
-Sri_Lanka,Sri Lanka,210,regions,210
-Sudan,Sudan,211,regions,212
-Suriname,Suriname,212,regions,213
-Svalbard_and_Jan_Mayen,Svalbard and Jan Mayen,213,regions,214
-Swaziland,Swaziland,214,regions,215
-Sweden,Sweden,215,regions,216
-Switzerland,Switzerland,216,regions,217
-Syrian_Arab_Republic,Syrian Arab Republic,217,regions,218
-Taiwan,"Taiwan, Province of China",218,regions,219
-Tajikistan,Tajikistan,219,regions,220
-Tanzania,"Tanzania, United Republic of",220,regions,221
-Thailand,Thailand,221,regions,222
-Timor_Leste,Timor-Leste,222,regions,223
-Togo,Togo,223,regions,224
-Tokelau,Tokelau,224,regions,225
-Tonga,Tonga,225,regions,226
-Trinidad_and_Tobago,Trinidad and Tobago,226,regions,227
-Tunisia,Tunisia,227,regions,228
-Turkey,Turkey,228,regions,229
-Turkmenistan,Turkmenistan,229,regions,230
-Turks_Caicos_Islands,Turks and Caicos Islands,230,regions,231
-Tuvalu,Tuvalu,231,regions,232
-Uganda,Uganda,232,regions,233
-Ukraine,Ukraine,233,regions,234
-United_Arab_Emirates,United Arab Emirates,234,regions,235
-United_Kingdom,United Kingdom of Great Britain and Northern Ireland,235,regions,236
-US_minor_outlying_islands,United States Minor Outlying Islands,237,regions,239
-USA,United States of America,236,regions,238
-Uruguay,Uruguay,238,regions,237
-Uzbekistan,Uzbekistan,239,regions,240
-Vanuatu,Vanuatu,240,regions,241
-Venezuela,Venezuela (Bolivarian Republic of),241,regions,243
-Vietnam,Viet Nam,242,regions,244
-Virgin_Islands_UK,Virgin Islands (British),243,regions,245
-Virgin_Islands_US,Virgin Islands (U.S.),244,regions,246
-Wallis_and_Futuna,Wallis and Futuna,245,regions,247
-Western_Sahara,Western Sahara,246,regions,248
-Yemen,Yemen,247,regions,249
-Zambia,Zambia,248,regions,250
-Zimbabwe,Zimbabwe,249,regions,251
+Democratic_Peoples_Republic_of_Korea,Korea (Democratic Peoples Republic of)",118,"regions",59
+"Democratic_Peoples_Republic_of_Korea","NKorea",144,"WTO",59
+"Democratic_Republic_ of_the_ Congo","DR_of_the_Congo",51,"coverage",60
+"Democratic_Republic_ of_the_ Congo","Democratic_Republic_ of_the_ Congo",NA,"database",60
+"Democratic_Republic_ of_the_ Congo","Democratic_Republic_ of_the_ Congo",NA,"database",60
+"Democratic_Republic_ of_the_ Congo","Democratic Republic of the Congo",51,"demography",60
+"Democratic_Republic_ of_the_ Congo","Congo (Kinshasa)",35,"Huang2013",60
+"Democratic_Republic_ of_the_ Congo","Congo [DRC]",50,"latitudes",60
+"Democratic_Republic_ of_the_ Congo","Congo (Democratic Republic of the)",52,"regions",60
+"Democratic_Republic_ of_the_ Congo","Congo_Dem_Rep",43,"WTO",60
+"Denmark","Denmark",37,"contacts",61
+"Denmark","Denmark",46,"coverage",61
+"Denmark","Denmark",53,"demography",61
+"Denmark","Denmark",42,"Huang2013",61
+"Denmark","Denmark",59,"latitudes",61
+"Denmark","Denmark",50,"OAG",61
+"Denmark","Denmark",50,"WTO",61
+"Djibouti","Djibouti",47,"coverage",62
+"Djibouti","Djibouti",54,"demography",62
+"Djibouti","Djibouti",43,"Huang2013",62
+"Djibouti","Djibouti",60,"latitudes",62
+"Djibouti","Djibouti",51,"OAG",62
+"Djibouti","Djibouti",51,"WTO",62
+"Dominica","Dominica",48,"coverage",63
+"Dominica","Dominica",61,"latitudes",63
+"Dominica","Dominica",52,"OAG",63
+"Dominica","Dominica",52,"WTO",63
+"Dominican_Republic","Dominican Republic",38,"contacts",64
+"Dominican_Republic","Dominican_Republic",49,"coverage",64
+"Dominican_Republic","Dominican Republic",55,"demography",64
+"Dominican_Republic","Dominican Republic",44,"Huang2013",64
+"Dominican_Republic","Dominican Republic",62,"latitudes",64
+"Dominican_Republic","Dominican_Republic",53,"OAG",64
+"Dominican_Republic","Dominican_Republic",53,"WTO",64
+"East_Timor","East_Timor",NA,"database",65
+"East_Timor","East_Timor",NA,"database",65
+"East_Timor","East Timor",45,"Huang2013",65
+"Ecuador","Ecuador",39,"contacts",66
+"Ecuador","Ecuador",52,"coverage",66
+"Ecuador","Ecuador",56,"demography",66
+"Ecuador","Ecuador",46,"Huang2013",66
+"Ecuador","Ecuador",63,"latitudes",66
+"Ecuador","Ecuador",54,"OAG",66
+"Ecuador","Ecuador",54,"WTO",66
+"Egypt","Egypt",40,"contacts",67
+"Egypt","Egypt",53,"coverage",67
+"Egypt","Egypt",57,"demography",67
+"Egypt","Egypt",47,"Huang2013",67
+"Egypt","Egypt",64,"latitudes",67
+"Egypt","Egypt",55,"OAG",67
+"Egypt","Egypt",55,"WTO",67
+"El_Salvador","El Salvador",41,"contacts",68
+"El_Salvador","El_Salvador",54,"coverage",68
+"El_Salvador","El Salvador",58,"demography",68
+"El_Salvador","El Salvador",65,"latitudes",68
+"El_Salvador","El_Salvador",56,"OAG",68
+"El_Salvador","El_Salvador",56,"WTO",68
+"Equatorial_Guinea","Equatorial_Guinea",55,"coverage",69
+"Equatorial_Guinea","Equatorial Guinea",59,"demography",69
+"Equatorial_Guinea","Equatorial Guinea",48,"Huang2013",69
+"Equatorial_Guinea","Equatorial Guinea",66,"latitudes",69
+"Equatorial_Guinea","Equatorial_Guinea",57,"OAG",69
+"Equatorial_Guinea","Equatorial_Guinea",57,"WTO",69
+"Eritrea","Eritrea",56,"coverage",70
+"Eritrea","Eritrea",60,"demography",70
+"Eritrea","Eritrea",49,"Huang2013",70
+"Eritrea","Eritrea",67,"latitudes",70
+"Eritrea","Eritrea",58,"OAG",70
+"Eritrea","Eritrea",58,"WTO",70
+"Estonia","Estonia",42,"contacts",71
+"Estonia","Estonia",57,"coverage",71
+"Estonia","Estonia",61,"demography",71
+"Estonia","Estonia",50,"Huang2013",71
+"Estonia","Estonia",68,"latitudes",71
+"Estonia","Estonia",59,"OAG",71
+"Estonia","Estonia",59,"WTO",71
+"Ethiopia","Ethiopia",43,"contacts",72
+"Ethiopia","Ethiopia",58,"coverage",72
+"Ethiopia","Ethiopia",62,"demography",72
+"Ethiopia","Ethiopia",51,"Huang2013",72
+"Ethiopia","Ethiopia",69,"latitudes",72
+"Ethiopia","Ethiopia",60,"OAG",72
+"Ethiopia","Ethiopia",60,"WTO",72
+"Falkland_Islands","Falkland_Islands",NA,"database",73
+"Falkland_Islands","Falkland Islands [Islas Malvinas]",70,"latitudes",73
+"Faroe_Islands","Faroe Islands",71,"latitudes",74
+"Faroe_Islands","Faroe_Islands",61,"OAG",74
+"Faroe_Islands","Faroe_Islands",61,"WTO",74
+"Fiji","Fiji",44,"contacts",75
+"Fiji","Fiji",59,"coverage",75
+"Fiji","Fiji",63,"demography",75
+"Fiji","Fiji",52,"Huang2013",75
+"Fiji","Fiji",72,"latitudes",75
+"Fiji","Fiji",62,"OAG",75
+"Fiji","Fiji",62,"WTO",75
+"Finland","Finland",45,"contacts",76
+"Finland","Finland",60,"coverage",76
+"Finland","Finland",64,"demography",76
+"Finland","Finland",53,"Huang2013",76
+"Finland","Finland",73,"latitudes",76
+"Finland","Finland",63,"OAG",76
+"Finland","Finland",63,"WTO",76
+"France","France",46,"contacts",77
+"France","France",61,"coverage",77
+"France","France",65,"demography",77
+"France","France",54,"Huang2013",77
+"France","France",74,"latitudes",77
+"France","France",64,"OAG",77
+"France","France",64,"WTO",77
+"French_Guiana","French Guiana",66,"demography",78
+"French_Guiana","French Guiana",75,"latitudes",78
+"French_Guiana","French_Guiana",65,"OAG",78
+"French_Guiana","French_Guiana",65,"WTO",78
+"French_Polynesia","French_Polynesia",62,"coverage",79
+"French_Polynesia","French Polynesia",67,"demography",79
+"French_Polynesia","French Polynesia",55,"Huang2013",79
+"French_Polynesia","French Polynesia",76,"latitudes",79
+"French_Polynesia","French_Polynesia",66,"OAG",79
+"French_Polynesia","French_Polynesia",66,"WTO",79
+"French_Southern_Territories","French_Southern_Territories",NA,"database",80
+"French_Southern_Territories","French Southern Territories",77,"latitudes",80
+"Gabon","Gabon",63,"coverage",81
+"Gabon","Gabon",68,"demography",81
+"Gabon","Gabon",56,"Huang2013",81
+"Gabon","Gabon",78,"latitudes",81
+"Gabon","Gabon",67,"OAG",81
+"Gabon","Gabon",67,"WTO",81
+"Gambia","Gambia",64,"coverage",82
+"Gambia","Gambia",69,"demography",82
+"Gambia","Gambia",79,"latitudes",82
+"Gambia","Gambia",68,"OAG",82
+"Gambia","Gambia",68,"WTO",82
+"Gaza_Strip","Gaza_Strip",NA,"database",83
+"Gaza_Strip","Gaza Strip",80,"latitudes",83
+"Georgia","Georgia",47,"contacts",84
+"Georgia","Georgia",65,"coverage",84
+"Georgia","Georgia",70,"demography",84
+"Georgia","Georgia",57,"Huang2013",84
+"Georgia","Georgia",81,"latitudes",84
+"Georgia","Georgia",69,"OAG",84
+"Georgia","Georgia",69,"WTO",84
+"Germany","Germany",48,"contacts",85
+"Germany","Germany",66,"coverage",85
+"Germany","Germany",71,"demography",85
+"Germany","Germany",58,"Huang2013",85
+"Germany","Germany",82,"latitudes",85
+"Germany","Germany",70,"OAG",85
+"Germany","Germany",70,"WTO",85
+"Ghana","Ghana",49,"contacts",86
+"Ghana","Ghana",67,"coverage",86
+"Ghana","Ghana",72,"demography",86
+"Ghana","Ghana",59,"Huang2013",86
+"Ghana","Ghana",83,"latitudes",86
+"Ghana","Ghana",71,"OAG",86
+"Ghana","Ghana",71,"WTO",86
+"Gibraltar","Gibraltar",84,"latitudes",87
+"Gibraltar","Gibraltar",72,"OAG",87
+"Gibraltar","Gibraltar",72,"WTO",87
+"Greece","Greece",50,"contacts",88
+"Greece","Greece",68,"coverage",88
+"Greece","Greece",73,"demography",88
+"Greece","Greece",60,"Huang2013",88
+"Greece","Greece",85,"latitudes",88
+"Greece","Greece",73,"OAG",88
+"Greece","Greece",73,"WTO",88
+"Greenland","Greenland",86,"latitudes",89
+"Greenland","Greenland",74,"OAG",89
+"Greenland","Greenland",74,"WTO",89
+"Grenada","Grenada",69,"coverage",90
+"Grenada","Grenada",74,"demography",90
+"Grenada","Grenada",87,"latitudes",90
+"Grenada","Grenada",75,"OAG",90
+"Grenada","Grenada",75,"WTO",90
+"Guadeloupe","Guadeloupe",75,"demography",91
+"Guadeloupe","Guadeloupe",61,"Huang2013",91
+"Guadeloupe","Guadeloupe",88,"latitudes",91
+"Guadeloupe","Guadeloupe",76,"OAG",91
+"Guadeloupe","Guadeloupe",76,"WTO",91
+"Guam","Guam",76,"demography",92
+"Guam","Guam",62,"Huang2013",92
+"Guam","Guam",89,"latitudes",92
+"Guam","Guam",77,"OAG",92
+"Guam","Guam",77,"WTO",92
+"Guatemala","Guatemala",51,"contacts",93
+"Guatemala","Guatemala",70,"coverage",93
+"Guatemala","Guatemala",77,"demography",93
+"Guatemala","Guatemala",63,"Huang2013",93
+"Guatemala","Guatemala",90,"latitudes",93
+"Guatemala","Guatemala",78,"OAG",93
+"Guatemala","Guatemala",78,"WTO",93
+"Guernsey","Guernsey",91,"latitudes",94
+"Guernsey","Guernsey",79,"OAG",94
+"Guernsey","Guernsey",79,"WTO",94
+"Guinea","Guinea",52,"contacts",95
+"Guinea","Guinea",71,"coverage",95
+"Guinea","Guinea",78,"demography",95
+"Guinea","Guinea",64,"Huang2013",95
+"Guinea","Guinea",92,"latitudes",95
+"Guinea","Guinea",80,"OAG",95
+"Guinea","Guinea",80,"WTO",95
+"Guinea-Bissau","Guinea-Bissau",72,"coverage",96
+"Guinea-Bissau","Guinea-Bissau",79,"demography",96
+"Guinea-Bissau","Guinea-Bissau",93,"latitudes",96
+"Guinea-Bissau","Guinea-Bissau",81,"OAG",96
+"Guinea-Bissau","Guinea-Bissau",81,"WTO",96
+"Guyana","Guyana",53,"contacts",97
+"Guyana","Guyana",73,"coverage",97
+"Guyana","Guyana",80,"demography",97
+"Guyana","Guyana",65,"Huang2013",97
+"Guyana","Guyana",94,"latitudes",97
+"Guyana","Guyana",82,"OAG",97
+"Guyana","Guyana",82,"WTO",97
+"Haiti","Haiti",54,"contacts",98
+"Haiti","Haiti",74,"coverage",98
+"Haiti","Haiti",81,"demography",98
+"Haiti","Haiti",66,"Huang2013",98
+"Haiti","Haiti",95,"latitudes",98
+"Haiti","Haiti",83,"OAG",98
+"Haiti","Haiti",83,"WTO",98
+"Heard_and_McDonald_Islands","Heard_and_McDonald_Islands",NA,"database",99
+"Heard_and_McDonald_Islands","Heard Island and McDonald Islands",96,"latitudes",99
+"Honduras","Honduras",55,"contacts",100
+"Honduras","Honduras",75,"coverage",100
+"Honduras","Honduras",82,"demography",100
+"Honduras","Honduras",67,"Huang2013",100
+"Honduras","Honduras",97,"latitudes",100
+"Honduras","Honduras",84,"OAG",100
+"Honduras","Honduras",84,"WTO",100
+"Hong_Kong","Hong Kong SAR, China",56,"contacts",101
+"Hong_Kong","Hong_Kong_(China)",76,"coverage",101
+"Hong_Kong","China, Hong Kong SAR",38,"demography",101
+"Hong_Kong","Hong Kong",68,"Huang2013",101
+"Hong_Kong","Hong Kong",98,"latitudes",101
+"Hong_Kong","Hong_Kong",85,"OAG",101
+"Hong_Kong","Hong_Kong",85,"WTO",101
+"Hungary","Hungary",57,"contacts",102
+"Hungary","Hungary",77,"coverage",102
+"Hungary","Hungary",83,"demography",102
+"Hungary","Hungary",69,"Huang2013",102
+"Hungary","Hungary",99,"latitudes",102
+"Hungary","Hungary",86,"OAG",102
+"Hungary","Hungary",86,"WTO",102
+"Iceland","Iceland",58,"contacts",103
+"Iceland","Iceland",78,"coverage",103
+"Iceland","Iceland",84,"demography",103
+"Iceland","Iceland",70,"Huang2013",103
+"Iceland","Iceland",100,"latitudes",103
+"Iceland","Iceland",87,"OAG",103
+"Iceland","Iceland",87,"WTO",103
+"India","India",59,"contacts",104
+"India","India",79,"coverage",104
+"India","India",85,"demography",104
+"India","India",71,"Huang2013",104
+"India","India",101,"latitudes",104
+"India","India",88,"OAG",104
+"India","India",88,"WTO",104
+"Indonesia","Indonesia",60,"contacts",105
+"Indonesia","Indonesia",80,"coverage",105
+"Indonesia","Indonesia",86,"demography",105
+"Indonesia","Indonesia",72,"Huang2013",105
+"Indonesia","Indonesia",102,"latitudes",105
+"Indonesia","Indonesia",89,"OAG",105
+"Indonesia","Indonesia",89,"WTO",105
+"Iran","Iran (Islamic Republic of)",61,"contacts",106
+"Iran","Iran_(Islamic_Republic_of)",81,"coverage",106
+"Iran","Iran (Islamic Republic of)",87,"demography",106
+"Iran","Iran",73,"Huang2013",106
+"Iran","Iran",103,"latitudes",106
+"Iran","Iran",90,"OAG",106
+"Iran","Iran",90,"WTO",106
+"Iraq","Iraq",62,"contacts",107
+"Iraq","Iraq",82,"coverage",107
+"Iraq","Iraq",88,"demography",107
+"Iraq","Iraq",74,"Huang2013",107
+"Iraq","Iraq",104,"latitudes",107
+"Iraq","Iraq",91,"OAG",107
+"Iraq","Iraq",91,"WTO",107
+"Ireland","Ireland",63,"contacts",108
+"Ireland","Ireland",83,"coverage",108
+"Ireland","Ireland",89,"demography",108
+"Ireland","Ireland",75,"Huang2013",108
+"Ireland","Ireland",105,"latitudes",108
+"Ireland","Ireland",92,"OAG",108
+"Ireland","Ireland",92,"WTO",108
+"Isle_of_Man","Isle of Man",106,"latitudes",109
+"Isle_of_Man","Isle_of_Man",93,"OAG",109
+"Isle_of_Man","Isle_of_Man",93,"WTO",109
+"Israel","Israel",64,"contacts",110
+"Israel","Israel",84,"coverage",110
+"Israel","Israel",90,"demography",110
+"Israel","Israel",76,"Huang2013",110
+"Israel","Israel",107,"latitudes",110
+"Israel","Israel",94,"OAG",110
+"Israel","Israel",94,"WTO",110
+"Italy","Italy",65,"contacts",111
+"Italy","Italy",85,"coverage",111
+"Italy","Italy",91,"demography",111
+"Italy","Italy",77,"Huang2013",111
+"Italy","Italy",108,"latitudes",111
+"Italy","Italy",95,"OAG",111
+"Italy","Italy",95,"WTO",111
+"Jamaica","Jamaica",66,"contacts",112
+"Jamaica","Jamaica",86,"coverage",112
+"Jamaica","Jamaica",92,"demography",112
+"Jamaica","Jamaica",78,"Huang2013",112
+"Jamaica","Jamaica",109,"latitudes",112
+"Jamaica","Jamaica",96,"OAG",112
+"Jamaica","Jamaica",96,"WTO",112
+"Japan","Japan",67,"contacts",113
+"Japan","Japan",87,"coverage",113
+"Japan","Japan",93,"demography",113
+"Japan","Japan",79,"Huang2013",113
+"Japan","Japan",110,"latitudes",113
+"Japan","Japan",97,"OAG",113
+"Japan","Japan",97,"WTO",113
+"Jersey","Jersey",111,"latitudes",114
+"Jersey","Jersey",98,"OAG",114
+"Jersey","Jersey",98,"WTO",114
+"Jordan","Jordan",68,"contacts",115
+"Jordan","Jordan",88,"coverage",115
+"Jordan","Jordan",94,"demography",115
+"Jordan","Jordan",80,"Huang2013",115
+"Jordan","Jordan",112,"latitudes",115
+"Jordan","Jordan",99,"OAG",115
+"Jordan","Jordan",99,"WTO",115
+"Kazakhstan","Kazakhstan",69,"contacts",116
+"Kazakhstan","Kazakhstan",89,"coverage",116
+"Kazakhstan","Kazakhstan",95,"demography",116
+"Kazakhstan","Kazakhstan",81,"Huang2013",116
+"Kazakhstan","Kazakhstan",113,"latitudes",116
+"Kazakhstan","Kazakhstan",100,"OAG",116
+"Kazakhstan","Kazakhstan",100,"WTO",116
+"Kenya","Kenya",70,"contacts",117
+"Kenya","Kenya",90,"coverage",117
+"Kenya","Kenya",96,"demography",117
+"Kenya","Kenya",82,"Huang2013",117
+"Kenya","Kenya",114,"latitudes",117
+"Kenya","Kenya",101,"OAG",117
+"Kenya","Kenya",101,"WTO",117
+"Kiribati","Kiribati",71,"contacts",118
+"Kiribati","Kiribati",91,"coverage",118
+"Kiribati","Kiribati",97,"demography",118
+"Kiribati","Kiribati",115,"latitudes",118
+"Kiribati","Kiribati",102,"OAG",118
+"Kiribati","Kiribati",102,"WTO",118
+"Kosovo","Kosovo",116,"latitudes",119
+"Kuwait","Kuwait",72,"contacts",120
+"Kuwait","Kuwait",92,"coverage",120
+"Kuwait","Kuwait",98,"demography",120
+"Kuwait","Kuwait",117,"latitudes",120
+"Kuwait","Kuwait",103,"OAG",120
+"Kuwait","Kuwait",120,"regions",120
+"Kuwait","Kuwait",103,"WTO",120
+"Kyrgyzstan","Kyrgyzstan",73,"contacts",121
+"Kyrgyzstan","Kyrgyzstan",93,"coverage",121
+"Kyrgyzstan","Kyrgyzstan",99,"demography",121
+"Kyrgyzstan","Kyrgyzstan",83,"Huang2013",121
+"Kyrgyzstan","Kyrgyzstan",118,"latitudes",121
+"Kyrgyzstan","Kyrgyzstan",104,"OAG",121
+"Kyrgyzstan","Kyrgyzstan",121,"regions",121
+"Kyrgyzstan","Kyrgyzstan",104,"WTO",121
+"Laos","Lao_People’s_Democratic_Republic",94,"coverage",122
+"Laos","Lao Peoples Democratic Republi,74,contacts,122
+Laos,Laos,84,Huang2013,122
+Laos,Lao Peoples Democratic Republic",100,"demography",122
+"Laos","Laos",119,"latitudes",122
+"Laos","Laos",105,"OAG",122
+"Laos","Lao Peoples Democratic Republic",122,"regions",122
+"Laos","Laos",105,"WTO",122
+"Latvia","Latvia",75,"contacts",123
+"Latvia","Latvia",95,"coverage",123
+"Latvia","Latvia",101,"demography",123
+"Latvia","Latvia",85,"Huang2013",123
+"Latvia","Latvia",120,"latitudes",123
+"Latvia","Latvia",106,"OAG",123
+"Latvia","Latvia",123,"regions",123
+"Latvia","Latvia",106,"WTO",123
+"Lebanon","Lebanon",76,"contacts",124
+"Lebanon","Lebanon",96,"coverage",124
+"Lebanon","Lebanon",102,"demography",124
+"Lebanon","Lebanon",86,"Huang2013",124
+"Lebanon","Lebanon",121,"latitudes",124
+"Lebanon","Lebanon",107,"OAG",124
+"Lebanon","Lebanon",124,"regions",124
+"Lebanon","Lebanon",107,"WTO",124
+"Lesotho","Lesotho",77,"contacts",125
+"Lesotho","Lesotho",97,"coverage",125
+"Lesotho","Lesotho",103,"demography",125
+"Lesotho","Lesotho",87,"Huang2013",125
+"Lesotho","Lesotho",122,"latitudes",125
+"Lesotho","Lesotho",108,"OAG",125
+"Lesotho","Lesotho",125,"regions",125
+"Lesotho","Lesotho",108,"WTO",125
+"Liberia","Liberia",78,"contacts",126
+"Liberia","Liberia",98,"coverage",126
+"Liberia","Liberia",104,"demography",126
+"Liberia","Liberia",88,"Huang2013",126
+"Liberia","Liberia",123,"latitudes",126
+"Liberia","Liberia",109,"OAG",126
+"Liberia","Liberia",126,"regions",126
+"Liberia","Liberia",109,"WTO",126
+"Libya","Libya",99,"coverage",127
+"Libya","Libya",105,"demography",127
+"Libya","Libya",89,"Huang2013",127
+"Libya","Libya",124,"latitudes",127
+"Libya","Libya",110,"OAG",127
+"Libya","Libya",127,"regions",127
+"Libya","Libya",110,"WTO",127
+"Liechtenstein","Liechtenstein",125,"latitudes",128
+"Liechtenstein","Liechtenstein",111,"OAG",128
+"Liechtenstein","Liechtenstein",128,"regions",128
+"Liechtenstein","Liechtenstein",111,"WTO",128
+"Lithuania","Lithuania",79,"contacts",129
+"Lithuania","Lithuania",100,"coverage",129
+"Lithuania","Lithuania",106,"demography",129
+"Lithuania","Lithuania",90,"Huang2013",129
+"Lithuania","Lithuania",126,"latitudes",129
+"Lithuania","Lithuania",112,"OAG",129
+"Lithuania","Lithuania",129,"regions",129
+"Lithuania","Lithuania",112,"WTO",129
+"Luxembourg","Luxembourg",80,"contacts",130
+"Luxembourg","Luxembourg",101,"coverage",130
+"Luxembourg","Luxembourg",107,"demography",130
+"Luxembourg","Luxembourg",127,"latitudes",130
+"Luxembourg","Luxembourg",113,"OAG",130
+"Luxembourg","Luxembourg",130,"regions",130
+"Luxembourg","Luxembourg",113,"WTO",130
+"Macao","Macao_(China)",102,"coverage",131
+"Macao","China, Macao SAR",39,"demography",131
+"Macao","Macau",91,"Huang2013",131
+"Macao","Macau",128,"latitudes",131
+"Macao","Macao",114,"OAG",131
+"Macao","Macao",131,"regions",131
+"Macao","Macao",114,"WTO",131
+"Macedonia","TFYR of Macedonia",133,"contacts",132
+"Macedonia","The_former_Yugoslav_Republic_of_Macedonia",172,"coverage",132
+"Macedonia","TFYR Macedonia",177,"demography",132
+"Macedonia","Macedonia",92,"Huang2013",132
+"Macedonia","Macedonia [FYROM]",129,"latitudes",132
+"Macedonia","Macedonia",115,"OAG",132
+"Macedonia","Macedonia (the former Yugoslav Republic of)",132,"regions",132
+"Macedonia","Macedonia",115,"WTO",132
+"Madagascar","Madagascar",103,"coverage",133
+"Madagascar","Madagascar",108,"demography",133
+"Madagascar","Madagascar",93,"Huang2013",133
+"Madagascar","Madagascar",130,"latitudes",133
+"Madagascar","Madagascar",116,"OAG",133
+"Madagascar","Madagascar",133,"regions",133
+"Madagascar","Madagascar",116,"WTO",133
+"Malawi","Malawi",104,"coverage",134
+"Malawi","Malawi",109,"demography",134
+"Malawi","Malawi",94,"Huang2013",134
+"Malawi","Malawi",131,"latitudes",134
+"Malawi","Malawi",117,"OAG",134
+"Malawi","Malawi",134,"regions",134
+"Malawi","Malawi",117,"WTO",134
+"Malaysia","Malaysia",81,"contacts",135
+"Malaysia","Malaysia",105,"coverage",135
+"Malaysia","Malaysia",110,"demography",135
+"Malaysia","Malaysia",95,"Huang2013",135
+"Malaysia","Malaysia",132,"latitudes",135
+"Malaysia","Malaysia",118,"OAG",135
+"Malaysia","Malaysia",135,"regions",135
+"Malaysia","Malaysia",118,"WTO",135
+"Maldives","Maldives",82,"contacts",136
+"Maldives","Maldives",106,"coverage",136
+"Maldives","Maldives",111,"demography",136
+"Maldives","Maldives",96,"Huang2013",136
+"Maldives","Maldives",133,"latitudes",136
+"Maldives","Maldives",119,"OAG",136
+"Maldives","Maldives",136,"regions",136
+"Maldives","Maldives",119,"WTO",136
+"Mali","Mali",107,"coverage",137
+"Mali","Mali",112,"demography",137
+"Mali","Mali",97,"Huang2013",137
+"Mali","Mali",134,"latitudes",137
+"Mali","Mali",120,"OAG",137
+"Mali","Mali",137,"regions",137
+"Mali","Mali",120,"WTO",137
+"Malta","Malta",83,"contacts",138
+"Malta","Malta",108,"coverage",138
+"Malta","Malta",113,"demography",138
+"Malta","Malta",98,"Huang2013",138
+"Malta","Malta",135,"latitudes",138
+"Malta","Malta",121,"OAG",138
+"Malta","Malta",138,"regions",138
+"Malta","Malta",121,"WTO",138
+"Marshall_Islands","Marshall_Islands",109,"coverage",139
+"Marshall_Islands","Marshall Islands",136,"latitudes",139
+"Marshall_Islands","Marshall_Islands",122,"OAG",139
+"Marshall_Islands","Marshall Islands",139,"regions",139
+"Marshall_Islands","Marshall_Islands",122,"WTO",139
+"Martinique","Martinique",114,"demography",140
+"Martinique","Martinique",137,"latitudes",140
+"Martinique","Martinique",123,"OAG",140
+"Martinique","Martinique",140,"regions",140
+"Martinique","Martinique",123,"WTO",140
+"Mauritania","Mauritania",84,"contacts",141
+"Mauritania","Mauritania",110,"coverage",141
+"Mauritania","Mauritania",115,"demography",141
+"Mauritania","Mauritania",99,"Huang2013",141
+"Mauritania","Mauritania",138,"latitudes",141
+"Mauritania","Mauritania",124,"OAG",141
+"Mauritania","Mauritania",141,"regions",141
+"Mauritania","Mauritania",124,"WTO",141
+"Mauritius","Mauritius",85,"contacts",142
+"Mauritius","Mauritius",111,"coverage",142
+"Mauritius","Mauritius",116,"demography",142
+"Mauritius","Mauritius",139,"latitudes",142
+"Mauritius","Mauritius",125,"OAG",142
+"Mauritius","Mauritius",142,"regions",142
+"Mauritius","Mauritius",125,"WTO",142
+"Mayotte","Mayotte",117,"demography",143
+"Mayotte","Mayotte",140,"latitudes",143
+"Mayotte","Mayotte",143,"regions",143
+"Mexico","Mexico",86,"contacts",144
+"Mexico","Mexico",112,"coverage",144
+"Mexico","Mexico",118,"demography",144
+"Mexico","Mexico",100,"Huang2013",144
+"Mexico","Mexico",141,"latitudes",144
+"Mexico","Mexico",126,"OAG",144
+"Mexico","Mexico",144,"regions",144
+"Mexico","Mexico",126,"WTO",144
+"Micronesia","Micronesia_(Federated_States_of)",113,"coverage",145
+"Micronesia","Micronesia (Fed. States of)",119,"demography",145
+"Micronesia","Micronesia",142,"latitudes",145
+"Micronesia","Micronesia",127,"OAG",145
+"Micronesia","Micronesia (Federated States of)",145,"regions",145
+"Micronesia","Micronesia",127,"WTO",145
+"Moldova","Republic_of_Moldova",141,"coverage",146
+"Moldova","Republic of Moldova",146,"demography",146
+"Moldova","Moldova",101,"Huang2013",146
+"Moldova","Moldova",143,"latitudes",146
+"Moldova","Moldova",128,"OAG",146
+"Moldova","Moldova (Republic of)",146,"regions",146
+"Moldova","Moldova",128,"WTO",146
+"Monaco","Monaco",87,"contacts",147
+"Monaco","Monaco",114,"coverage",147
+"Monaco","Monaco",144,"latitudes",147
+"Monaco","Monaco",129,"OAG",147
+"Monaco","Monaco",147,"regions",147
+"Monaco","Monaco",129,"WTO",147
+"Mongolia","Mongolia",88,"contacts",148
+"Mongolia","Mongolia",115,"coverage",148
+"Mongolia","Mongolia",120,"demography",148
+"Mongolia","Mongolia",102,"Huang2013",148
+"Mongolia","Mongolia",145,"latitudes",148
+"Mongolia","Mongolia",130,"OAG",148
+"Mongolia","Mongolia",148,"regions",148
+"Mongolia","Mongolia",130,"WTO",148
+"Montenegro","Montenegro",89,"contacts",149
+"Montenegro","Montenegro",116,"coverage",149
+"Montenegro","Montenegro",121,"demography",149
+"Montenegro","Montenegro",103,"Huang2013",149
+"Montenegro","Montenegro",146,"latitudes",149
+"Montenegro","Montenegro",149,"regions",149
+"Montserrat","Montserrat",147,"latitudes",150
+"Montserrat","Montserrat",131,"OAG",150
+"Montserrat","Montserrat",150,"regions",150
+"Montserrat","Montserrat",131,"WTO",150
+"Morocco","Morocco",90,"contacts",151
+"Morocco","Morocco",117,"coverage",151
+"Morocco","Morocco",122,"demography",151
+"Morocco","Morocco",104,"Huang2013",151
+"Morocco","Morocco",148,"latitudes",151
+"Morocco","Morocco",132,"OAG",151
+"Morocco","Morocco",151,"regions",151
+"Morocco","Morocco",132,"WTO",151
+"Mozambique","Mozambique",91,"contacts",152
+"Mozambique","Mozambique",118,"coverage",152
+"Mozambique","Mozambique",123,"demography",152
+"Mozambique","Mozambique",105,"Huang2013",152
+"Mozambique","Mozambique",149,"latitudes",152
+"Mozambique","Mozambique",133,"OAG",152
+"Mozambique","Mozambique",152,"regions",152
+"Mozambique","Mozambique",133,"WTO",152
+"Myanmar","Myanmar",119,"coverage",153
+"Myanmar","Myanmar",124,"demography",153
+"Myanmar","Myanmar [Burma]",150,"latitudes",153
+"Myanmar","Myanmar",153,"regions",153
+"Namibia","Namibia",92,"contacts",154
+"Namibia","Namibia",120,"coverage",154
+"Namibia","Namibia",125,"demography",154
+"Namibia","Namibia",106,"Huang2013",154
+"Namibia","Namibia",151,"latitudes",154
+"Namibia","Namibia",134,"OAG",154
+"Namibia","Namibia",154,"regions",154
+"Namibia","Namibia",134,"WTO",154
+"Nauru","Nauru",152,"latitudes",155
+"Nauru","Nauru",155,"regions",155
+"Nepal","Nepal",93,"contacts",156
+"Nepal","Nepal",121,"coverage",156
+"Nepal","Nepal",126,"demography",156
+"Nepal","Nepal",107,"Huang2013",156
+"Nepal","Nepal",153,"latitudes",156
+"Nepal","Nepal",135,"OAG",156
+"Nepal","Nepal",156,"regions",156
+"Nepal","Nepal",135,"WTO",156
+"Netherlands","Netherlands",94,"contacts",157
+"Netherlands","Netherlands",122,"coverage",157
+"Netherlands","Netherlands",127,"demography",157
+"Netherlands","Netherlands",108,"Huang2013",157
+"Netherlands","Netherlands",154,"latitudes",157
+"Netherlands","Netherlands",136,"OAG",157
+"Netherlands","Netherlands",157,"regions",157
+"Netherlands","Netherlands",136,"WTO",157
+"Netherlands_Antilles","Netherlands Antilles",155,"latitudes",158
+"Netherlands_Antilles","Netherlands_Antilles",137,"OAG",158
+"Netherlands_Antilles","Netherlands_Antilles",137,"WTO",158
+"New_Caledonia","New_Caledonia",123,"coverage",159
+"New_Caledonia","New Caledonia",128,"demography",159
+"New_Caledonia","New Caledonia",156,"latitudes",159
+"New_Caledonia","New_Caledonia",138,"OAG",159
+"New_Caledonia","New Caledonia",158,"regions",159
+"New_Caledonia","New_Caledonia",138,"WTO",159
+"New_Zealand","New Zealand",95,"contacts",160
+"New_Zealand","New_Zealand",124,"coverage",160
+"New_Zealand","New Zealand",129,"demography",160
+"New_Zealand","New Zealand",109,"Huang2013",160
+"New_Zealand","New Zealand",157,"latitudes",160
+"New_Zealand","New_Zealand",140,"OAG",160
+"New_Zealand","New Zealand",159,"regions",160
+"New_Zealand","New_Zealand",140,"WTO",160
+"Nicaragua","Nicaragua",96,"contacts",161
+"Nicaragua","Nicaragua",125,"coverage",161
+"Nicaragua","Nicaragua",130,"demography",161
+"Nicaragua","Nicaragua",110,"Huang2013",161
+"Nicaragua","Nicaragua",158,"latitudes",161
+"Nicaragua","Nicaragua",141,"OAG",161
+"Nicaragua","Nicaragua",160,"regions",161
+"Nicaragua","Nicaragua",141,"WTO",161
+"Niger","Niger",97,"contacts",162
+"Niger","Niger",126,"coverage",162
+"Niger","Niger",131,"demography",162
+"Niger","Niger",111,"Huang2013",162
+"Niger","Niger",159,"latitudes",162
+"Niger","Niger",142,"OAG",162
+"Niger","Niger",161,"regions",162
+"Niger","Niger",142,"WTO",162
+"Nigeria","Nigeria",98,"contacts",163
+"Nigeria","Nigeria",127,"coverage",163
+"Nigeria","Nigeria",132,"demography",163
+"Nigeria","Nigeria",112,"Huang2013",163
+"Nigeria","Nigeria",160,"latitudes",163
+"Nigeria","Nigeria",143,"OAG",163
+"Nigeria","Nigeria",162,"regions",163
+"Nigeria","Nigeria",143,"WTO",163
+"Niue","Niue",161,"latitudes",164
+"Niue","Niue",163,"regions",164
+"Norfolk_Island","Norfolk_Island",NA,"database",165
+"Norfolk_Island","Norfolk Island",162,"latitudes",165
+"Norfolk_Island","Norfolk Island",164,"regions",165
+"Northern_Mariana_Islands","Northern Mariana Islands",164,"latitudes",166
+"Northern_Mariana_Islands","Northern_Mariana_Islands",145,"OAG",166
+"Northern_Mariana_Islands","Northern Mariana Islands",165,"regions",166
+"Northern_Mariana_Islands","Northern_Mariana_Islands",145,"WTO",166
+"Norway","Norway",128,"coverage",167
+"Norway","Norway",133,"demography",167
+"Norway","Norway",114,"Huang2013",167
+"Norway","Norway",165,"latitudes",167
+"Norway","Norway",146,"OAG",167
+"Norway","Norway",166,"regions",167
+"Norway","Norway",146,"WTO",167
+"Oman","Oman",99,"contacts",168
+"Oman","Oman",129,"coverage",168
+"Oman","Oman",134,"demography",168
+"Oman","Oman",115,"Huang2013",168
+"Oman","Oman",166,"latitudes",168
+"Oman","Oman",147,"OAG",168
+"Oman","Oman",167,"regions",168
+"Oman","Oman",147,"WTO",168
+"Pakistan","Pakistan",100,"contacts",169
+"Pakistan","Pakistan",130,"coverage",169
+"Pakistan","Pakistan",135,"demography",169
+"Pakistan","Pakistan",116,"Huang2013",169
+"Pakistan","Pakistan",167,"latitudes",169
+"Pakistan","Pakistan",148,"OAG",169
+"Pakistan","Pakistan",168,"regions",169
+"Pakistan","Pakistan",148,"WTO",169
+"Palau","Palau",131,"coverage",170
+"Palau","Palau",168,"latitudes",170
+"Palau","Palau",149,"OAG",170
+"Palau","Palau",169,"regions",170
+"Palau","Palau",149,"WTO",170
+"Palestinian_Territories","Palestinian_Territories",NA,"database",171
+"Palestinian_Territories","Palestinian_Territories",NA,"database",171
+"Palestinian_Territories","Palestinian Territories",169,"latitudes",171
+"Palestinian_Territories","Palest_Territory",150,"OAG",171
+"Palestinian_Territories","Palestine, State of",170,"regions",171
+"Palestinian_Territories","Palest_Territory",150,"WTO",171
+"Panama","Panama",101,"contacts",172
+"Panama","Panama",132,"coverage",172
+"Panama","Panama",136,"demography",172
+"Panama","Panama",117,"Huang2013",172
+"Panama","Panama",170,"latitudes",172
+"Panama","Panama",151,"OAG",172
+"Panama","Panama",171,"regions",172
+"Panama","Panama",151,"WTO",172
+"Papua New Guinea","Papua_New_Guinea",133,"coverage",173
+"Papua New Guinea","Papua New Guinea",137,"demography",173
+"Papua New Guinea","Papua New Guinea",118,"Huang2013",173
+"Papua New Guinea","Papua New Guinea",171,"latitudes",173
+"Papua New Guinea","New_Guinea",139,"OAG",173
+"Papua New Guinea","Papua New Guinea",172,"regions",173
+"Papua New Guinea","New_Guinea",139,"WTO",173
+"Paraguay","Paraguay",102,"contacts",174
+"Paraguay","Paraguay",134,"coverage",174
+"Paraguay","Paraguay",138,"demography",174
+"Paraguay","Paraguay",119,"Huang2013",174
+"Paraguay","Paraguay",172,"latitudes",174
+"Paraguay","Paraguay",152,"OAG",174
+"Paraguay","Paraguay",173,"regions",174
+"Paraguay","Paraguay",152,"WTO",174
+"Peru","Peru",103,"contacts",175
+"Peru","Peru",135,"coverage",175
+"Peru","Peru",139,"demography",175
+"Peru","Peru",120,"Huang2013",175
+"Peru","Peru",173,"latitudes",175
+"Peru","Peru",153,"OAG",175
+"Peru","Peru",174,"regions",175
+"Peru","Peru",153,"WTO",175
+"Philippines","Philippines",104,"contacts",176
+"Philippines","Philippines",136,"coverage",176
+"Philippines","Philippines",140,"demography",176
+"Philippines","Philippines",121,"Huang2013",176
+"Philippines","Philippines",174,"latitudes",176
+"Philippines","Philippines",154,"OAG",176
+"Philippines","Philippines",175,"regions",176
+"Philippines","Philippines",154,"WTO",176
+"Pitcairn_Islands","Pitcairn_Islands",NA,"database",177
+"Pitcairn_Islands","Pitcairn Islands",175,"latitudes",177
+"Pitcairn_Islands","Pitcairn",176,"regions",177
+"Poland","Poland",105,"contacts",178
+"Poland","Poland",137,"coverage",178
+"Poland","Poland",141,"demography",178
+"Poland","Poland",122,"Huang2013",178
+"Poland","Poland",176,"latitudes",178
+"Poland","Poland",155,"OAG",178
+"Poland","Poland",177,"regions",178
+"Poland","Poland",155,"WTO",178
+"Portugal","Portugal",106,"contacts",179
+"Portugal","Portugal",138,"coverage",179
+"Portugal","Portugal",142,"demography",179
+"Portugal","Portugal",123,"Huang2013",179
+"Portugal","Portugal",177,"latitudes",179
+"Portugal","Portugal",156,"OAG",179
+"Portugal","Portugal",178,"regions",179
+"Portugal","Portugal",156,"WTO",179
+"Puerto_Rico","Puerto Rico",143,"demography",180
+"Puerto_Rico","Puerto Rico",124,"Huang2013",180
+"Puerto_Rico","Puerto Rico",178,"latitudes",180
+"Puerto_Rico","Puerto_Rico",157,"OAG",180
+"Puerto_Rico","Puerto Rico",179,"regions",180
+"Puerto_Rico","Puerto_Rico",157,"WTO",180
+"Qatar","Qatar",107,"contacts",181
+"Qatar","Qatar",139,"coverage",181
+"Qatar","Qatar",144,"demography",181
+"Qatar","Qatar",125,"Huang2013",181
+"Qatar","Qatar",179,"latitudes",181
+"Qatar","Qatar",180,"regions",181
+"Qatar","Qatar",158,"WTO",181
+"Republic_of_Congo","Congo",32,"contacts",182
+"Republic_of_Congo","Congo",39,"coverage",182
+"Republic_of_Congo","Republic_of_Congo",NA,"database",182
+"Republic_of_Congo","Republic_of_Congo",NA,"database",182
+"Republic_of_Congo","Congo",43,"demography",182
+"Republic_of_Congo","Congo (Brazzaville)",34,"Huang2013",182
+"Republic_of_Congo","Congo [Republic]",51,"latitudes",182
+"Republic_of_Congo","Congo_Brazzaville",42,"OAG",182
+"Republic_of_Congo","Congo",51,"regions",182
+"Republic_of_Congo","Congo_Brazzaville",42,"WTO",182
+"Republic_of_Korea","Republic of Korea",108,"contacts",183
+"Republic_of_Korea","Republic_of_Korea",140,"coverage",183
+"Republic_of_Korea","Republic_of_Korea",NA,"database",183
+"Republic_of_Korea","Republic_of_Korea",NA,"database",183
+"Republic_of_Korea","Republic of Korea",145,"demography",183
+"Republic_of_Korea","South Korea",141,"Huang2013",183
+"Republic_of_Korea","South Korea",204,"latitudes",183
+"Republic_of_Korea","Skorea",171,"OAG",183
+"Republic_of_Korea","Korea (Republic of)",119,"regions",183
+"Republic_of_Korea","Skorea",172,"WTO",183
+"Reunion","Réunion",147,"demography",184
+"Reunion","Reunion",126,"Huang2013",184
+"Reunion","Réunion",180,"latitudes",184
+"Reunion","Reunion",158,"OAG",184
+"Reunion","Réunion",181,"regions",184
+"Reunion","Reunion",159,"WTO",184
+"Romania","Romania",109,"contacts",185
+"Romania","Romania",142,"coverage",185
+"Romania","Romania",148,"demography",185
+"Romania","Romania",127,"Huang2013",185
+"Romania","Romania",181,"latitudes",185
+"Romania","Romania",159,"OAG",185
+"Romania","Romania",182,"regions",185
+"Romania","Romania",160,"WTO",185
+"Russia","Russian Federation",110,"contacts",186
+"Russia","Russian_Federation",143,"coverage",186
+"Russia","Russian Federation",149,"demography",186
+"Russia","Russia",128,"Huang2013",186
+"Russia","Russia",182,"latitudes",186
+"Russia","Russia",160,"OAG",186
+"Russia","Russian Federation",183,"regions",186
+"Russia","Russia",161,"WTO",186
+"Rwanda","Rwanda",111,"contacts",187
+"Rwanda","Rwanda",144,"coverage",187
+"Rwanda","Rwanda",150,"demography",187
+"Rwanda","Rwanda",129,"Huang2013",187
+"Rwanda","Rwanda",183,"latitudes",187
+"Rwanda","Rwanda",161,"OAG",187
+"Rwanda","Rwanda",184,"regions",187
+"Rwanda","Rwanda",162,"WTO",187
+"Saint_Helena","Saint_Helena",NA,"database",188
+"Saint_Helena","Saint Helena",184,"latitudes",188
+"Saint_Helena","Saint Helena, Ascension and Tristan da Cunha",186,"regions",188
+"Saint_Kitts_and_Nevis","Saint_Kitts_and_Nevis",NA,"database",189
+"Saint_Kitts_and_Nevis","Saint_Kitts_and_Nevis",NA,"database",189
+"Saint_Kitts_and_Nevis","Saint Kitts and Nevis",185,"latitudes",189
+"Saint_Kitts_and_Nevis","St_Kitts__Nevis",178,"OAG",189
+"Saint_Kitts_and_Nevis","Saint Kitts and Nevis",187,"regions",189
+"Saint_Kitts_and_Nevis","St_Kitts__Nevis",179,"WTO",189
+"Saint_Lucia","Saint Lucia",112,"contacts",190
+"Saint_Lucia","St._Lucia",162,"coverage",190
+"Saint_Lucia","Saint_Lucia",NA,"database",190
+"Saint_Lucia","Saint_Lucia",NA,"database",190
+"Saint_Lucia","Saint Lucia",151,"demography",190
+"Saint_Lucia","Saint Lucia",186,"latitudes",190
+"Saint_Lucia","St_Lucia",179,"OAG",190
+"Saint_Lucia","Saint Lucia",188,"regions",190
+"Saint_Lucia","St_Lucia",180,"WTO",190
+"Saint_Pierre_and_Miquelon","Saint_Pierre_and_Miquelon",NA,"database",191
+"Saint_Pierre_and_Miquelon","Saint Pierre and Miquelon",187,"latitudes",191
+"Saint_Pierre_and_Miquelon","Saint Pierre and Miquelon",190,"regions",191
+"Saint_Vincent_and_the_Grenadines","St._Vincent_The_Grenadines",163,"coverage",192
+"Saint_Vincent_and_the_Grenadines","Saint_Vincent_and_the_Grenadines",NA,"database",192
+"Saint_Vincent_and_the_Grenadines","Saint_Vincent_and_the_Grenadines",NA,"database",192
+"Saint_Vincent_and_the_Grenadines","Saint Vincent and the Grenadines",152,"demography",192
+"Saint_Vincent_and_the_Grenadines","Saint Vincent and the Grenadines",188,"latitudes",192
+"Saint_Vincent_and_the_Grenadines","St_Vincent_The_Grenadines",180,"OAG",192
+"Saint_Vincent_and_the_Grenadines","Saint Vincent and the Grenadines",191,"regions",192
+"Saint_Vincent_and_the_Grenadines","St_Vincent_The_Grenadines",181,"WTO",192
+"Samoa","Samoa",113,"contacts",193
+"Samoa","Samoa",145,"coverage",193
+"Samoa","Samoa",153,"demography",193
+"Samoa","Samoa",189,"latitudes",193
+"Samoa","Samoa",162,"OAG",193
+"Samoa","Samoa",192,"regions",193
+"Samoa","Samoa",163,"WTO",193
+"San_Marino","San_Marino",146,"coverage",194
+"San_Marino","San Marino",190,"latitudes",194
+"San_Marino","San_Marino",163,"OAG",194
+"San_Marino","San Marino",193,"regions",194
+"San_Marino","San_Marino",164,"WTO",194
+"Sao_Tome_and_Principe","Sao Tome and Principe ",114,"contacts",195
+"Sao_Tome_and_Principe","Sao_Tome_and_Principe",147,"coverage",195
+"Sao_Tome_and_Principe","Sao_Tome_and_Principe",NA,"database",195
+"Sao_Tome_and_Principe","Sao_Tome_and_Principe",NA,"database",195
+"Sao_Tome_and_Principe","Sao Tome and Principe",154,"demography",195
+"Sao_Tome_and_Principe","Sao Tome and Principe",130,"Huang2013",195
+"Sao_Tome_and_Principe","São Tomé and Príncipe",191,"latitudes",195
+"Sao_Tome_and_Principe","Sao_Tome_Principe",164,"OAG",195
+"Sao_Tome_and_Principe","Sao Tome and Principe",194,"regions",195
+"Sao_Tome_and_Principe","Sao_Tome_Principe",165,"WTO",195
+"Saudi_Arabia","Saudi Arabia",115,"contacts",196
+"Saudi_Arabia","Saudi_Arabia",148,"coverage",196
+"Saudi_Arabia","Saudi Arabia",155,"demography",196
+"Saudi_Arabia","Saudi Arabia",131,"Huang2013",196
+"Saudi_Arabia","Saudi Arabia",192,"latitudes",196
+"Saudi_Arabia","Saudi_Arabia",165,"OAG",196
+"Saudi_Arabia","Saudi Arabia",195,"regions",196
+"Saudi_Arabia","Saudi_Arabia",166,"WTO",196
+"Senegal","Senegal",116,"contacts",197
+"Senegal","Senegal",149,"coverage",197
+"Senegal","Senegal",156,"demography",197
+"Senegal","Senegal",132,"Huang2013",197
+"Senegal","Senegal",193,"latitudes",197
+"Senegal","Senegal",166,"OAG",197
+"Senegal","Senegal",196,"regions",197
+"Senegal","Senegal",167,"WTO",197
+"Serbia","Serbia",117,"contacts",198
+"Serbia","Serbia",150,"coverage",198
+"Serbia","Serbia",157,"demography",198
+"Serbia","Serbia",133,"Huang2013",198
+"Serbia","Serbia",194,"latitudes",198
+"Serbia","Serbia",167,"OAG",198
+"Serbia","Serbia",197,"regions",198
+"Serbia","Serbia",168,"WTO",198
+"Seychelles","Seychelles",118,"contacts",199
+"Seychelles","Seychelles",151,"coverage",199
+"Seychelles","Seychelles",158,"demography",199
+"Seychelles","Seychelles",195,"latitudes",199
+"Seychelles","Seychelles",168,"OAG",199
+"Seychelles","Seychelles",198,"regions",199
+"Seychelles","Seychelles",169,"WTO",199
+"Sierra_Leone","Sierra Leone",119,"contacts",200
+"Sierra_Leone","Sierra_Leone",152,"coverage",200
+"Sierra_Leone","Sierra Leone",159,"demography",200
+"Sierra_Leone","Sierra Leone",134,"Huang2013",200
+"Sierra_Leone","Sierra Leone",196,"latitudes",200
+"Sierra_Leone","Sierra_Leone",169,"OAG",200
+"Sierra_Leone","Sierra Leone",199,"regions",200
+"Sierra_Leone","Sierra_Leone",170,"WTO",200
+"Singapore","Singapore",120,"contacts",201
+"Singapore","Singapore",153,"coverage",201
+"Singapore","Singapore",160,"demography",201
+"Singapore","Singapore",135,"Huang2013",201
+"Singapore","Singapore",197,"latitudes",201
+"Singapore","Singapore",170,"OAG",201
+"Singapore","Singapore",200,"regions",201
+"Singapore","Singapore",171,"WTO",201
+"Slovakia","Slovakia",121,"contacts",202
+"Slovakia","Slovakia",154,"coverage",202
+"Slovakia","Slovakia",161,"demography",202
+"Slovakia","Slovakia",136,"Huang2013",202
+"Slovakia","Slovakia",198,"latitudes",202
+"Slovakia","Slovakia",172,"OAG",202
+"Slovakia","Slovakia",202,"regions",202
+"Slovakia","Slovakia",173,"WTO",202
+"Slovenia","Slovenia",122,"contacts",203
+"Slovenia","Slovenia",155,"coverage",203
+"Slovenia","Slovenia",162,"demography",203
+"Slovenia","Slovenia",137,"Huang2013",203
+"Slovenia","Slovenia",199,"latitudes",203
+"Slovenia","Slovenia",173,"OAG",203
+"Slovenia","Slovenia",203,"regions",203
+"Slovenia","Slovenia",174,"WTO",203
+"Solomon_Islands","Solomon Islands",123,"contacts",204
+"Solomon_Islands","Solomon_Islands",156,"coverage",204
+"Solomon_Islands","Solomon_Islands",NA,"database",204
+"Solomon_Islands","Solomon_Islands",NA,"database",204
+"Solomon_Islands","Solomon Islands",163,"demography",204
+"Solomon_Islands","Solomon Islands",138,"Huang2013",204
+"Solomon_Islands","Solomon Islands",200,"latitudes",204
+"Solomon_Islands","Solomon Islands",204,"regions",204
+"Somalia","Somalia",157,"coverage",205
+"Somalia","Somalia",164,"demography",205
+"Somalia","Somalia",139,"Huang2013",205
+"Somalia","Somalia",201,"latitudes",205
+"Somalia","Somalia",174,"OAG",205
+"Somalia","Somalia",205,"regions",205
+"Somalia","Somalia",175,"WTO",205
+"South_Africa","South Africa",124,"contacts",206
+"South_Africa","South_Africa",158,"coverage",206
+"South_Africa","South Africa",165,"demography",206
+"South_Africa","South Africa",140,"Huang2013",206
+"South_Africa","South Africa",202,"latitudes",206
+"South_Africa","South_Africa",175,"OAG",206
+"South_Africa","South Africa",206,"regions",206
+"South_Africa","South_Africa",176,"WTO",206
+"South_Georgia_and_the_South_Sandwich_Islands","South_Georgia_and_the_South_Sandwich_Islands",NA,"database",207
+"South_Georgia_and_the_South_Sandwich_Islands","South Georgia and the South Sandwich Islands",203,"latitudes",207
+"South_Georgia_and_the_South_Sandwich_Islands","South Georgia and the South Sandwich Islands",207,"regions",207
+"South_Sudan","South_Sudan",159,"coverage",208
+"South_Sudan","South_Sudan",NA,"database",208
+"South_Sudan","South_Sudan",NA,"database",208
+"South_Sudan","South Sudan",166,"demography",208
+"South_Sudan","South Sudan",208,"regions",208
+"Spain","Spain",125,"contacts",209
+"Spain","Spain",160,"coverage",209
+"Spain","Spain",167,"demography",209
+"Spain","Spain",142,"Huang2013",209
+"Spain","Spain",205,"latitudes",209
+"Spain","Spain",176,"OAG",209
+"Spain","Spain",209,"regions",209
+"Spain","Spain",177,"WTO",209
+"Sri_Lanka","Sri Lanka",126,"contacts",210
+"Sri_Lanka","Sri_Lanka",161,"coverage",210
+"Sri_Lanka","Sri Lanka",168,"demography",210
+"Sri_Lanka","Sri Lanka",143,"Huang2013",210
+"Sri_Lanka","Sri Lanka",206,"latitudes",210
+"Sri_Lanka","Sri_Lanka",177,"OAG",210
+"Sri_Lanka","Sri Lanka",210,"regions",210
+"Sri_Lanka","Sri_Lanka",178,"WTO",210
+"State_of_Palestine","State_of_Palestine",NA,"database",211
+"State_of_Palestine","State_of_Palestine",NA,"database",211
+"State_of_Palestine","State of Palestine",169,"demography",211
+"Sudan","Sudan",164,"coverage",212
+"Sudan","Sudan",170,"demography",212
+"Sudan","Sudan",144,"Huang2013",212
+"Sudan","Sudan",207,"latitudes",212
+"Sudan","Sudan",181,"OAG",212
+"Sudan","Sudan",211,"regions",212
+"Sudan","Sudan",182,"WTO",212
+"Suriname","Suriname",127,"contacts",213
+"Suriname","Suriname",165,"coverage",213
+"Suriname","Suriname",171,"demography",213
+"Suriname","Suriname",145,"Huang2013",213
+"Suriname","Suriname",208,"latitudes",213
+"Suriname","Suriname",182,"OAG",213
+"Suriname","Suriname",212,"regions",213
+"Suriname","Suriname",183,"WTO",213
+"Svalbard_and_Jan_Mayen","Svalbard_and_Jan_Mayen",NA,"database",214
+"Svalbard_and_Jan_Mayen","Svalbard and Jan Mayen",209,"latitudes",214
+"Svalbard_and_Jan_Mayen","Svalbard and Jan Mayen",213,"regions",214
+"Swaziland","Swaziland",166,"coverage",215
+"Swaziland","Swaziland",172,"demography",215
+"Swaziland","Swaziland",146,"Huang2013",215
+"Swaziland","Swaziland",210,"latitudes",215
+"Swaziland","Swaziland",183,"OAG",215
+"Swaziland","Swaziland",214,"regions",215
+"Swaziland","Swaziland",184,"WTO",215
+"Sweden","Sweden",128,"contacts",216
+"Sweden","Sweden",167,"coverage",216
+"Sweden","Sweden",173,"demography",216
+"Sweden","Sweden",147,"Huang2013",216
+"Sweden","Sweden",211,"latitudes",216
+"Sweden","Sweden",184,"OAG",216
+"Sweden","Sweden",215,"regions",216
+"Sweden","Sweden",185,"WTO",216
+"Switzerland","Switzerland",129,"contacts",217
+"Switzerland","Switzerland",168,"coverage",217
+"Switzerland","Switzerland",174,"demography",217
+"Switzerland","Switzerland",148,"Huang2013",217
+"Switzerland","Switzerland",212,"latitudes",217
+"Switzerland","Switzerland",185,"OAG",217
+"Switzerland","Switzerland",216,"regions",217
+"Switzerland","Switzerland",186,"WTO",217
+"Syrian_Arab_Republic","Syrian Arab Republic",130,"contacts",218
+"Syrian_Arab_Republic","Syrian_Arab_Republic",169,"coverage",218
+"Syrian_Arab_Republic","Syrian_Arab_Republic",NA,"database",218
+"Syrian_Arab_Republic","Syrian_Arab_Republic",NA,"database",218
+"Syrian_Arab_Republic","Syrian Arab Republic",175,"demography",218
+"Syrian_Arab_Republic","Syria",149,"Huang2013",218
+"Syrian_Arab_Republic","Syria",213,"latitudes",218
+"Syrian_Arab_Republic","Syria",186,"OAG",218
+"Syrian_Arab_Republic","Syrian Arab Republic",217,"regions",218
+"Syrian_Arab_Republic","Syria",187,"WTO",218
+"Taiwan","Taiwan",131,"contacts",219
+"Taiwan","China, Taiwan Province of China",40,"demography",219
+"Taiwan","Taiwan",150,"Huang2013",219
+"Taiwan","Taiwan",214,"latitudes",219
+"Taiwan","Taiwan",187,"OAG",219
+"Taiwan","Taiwan, Province of China",218,"regions",219
+"Taiwan","Taiwan",188,"WTO",219
+"Tajikistan","Tajikistan",132,"contacts",220
+"Tajikistan","Tajikistan",170,"coverage",220
+"Tajikistan","Tajikistan",176,"demography",220
+"Tajikistan","Tajikistan",151,"Huang2013",220
+"Tajikistan","Tajikistan",215,"latitudes",220
+"Tajikistan","Tajikistan",188,"OAG",220
+"Tajikistan","Tajikistan",219,"regions",220
+"Tajikistan","Tajikistan",189,"WTO",220
+"Tanzania","United Republic of Tanzania",143,"contacts",221
+"Tanzania","United_Republic_of_Tanzania",185,"coverage",221
+"Tanzania","United Republic of Tanzania",190,"demography",221
+"Tanzania","Tanzania",152,"Huang2013",221
+"Tanzania","Tanzania",216,"latitudes",221
+"Tanzania","Tanzania",189,"OAG",221
+"Tanzania","Tanzania, United Republic of",220,"regions",221
+"Tanzania","Tanzania",190,"WTO",221
+"Thailand","Thailand",134,"contacts",222
+"Thailand","Thailand",171,"coverage",222
+"Thailand","Thailand",178,"demography",222
+"Thailand","Thailand",153,"Huang2013",222
+"Thailand","Thailand",217,"latitudes",222
+"Thailand","Thailand",190,"OAG",222
+"Thailand","Thailand",221,"regions",222
+"Thailand","Thailand",191,"WTO",222
+"Timor_Leste","Timor-Leste",135,"contacts",223
+"Timor_Leste","Timor-Leste",173,"coverage",223
+"Timor_Leste","Timor-Leste",179,"demography",223
+"Timor_Leste","Timor-Leste",218,"latitudes",223
+"Timor_Leste","Timor_Leste",192,"OAG",223
+"Timor_Leste","Timor-Leste",222,"regions",223
+"Timor_Leste","Timor_Leste",193,"WTO",223
+"Togo","Togo",174,"coverage",224
+"Togo","Togo",180,"demography",224
+"Togo","Togo",154,"Huang2013",224
+"Togo","Togo",219,"latitudes",224
+"Togo","Togo",193,"OAG",224
+"Togo","Togo",223,"regions",224
+"Togo","Togo",194,"WTO",224
+"Tokelau","Tokelau",220,"latitudes",225
+"Tokelau","Tokelau",224,"regions",225
+"Tonga","Tonga",136,"contacts",226
+"Tonga","Tonga",175,"coverage",226
+"Tonga","Tonga",181,"demography",226
+"Tonga","Tonga",221,"latitudes",226
+"Tonga","Tonga",194,"OAG",226
+"Tonga","Tonga",225,"regions",226
+"Tonga","Tonga",195,"WTO",226
+"Trinidad_and_Tobago","Trinidad_Tobago",176,"coverage",227
+"Trinidad_and_Tobago","Trinidad_and_Tobago",NA,"database",227
+"Trinidad_and_Tobago","Trinidad_and_Tobago",NA,"database",227
+"Trinidad_and_Tobago","Trinidad and Tobago",182,"demography",227
+"Trinidad_and_Tobago","Trinidad and Tobago",222,"latitudes",227
+"Trinidad_and_Tobago","Trinidad_Tobago",195,"OAG",227
+"Trinidad_and_Tobago","Trinidad and Tobago",226,"regions",227
+"Trinidad_and_Tobago","Trinidad_Tobago",196,"WTO",227
+"Tunisia","Tunisia",137,"contacts",228
+"Tunisia","Tunisia",177,"coverage",228
+"Tunisia","Tunisia",183,"demography",228
+"Tunisia","Tunisia",155,"Huang2013",228
+"Tunisia","Tunisia",223,"latitudes",228
+"Tunisia","Tunisia",196,"OAG",228
+"Tunisia","Tunisia",227,"regions",228
+"Tunisia","Tunisia",197,"WTO",228
+"Turkey","Turkey",138,"contacts",229
+"Turkey","Turkey",178,"coverage",229
+"Turkey","Turkey",184,"demography",229
+"Turkey","Turkey",156,"Huang2013",229
+"Turkey","Turkey",224,"latitudes",229
+"Turkey","Turkey",197,"OAG",229
+"Turkey","Turkey",228,"regions",229
+"Turkey","Turkey",198,"WTO",229
+"Turkmenistan","Turkmenistan",179,"coverage",230
+"Turkmenistan","Turkmenistan",185,"demography",230
+"Turkmenistan","Turkmenistan",157,"Huang2013",230
+"Turkmenistan","Turkmenistan",225,"latitudes",230
+"Turkmenistan","Turkmenistan",198,"OAG",230
+"Turkmenistan","Turkmenistan",229,"regions",230
+"Turkmenistan","Turkmenistan",199,"WTO",230
+"Turks_Caicos_Islands","Turks and Caicos Islands",226,"latitudes",231
+"Turks_Caicos_Islands","Turks_Caicos_Islands",199,"OAG",231
+"Turks_Caicos_Islands","Turks and Caicos Islands",230,"regions",231
+"Turks_Caicos_Islands","Turks_Caicos_Islands",200,"WTO",231
+"Tuvalu","Tuvalu",180,"coverage",232
+"Tuvalu","Tuvalu",227,"latitudes",232
+"Tuvalu","Tuvalu",200,"OAG",232
+"Tuvalu","Tuvalu",231,"regions",232
+"Tuvalu","Tuvalu",201,"WTO",232
+"Uganda","Uganda",139,"contacts",233
+"Uganda","Uganda",181,"coverage",233
+"Uganda","Uganda",186,"demography",233
+"Uganda","Uganda",158,"Huang2013",233
+"Uganda","Uganda",230,"latitudes",233
+"Uganda","Uganda",201,"OAG",233
+"Uganda","Uganda",232,"regions",233
+"Uganda","Uganda",202,"WTO",233
+"Ukraine","Ukraine",140,"contacts",234
+"Ukraine","Ukraine",182,"coverage",234
+"Ukraine","Ukraine",187,"demography",234
+"Ukraine","Ukraine",159,"Huang2013",234
+"Ukraine","Ukraine",231,"latitudes",234
+"Ukraine","Ukraine",202,"OAG",234
+"Ukraine","Ukraine",233,"regions",234
+"Ukraine","Ukraine",203,"WTO",234
+"United_Arab_Emirates","United Arab Emirates",141,"contacts",235
+"United_Arab_Emirates","United_Arab_Emirates",183,"coverage",235
+"United_Arab_Emirates","United Arab Emirates",188,"demography",235
+"United_Arab_Emirates","United Arab Emirates",160,"Huang2013",235
+"United_Arab_Emirates","United Arab Emirates",232,"latitudes",235
+"United_Arab_Emirates","United_Arab_Emirates",203,"OAG",235
+"United_Arab_Emirates","United Arab Emirates",234,"regions",235
+"United_Arab_Emirates","United_Arab_Emirates",204,"WTO",235
+"United_Kingdom","United Kingdom of Great Britain",142,"contacts",236
+"United_Kingdom","United_Kingdom",184,"coverage",236
+"United_Kingdom","United Kingdom",189,"demography",236
+"United_Kingdom","United Kingdom",161,"Huang2013",236
+"United_Kingdom","United Kingdom",233,"latitudes",236
+"United_Kingdom","United_Kingdom",204,"OAG",236
+"United_Kingdom","United Kingdom of Great Britain and Northern Ireland",235,"regions",236
+"United_Kingdom","United_Kingdom",205,"WTO",236
+"Uruguay","Uruguay",145,"contacts",237
+"Uruguay","Uruguay",186,"coverage",237
+"Uruguay","Uruguay",193,"demography",237
+"Uruguay","Uruguay",163,"Huang2013",237
+"Uruguay","Uruguay",235,"latitudes",237
+"Uruguay","Uruguay",205,"OAG",237
+"Uruguay","Uruguay",238,"regions",237
+"Uruguay","Uruguay",206,"WTO",237
+"USA","United States of America",144,"contacts",238
+"USA","U.S.A.",187,"coverage",238
+"USA","United States of America",191,"demography",238
+"USA","United States",162,"Huang2013",238
+"USA","United States",234,"latitudes",238
+"USA","USA",206,"OAG",238
+"USA","United States of America",236,"regions",238
+"USA","USA",207,"WTO",238
+"US_minor_outlying_islands","US_minor_outlying_islands",NA,"database",239
+"US_minor_outlying_islands","U.S. Minor Outlying Islands",228,"latitudes",239
+"US_minor_outlying_islands","United States Minor Outlying Islands",237,"regions",239
+"Uzbekistan","Uzbekistan",146,"contacts",240
+"Uzbekistan","Uzbekistan",188,"coverage",240
+"Uzbekistan","Uzbekistan",194,"demography",240
+"Uzbekistan","Uzbekistan",164,"Huang2013",240
+"Uzbekistan","Uzbekistan",236,"latitudes",240
+"Uzbekistan","Uzbekistan",207,"OAG",240
+"Uzbekistan","Uzbekistan",239,"regions",240
+"Uzbekistan","Uzbekistan",208,"WTO",240
+"Vanuatu","Vanuatu",147,"contacts",241
+"Vanuatu","Vanuatu",189,"coverage",241
+"Vanuatu","Vanuatu",195,"demography",241
+"Vanuatu","Vanuatu",237,"latitudes",241
+"Vanuatu","Vanuatu",208,"OAG",241
+"Vanuatu","Vanuatu",240,"regions",241
+"Vanuatu","Vanuatu",209,"WTO",241
+"Vatican_City","Vatican_City",NA,"database",242
+"Vatican_City","Vatican City",238,"latitudes",242
+"Venezuela","Venezuela (Bolivarian Republic ",148,"contacts",243
+"Venezuela","Venezuela_(Bolivarian_Republic_of)",190,"coverage",243
+"Venezuela","Venezuela (Bolivarian Republic of)",196,"demography",243
+"Venezuela","Venezuela",165,"Huang2013",243
+"Venezuela","Venezuela",239,"latitudes",243
+"Venezuela","Venezuela",209,"OAG",243
+"Venezuela","Venezuela (Bolivarian Republic of)",241,"regions",243
+"Venezuela","Venezuela",210,"WTO",243
+"Vietnam","Viet Nam",149,"contacts",244
+"Vietnam","Viet_Nam",191,"coverage",244
+"Vietnam","Viet Nam",197,"demography",244
+"Vietnam","Vietnam",166,"Huang2013",244
+"Vietnam","Vietnam",240,"latitudes",244
+"Vietnam","Vietnam",210,"OAG",244
+"Vietnam","Viet Nam",242,"regions",244
+"Vietnam","Vietnam",211,"WTO",244
+"Virgin_Islands_UK","British Virgin Islands",32,"latitudes",245
+"Virgin_Islands_UK","Virgin_Islands_UK",211,"OAG",245
+"Virgin_Islands_UK","Virgin Islands (British)",243,"regions",245
+"Virgin_Islands_UK","Virgin_Islands_UK",212,"WTO",245
+"Virgin_Islands_US","United States Virgin Islands",192,"demography",246
+"Virgin_Islands_US","U.S. Virgin Islands",229,"latitudes",246
+"Virgin_Islands_US","Virgin_Islands_US",212,"OAG",246
+"Virgin_Islands_US","Virgin Islands (U.S.)",244,"regions",246
+"Virgin_Islands_US","Virgin_Islands_US",213,"WTO",246
+"Wallis_and_Futuna","Wallis_and_Futuna",NA,"database",247
+"Wallis_and_Futuna","Wallis and Futuna",241,"latitudes",247
+"Wallis_and_Futuna","Wallis and Futuna",245,"regions",247
+"Western_Sahara","Western_Sahara",NA,"database",248
+"Western_Sahara","Western_Sahara",NA,"database",248
+"Western_Sahara","Western Sahara",198,"demography",248
+"Western_Sahara","Western Sahara",167,"Huang2013",248
+"Western_Sahara","Western Sahara",242,"latitudes",248
+"Western_Sahara","Western Sahara",246,"regions",248
+"Yemen","Yemen",150,"contacts",249
+"Yemen","Yemen",192,"coverage",249
+"Yemen","Yemen",199,"demography",249
+"Yemen","Yemen",168,"Huang2013",249
+"Yemen","Yemen",243,"latitudes",249
+"Yemen","Yemen",213,"OAG",249
+"Yemen","Yemen",247,"regions",249
+"Yemen","Yemen",214,"WTO",249
+"Zambia","Zambia",151,"contacts",250
+"Zambia","Zambia",193,"coverage",250
+"Zambia","Zambia",200,"demography",250
+"Zambia","Zambia",169,"Huang2013",250
+"Zambia","Zambia",244,"latitudes",250
+"Zambia","Zambia",214,"OAG",250
+"Zambia","Zambia",248,"regions",250
+"Zambia","Zambia",215,"WTO",250
+"Zimbabwe","Zimbabwe",152,"contacts",251
+"Zimbabwe","Zimbabwe",194,"coverage",251
+"Zimbabwe","Zimbabwe",201,"demography",251
+"Zimbabwe","Zimbabwe",170,"Huang2013",251
+"Zimbabwe","Zimbabwe",245,"latitudes",251
+"Zimbabwe","Zimbabwe",215,"OAG",251
+"Zimbabwe","Zimbabwe",249,"regions",251
+"Zimbabwe","Zimbabwe",216,"WTO",251
+"Aland_Islands","Åland Islands",2,"regions",NA
+"Bonaire_SaintEustatius_Saba","Bonaire, Sint Eustatius and Saba",28,"regions",NA
+"Saint_Barthelemy","Saint Barthélemy",185,"regions",NA
+"Saint_Martin","Saint Martin (French part)",189,"regions",NA
+"Saint_Maarten","Sint Maarten (Dutch part)",201,"regions",NA

@@ -60,9 +60,11 @@ time_end <- function(results){
 
 # vector of deaths... What does each entry corresponds to? I presume split by
 #  coutry, risk group, age group?
+
+# Check if need popns or X...
 deaths <- function(results){
   tend <- time_end(results)
-  X - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
+  popns - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
     results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
 }
 

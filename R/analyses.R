@@ -47,6 +47,7 @@ user_specified_cum_vax_pool_func <- function(vax_production_params, t) {
     min(vax_production_params[["max_vax"]],
         t_since_production * vax_production_params[["production_rate"]])
   }
+  }
 
 ######################################################################
 # Functions for manipulating simulation output
@@ -74,5 +75,7 @@ worldwide_deaths <- function(results){
 global_attack <- function(results){
   pop_total <- sum(X)
   tend <- time_end(results)
-  sum(results$R[,tend] + results$RV[,tend] + deaths(results))/pop_total
+  sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results)) / pop_total
 }
+
+

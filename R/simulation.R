@@ -88,7 +88,6 @@ run_simulation <- function(simulation_flags, life_history_params,
       timevec <- seq(1/tdiv,tmax,by=1/tdiv)
       wave <- sin((timevec-tdelay)*2*pi/365)
       wave <- t(colMeans(matrix(wave, nrow=season_res)))
-      
       Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
     } else {
       Phi <- 1

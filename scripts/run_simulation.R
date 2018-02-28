@@ -2,13 +2,14 @@ library(reshape2)
 library(ggplot2)
 library(Matrix)
 library(data.table)
+library(foreach)
 
 # wd <- "C:/Users/Caroline Walters/Documents/vaxedemic" 
 # devtools::load_all(wd)
 # wd <- "C:/Users/Caroline Walters/Documents/vaxedemic/"
 wd <- "~/Documents/vaxedemic/"
 setwd(wd)
-# devtools::load_all()
+devtools::load_all()
 
 
 ## LIFE HISTORY PARAMETER INPUTS
@@ -115,7 +116,8 @@ tdiv <- 24 ##DH
 ## Seasonality resolution
 # 1 -> tmax*tdiv
 # 12 -> tmax*tdiv/12
-seasonality_resolution <- 1
+seasonality_resolution <- tmax*tdiv/12
+tdelay <- 0
 
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
@@ -271,13 +273,13 @@ sim_params <- list(n_countries=n_countries,
                    n_ages=n_ages,
                    n_riskgroups=n_riskgroups,
                    seed_vec = seed_vec,
-                   seasonality_resolution=seasonality_resolution)
+                   seasonality_resolution=seasonality_resolution,
+                   tdelay = tdelay)
 
 ## run simulation
-simulation_flags$seasonal <- TRUE
+simulation_flags$seasonal <- FALSE
 tmax <- 365
-sim_params$seasonality_resolution <- tmax*tdiv/12
-#sim_params$seasonality_resolution <- 1
+
 # Rprof(tmp <- tempfile(), line.profiling=TRUE)
 # system.time(
 # res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
@@ -301,15 +303,15 @@ test_sim_results <- function(simulation_flags, life_history_params,
                              cum_vax_pool_func,
                              vax_allocation_func,
                              tmax=100,tdiv=24, vax_alloc_period = 24 * 7){
-  
+
   res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                         case_fatality_ratio_vec, X, labels, C3, K, latitudes, 
-                        cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
+                        cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period, n_runs = 2)
+
+  res_df <- data.frame("worldwide_deaths" = vapply(res, worldwide_deaths, double(1)), 
+               "global_attack" = vapply(res, global_attack, double(1)))
   
-  res_vec <- c("worldwide deaths" = worldwide_deaths(res), 
-               "global attack" = global_attack(res))
-  
-  return(res_vec)
+  return(res_df)
   }
 
 # run the function

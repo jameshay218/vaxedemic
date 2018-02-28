@@ -17,10 +17,9 @@ Suggests:
     rmarkdown,
     Matrix
 Imports:
-    data.table
-LinkingTo: Rcpp,
-    RcppArmadillo,
-    RcppEigen
+    data.table	
+LinkingTo:
+    Rcpp
 SystemRequirements: C++11
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr

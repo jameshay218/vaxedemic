@@ -74,6 +74,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     Beta1 <- function(lats,n_countries){
       trop <- 23.5 #Tropics (in degrees)
       Y=matrix(1,n_countries,1) #Flat outside of tropics - could modify (DH/SR)
+      
       in_tropics <- abs(lats) < trop # find countries in tropics
       Y[in_tropics] <- lats[in_tropics]/trop # linear with abs(latitude) in tropics
       Y[lats < (-trop)] <- -1 # opposite sign in southern hemisphere
@@ -199,6 +200,14 @@ run_simulation <- function(simulation_flags, life_history_params,
         res
     }
     result
+                                        #result <- #foreach(i = 1:n_runs) %dopar% {        
+                                        #  main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
+                                        #                    SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                                        #                    vax_allocation_func)
+                                        #   res
+                                        # }
+    
+                                        #list(result)
 }
 
 
@@ -319,7 +328,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
                   all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
 
-         if(i %% switch_freq == 0){
+         if(i %% switch_freq == 0 && i < tend){
              index <- index + 1
              LD1 <- LD[[index]]
         }
@@ -359,7 +368,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
                 ## update current vax pool
                 alloc_this_round <- sum(unlist(actual_alloc))
                 if (alloc_this_round == 0 && vax_pool >= 1) {
-                  stop("stopping as no vaccine allocated despite vaccine being in the pool -- will cause infinite loop")
+                  break
                 }
                 
                 vax_pool <- vax_pool - alloc_this_round
@@ -379,6 +388,19 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
             vax_alloc_mat[,i] <- sum_vax_alloc
             
         }
+        
+        # numeric errors can be introduced, so make sure numbers of individuals
+        # are still integers before the transmission process
+        
+        S <- round(S)
+        E <- round(E)
+        I <- round(I)
+        R <- round(R)
+        SV <- round(SV)
+        EV <- round(EV)
+        IV <- round(IV)
+        RV <- round(RV)
+        
         #################
         ## INFECTIONS
         #################
@@ -448,7 +470,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         vax_pool_vec[i] <- vax_pool
         
         ## stop simulation if there are no more exposed/infectious individuals
+
         if(sum(E + I + EV + IV) == 0) {
+          
             remaining_idx <- seq((i+1), ncol(Smat))
             
             # make a function to fill in the remaining parts of the state matrix

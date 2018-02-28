@@ -41,6 +41,7 @@ user_specified_vax_alloc_func <- function(sum_age_risk_func,
 user_specified_cum_vax_pool_func <- function(vax_production_params, t) {
     t_since_production <- t - (vax_production_params[["detection_delay"]] + 
                                vax_production_params[["production_delay"]])
+
     if(t_since_production < 0) {
         0
     } else {
@@ -59,12 +60,13 @@ time_end <- function(results){
     ncol(results$S)
 }
 
+
                                         # vector of deaths... What does each entry corresponds to? I presume split by
                                         #  coutry, risk group, age group?
 #' @export
-deaths <- function(results, X){
+deaths <- function(results){
     tend <- time_end(results)
-    X - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
+    popns - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
         results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
 }
 
@@ -77,7 +79,7 @@ worldwide_deaths <- function(results){
                                         # global attack rate
 #' @export
 global_attack <- function(results){
-    pop_total <- sum(X)
+    pop_total <- sum(popns)
     tend <- time_end(results)
     sum(results$R[,tend] + results$RV[,tend] + deaths(results))/pop_total
 }
@@ -128,4 +130,14 @@ calculate_summaries <- function(res, labels, reqested_stats){
     tmp <- unique(I[,c("Location","variable","sumI","sumN")])
     peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
     return(peakTimes)
+
 }
+
+                                        # Create a data frame from of the simulation results - worldwide deaths, global 
+                                        #  attack rate
+deaths_GAR_df <- function(results){
+    data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1)), 
+               "global_attack" = vapply(results, global_attack, double(1)))
+}
+
+

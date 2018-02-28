@@ -225,7 +225,7 @@ setup_populations_real_data <- function(demography_filename,
     ## Generate risk propns for each age group
     ## Enumerate out risk groups to same dimension as countries
     ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
-    risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
+    risk_matrix <- kronecker(c(t(risk_propns)),matrix(1,n_countries,1))
     
     ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
     age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
@@ -372,4 +372,21 @@ generate_risk_matrix <- function(propRisk, n_riskgroups, transpose=TRUE){
     non_risk <- 1 - propRisk
     risk_mat <- matrix(c(non_risk, propRisk), length(propRisk), n_riskgroups)
     if(TRANSPOSE) risk_mat <- t(risk_mat)
+}
+
+#' Read and process seasonal vaccine coverage data
+#' 
+#' Calculates the proportion of seasonal vaccine doses distributed to each country in 2013
+#' @param coverage_filename the vector or matrix of age-specific contact rates
+#' @param labels a data frame containing the number of individuals in each location, age, risk group
+#' @return the proportion of doses distributed to each country
+#' @export
+read_coverage_data <- function(coverage_filename, labels) {
+  sum_age_risk_func <- sum_age_risk_closure(labels)
+  pop_size <- sum_age_risk_func(labels$X)
+  coverage_df <- read.table(coverage_filename, sep = ",", header = TRUE, stringsAsFactors = FALSE)
+  browser()
+  stopifnot(all(coverage_df$country == levels(labels$Location)))
+  coverage <- coverage_df$dose_per_1000 * pop_size
+  normalise(coverage)
 }

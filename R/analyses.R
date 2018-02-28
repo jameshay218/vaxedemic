@@ -16,9 +16,9 @@
 #' @return n_vax_allocated numeric vector of length n_countries.  number of vaccines allocated to each country
 #' @export
 vaccinate_by_incidence <- function(sum_age_risk_func, 
-                                          travel_matrix,
-                                          vax_allocation_params,
-                                          S, E, I, R, vax_pool) {
+                                   travel_matrix,
+                                   vax_allocation_params,
+                                   S, E, I, R, vax_pool) {
   # find incidence in each country
   # incidence proportional to E
   incidence_by_country <- sum_age_risk_func(E)
@@ -49,9 +49,9 @@ vaccinate_by_incidence <- function(sum_age_risk_func,
 #' @return n_vax_allocated numeric vector of length n_countries.  number of vaccines allocated to each country
 #' @export
 vaccinate_by_current_seasonal_alloc <- function(sum_age_risk_func,
-                                          travel_matrix,
-                                          vax_allocation_params,
-                                          S, E, I, R, vax_pool) {
+                                                travel_matrix,
+                                                vax_allocation_params,
+                                                S, E, I, R, vax_pool) {
   # allocate proportional to seasonal coverage
   n_vax_allocated <- vax_allocation_params$coverage * vax_pool
   return(n_vax_allocated)
@@ -64,6 +64,7 @@ vaccinate_by_current_seasonal_alloc <- function(sum_age_risk_func,
 #' @param t scalar time
 #' @return needs to return a scalar: the number of vaccines ever produced up to time t
 #' @export
+
 produce_vax_linear_with_delay <- function(vax_production_params, t) {
   t_since_production <- t - (vax_production_params[["detection_delay"]] + 
                                vax_production_params[["production_delay"]])
@@ -73,14 +74,13 @@ produce_vax_linear_with_delay <- function(vax_production_params, t) {
     min(vax_production_params[["max_vax"]],
         t_since_production * vax_production_params[["production_rate"]])
   }
-  }
+}
 
 ######################################################################
 # Functions for manipulating simulation output
 ######################################################################
 
 #' @export
-# this is tend... I presume the final time?
 time_end <- function(results){
   ncol(results$S)
 }
@@ -109,12 +109,60 @@ global_attack <- function(results, popns){
 }
 
 #' @export
+find_peak_times_list <- function(res){
+  return(lapply(res, find_peak_times))
+  
+}
+
+#' @export
+find_peak_times <- function(res){
+  peakTimes <- (apply(res$I, 1, function(x) as.numeric(colnames(res$I)[which.max(x)])))
+  return(peakTimes)
+}
+
+find_peak_summaries <- function(res, labels){
+  peakTimes <- find_peak_times_list(res)
+  peakTimes <- do.call("cbind",peakTimes)
+  summaryPeaks <- t(apply(peakTimes, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
+  colnames(summaryPeaks) <- c("mean","lower95","median","upper95")
+  summaryPeaks <- cbind(labels, summaryPeaks)
+  return(summaryPeaks)
+}
+
+
+shrink_data <- function(res){
+  compartments <- names(res)
+  final <- NULL
+  for(i in 1:length(res)){
+    tmp <- data.table(res[[i]])
+    tmp <- melt(tmp)
+    tmp$comparment <- compartments[i]
+    final[[i]] <- tmp
+  }
+  final <- rbindlist(final)
+  return(final)    
+}
+
+calculate_summaries <- function(res, labels, reqested_stats){
+  I <- data.table(res$I)
+  I <- cbind(labels, I)
+  I <- melt(I, id.vars=colnames(labels))
+  I$variable <- as.numeric(as.character(I$variable))
+  I <- data.table(I)
+  I[,sumI:=sum(value),key=c("Location","variable")]
+  I[,sumN:=sum(X),key=c("Location","variable")]
+  tmp <- unique(I[,c("Location","variable","sumI","sumN")])
+  peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
+  return(peakTimes)
+}
+
+#' @export
 # Create a data frame from of the simulation results - worldwide deaths, global 
 #  attack rate
 deaths_GAR_df <- function(results, popns){
-    data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1), popns), 
+  data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1), popns), 
              "global_attack" = vapply(results, global_attack, double(1), popns))
-  }
+}
 
 
 # attack rate by country
@@ -133,5 +181,3 @@ many_dead <- function(results, popns){
   dead <- do.call("cbind", dead)
   dead <- cbind(labels, dead)
 }
-
-

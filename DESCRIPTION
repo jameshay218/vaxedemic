@@ -18,8 +18,6 @@ Suggests:
     Matrix
 Imports:
     data.table	
-LinkingTo:
-    Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

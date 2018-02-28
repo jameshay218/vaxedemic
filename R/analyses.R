@@ -78,4 +78,11 @@ global_attack <- function(results){
   sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results)) / pop_total
 }
 
+# Create a data frame from of the simulation results - worldwide deaths, global 
+#  attack rate
+deaths_GAR_df <- function(results){
+    data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1)), 
+             "global_attack" = vapply(results, global_attack, double(1)))
+  }
+
 

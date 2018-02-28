@@ -27,7 +27,7 @@ seasonality_resolution <- tmax*tdiv/12 # Average seasonality into 12 blocks of t
 ## LIFE HISTORY PARAMETER INPUTS
 ###################################################
 ## R_0, recovery time and latent period
-life_history_params <- list(R0=1.8, TR=2.6, LP = 1.5, case_fatality_ratio = c(1e-3,1e-2))
+life_history_params <- list(R0=1.4, TR=2.6, LP = 1.5, case_fatality_ratio = rep(2e-2,2))
 
 ## travel parameters: scaling of off-diagonals
 travel_params <- list(epsilon = 1e-3)
@@ -52,12 +52,12 @@ simulation_flags <- list(ageMixing=TRUE,
 ## VACCINE INPUTS
 ###################################################
 ## vaccine efficacy and initial vaccinated proportion
-# this example roughly brings effective R to 1.2
-vax_params <- list(efficacy = 1 - 1.2/1.8, propn_vax0 = 0)
+
+vax_params <- list(efficacy = .7, propn_vax0 = 0)
 
 ## example parameters for vaccine production (see cum_vax_pool_func_closure)
-vax_production_params <- list(detection_delay = 0, production_delay = 0, 
-                              production_rate = 0, max_vax = 5e9)
+vax_production_params <- list(detection_delay = 0, production_delay = 365/2, 
+                              production_rate = 550e6/(365/12*3), max_vax = Inf)
 
 ## example parameters for vaccine allocation
 vax_allocation_params <- list(priorities = NULL)
@@ -135,8 +135,8 @@ sim_params <- list(n_countries=n_countries,
                    n_riskgroups=n_riskgroups,
                    seed_vec = seed_vec,
                    seasonality_resolution=seasonality_resolution,
-                   tdelay=0,
-                   amp=1)
+                   tdelay=180,
+                   amp=.7)
 ###################################################
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
@@ -144,3 +144,5 @@ res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_par
                       n_runs=n_runs)
 countries <- sample(1:n_countries,20)
 p <- model_plot_simple(res[[1]],labels, countries)
+
+summary_stats <- deaths_GAR_df(res)

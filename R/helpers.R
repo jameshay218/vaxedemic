@@ -78,7 +78,7 @@ distribute_vax_among_age_risk_closure <- function(priorities, labels) {
     
     # ensure that an integer number of vaccines is allocated to each country
     n_vax_allocated <- round_preserve_sum(n_vax_allocated)
-    
+
     # distribute vaccines between age and risk groups
     vax_alloc <- rep(n_vax_allocated, times = n_groups * n_states)
     distribution_factor <- c(S, E, I, R) * y_long_vec
@@ -103,13 +103,14 @@ distribute_vax_among_age_risk_closure <- function(priorities, labels) {
 round_preserve_sum <- function(vec) {
   
   # if vector already integers, do nothing
-  if(isTRUE(all.equal(vec, round(vec)))) {
+  # old implementation -- all.equal(vec - round(vec)) -- fails for large values in vec
+  if(isTRUE(all.equal(vec - round(vec), numeric(length(vec))))) {
     return(vec)
   }
   
   sum_vec <- sum(vec)
   rounded_sum <- round(sum_vec)
-  if(!isTRUE(all.equal(rounded_sum, sum_vec))) {
+  if(!isTRUE(all.equal(rounded_sum - sum_vec, 0))) {
     stop("vector passed to round_preserve_sum does not sum to integer")
   }
   
@@ -186,6 +187,27 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
     n_vax_allocated <- user_specified_vax_alloc_func(sum_age_risk_func, travel_matrix,
                                                      vax_allocation_params,
                                                      S, E, I, R, vax_pool)
+    
+    # ensure that total number of vaccines allocated is an integer
+    fractional_part <- sum(n_vax_allocated) - round(sum(n_vax_allocated))
+    if (!all.equal(fractional_part, 0)) {
+      # find which groups got allocated at least fractional_part of a vaccine
+      alloc_idx <- which(n_vax_allocated > fractional_part)
+      # subtract fractional_part from one of those groups, chosen randomly
+      subtract_idx <- sample(alloc_idx, 1)
+      n_vax_allocated[subtract_idx] <- n_vax_allocated[subtract_idx] - fractional_part
+    }
+    
+    # ensure that number of vaccines allocated to each country is an integer
+    n_vax_allocated <- round_preserve_sum(n_vax_allocated)
+    
+    # ensure that number of vaccines allocated to each country is fewer than or
+    # equal to the number of people eligible for vaccination
+    total_individuals <- sum_age_risk_func(S) +
+      sum_age_risk_func(E) +
+      sum_age_risk_func(I) +
+      sum_age_risk_func(R)
+    n_vax_allocated <- pmin(n_vax_allocated, total_individuals)
     
     # distribute vaccines in each country between individuals of different
     # ages, risk groups, and infection statuses

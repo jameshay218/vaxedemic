@@ -9,7 +9,7 @@ library(foreach)
 # wd <- "C:/Users/Caroline Walters/Documents/vaxedemic/"
 wd <- "~/Documents/vaxedemic/"
 setwd(wd)
-devtools::load_all()
+# devtools::load_all()
 
 
 ## LIFE HISTORY PARAMETER INPUTS

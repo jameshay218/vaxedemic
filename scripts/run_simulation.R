@@ -109,7 +109,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          rng_seed = 0)
 
 ## run simulation for tmax days
-tmax <- 100
+tmax <- 365
 ## tdiv timesteps per day
 tdiv <- 24 ##DH
 
@@ -118,6 +118,7 @@ tdiv <- 24 ##DH
 # 12 -> tmax*tdiv/12
 seasonality_resolution <- tmax*tdiv/12
 tdelay <- 0
+amp <- 1
 
 ## allocate and distribute vaccine every vac_alloc_period time divisions
 ## i.e. in this example, every 7 days
@@ -274,11 +275,11 @@ sim_params <- list(n_countries=n_countries,
                    n_riskgroups=n_riskgroups,
                    seed_vec = seed_vec,
                    seasonality_resolution=seasonality_resolution,
-                   tdelay = tdelay)
+                   tdelay = tdelay,
+                   amp = amp)
 
 ## run simulation
-simulation_flags$seasonal <- FALSE
-tmax <- 365
+simulation_flags$seasonal <- TRUE
 
 # Rprof(tmp <- tempfile(), line.profiling=TRUE)
 # system.time(

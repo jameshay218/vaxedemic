@@ -225,7 +225,7 @@ setup_populations_real_data <- function(demography_filename,
     ## Generate risk propns for each age group
     ## Enumerate out risk groups to same dimension as countries
     ## Risk proportions are already enumerated out for ages (ie. n_riskgroups*n_ages)
-    risk_matrix <- kronecker(c(risk_propns),matrix(1,n_countries,1))
+    risk_matrix <- kronecker(c(t(risk_propns)),matrix(1,n_countries,1))
     
     ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
     age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))

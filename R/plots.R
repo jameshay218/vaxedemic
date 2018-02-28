@@ -182,3 +182,13 @@ format_data_for_plots <- function(data,
   p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
   
 }
+
+plot_peak_times <- function(res, labels, regionDat, latitudeDat){
+    peakTimes = do.call("cbind",res)
+    summaryPeaks <- t(apply(peakTimes, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
+    colnames(summaryPeaks) <- c("mean","lower95","median","upper95")
+    summaryPeaks <- data.frame(Location=unique(labels$Location), summaryPeaks)
+    dat <- merge(summaryPeaks,regionDat[,c("Location","region")])
+    dat <- merge(dat,latitudeDat)
+    tmp <- unique(dat[,c("Location","latitude")
+}

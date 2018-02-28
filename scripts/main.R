@@ -5,7 +5,6 @@ library(data.table)
 library(foreach)
 library(doMC)
 registerDoMC(cores=4)
-
 wd <- "~/Documents/vaxedemic/" 
 devtools::load_all(wd)
 
@@ -107,7 +106,6 @@ n_ages <- all_inputs$n_ages
 n_riskgroups <- all_inputs$n_riskgroups
 ###################################################
 
-
 ###################################################
 ## FINAL SETUP
 ###################################################
@@ -141,6 +139,21 @@ sim_params <- list(n_countries=n_countries,
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
                       cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period,
-                      n_runs=n_runs)
+                      n_runs=5)
+peakTimes <- NULL
+for(i in 1:length(res)){
+  I <- data.table(res[[i]]$I)
+  I <- cbind(labels, I)
+  I <- melt(I, id.vars=colnames(labels))
+  I$variable <- as.numeric(as.character(I$variable))
+  I <- data.table(I)
+  I[,sumI:=sum(value),key=c("Location","variable")]
+  I[,sumN:=sum(X),key=c("Location","variable")]
+  
+  tmp <- unique(I[,c("Location","variable","sumI","sumN")])
+  peakTimes[[i]] <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])
+}
+
 countries <- sample(1:n_countries,20)
 p <- model_plot_simple(res[[1]],labels, countries)
+

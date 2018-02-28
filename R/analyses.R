@@ -39,40 +39,93 @@ user_specified_vax_alloc_func <- function(sum_age_risk_func,
 #' @return needs to return a scalar: the number of vaccines ever produced up to time t
 #' @export
 user_specified_cum_vax_pool_func <- function(vax_production_params, t) {
-  t_since_production <- t - (vax_production_params[["detection_delay"]] + 
+    t_since_production <- t - (vax_production_params[["detection_delay"]] + 
                                vax_production_params[["production_delay"]])
-  if(t_since_production < 0) {
-    0
-  } else {
-    min(vax_production_params[["max_vax"]],
-        t_since_production * vax_production_params[["production_rate"]])
-  }
+    if(t_since_production < 0) {
+        0
+    } else {
+        min(vax_production_params[["max_vax"]],
+            t_since_production * vax_production_params[["production_rate"]])
+    }
+}
 
 ######################################################################
-# Functions for manipulating simulation output
+                                        # Functions for manipulating simulation output
 ######################################################################
 
-# this is tend... I presume the final time?
+                                        # this is tend... I presume the final time?
+#' @export
 time_end <- function(results){
-  ncol(results$S)
+    ncol(results$S)
 }
 
-# vector of deaths... What does each entry corresponds to? I presume split by
-#  coutry, risk group, age group?
-deaths <- function(results){
-  tend <- time_end(results)
-  X - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
-    results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
+                                        # vector of deaths... What does each entry corresponds to? I presume split by
+                                        #  coutry, risk group, age group?
+#' @export
+deaths <- function(results, X){
+    tend <- time_end(results)
+    X - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
+        results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
 }
 
-# total number of deaths
+                                        # total number of deaths
+#' @export
 worldwide_deaths <- function(results){
-  sum(deaths(results))
+    sum(deaths(results))
 }
 
-# global attack rate
+                                        # global attack rate
+#' @export
 global_attack <- function(results){
-  pop_total <- sum(X)
-  tend <- time_end(results)
-  sum(results$R[,tend] + results$RV[,tend] + deaths(results))/pop_total
+    pop_total <- sum(X)
+    tend <- time_end(results)
+    sum(results$R[,tend] + results$RV[,tend] + deaths(results))/pop_total
+}
+
+#' @export
+find_peak_times_list <- function(res){
+    return(lapply(res, find_peak_times))
+    
+}
+
+#' @export
+find_peak_times <- function(res){
+    peakTimes <- (apply(res$I, 1, function(x) as.numeric(colnames(res$I)[which.max(x)])))
+    return(peakTimes)
+}
+
+find_peak_summaries <- function(res, labels){
+    peakTimes <- find_peak_times_list(res)
+    peakTimes <- do.call("cbind",peakTimes)
+    summaryPeaks <- t(apply(peakTimes, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
+    colnames(summaryPeaks) <- c("mean","lower95","median","upper95")
+    summaryPeaks <- cbind(labels, summaryPeaks)
+    return(summaryPeaks)
+}
+
+
+shrink_data <- function(res){
+    compartments <- names(res)
+    final <- NULL
+    for(i in 1:length(res)){
+        tmp <- data.table(res[[i]])
+        tmp <- melt(tmp)
+        tmp$comparment <- compartments[i]
+        final[[i]] <- tmp
+    }
+    final <- rbindlist(final)
+    return(final)    
+}
+
+calculate_summaries <- function(res, labels, reqested_stats){
+    I <- data.table(res$I)
+    I <- cbind(labels, I)
+    I <- melt(I, id.vars=colnames(labels))
+    I$variable <- as.numeric(as.character(I$variable))
+    I <- data.table(I)
+    I[,sumI:=sum(value),key=c("Location","variable")]
+    I[,sumN:=sum(X),key=c("Location","variable")]
+    tmp <- unique(I[,c("Location","variable","sumI","sumN")])
+    peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
+    return(peakTimes)
 }

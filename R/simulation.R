@@ -43,7 +43,8 @@ run_simulation <- function(simulation_flags, life_history_params,
                            cum_vax_pool_func,
                            vax_allocation_func,
                            tmax=100,tdiv=24, vax_alloc_period = 24 * 7,
-                           n_runs=1){
+                           n_runs=1,
+                           requested_stats=NULL){
   
     #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
@@ -190,8 +191,11 @@ run_simulation <- function(simulation_flags, life_history_params,
     ## run simulation
     result <- foreach(i = 1:n_runs) %dopar% {
         res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
-                        SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-                        vax_allocation_func)
+                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                               vax_allocation_func)
+        if(n_runs > 1){
+            res <- calculate_summaries(res, labels, requested_stats)
+        }
         res
     }
     result

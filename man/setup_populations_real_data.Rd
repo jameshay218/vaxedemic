@@ -5,8 +5,7 @@
 \title{function to setup population sizes for each location, age, risk group, 
 and labels associated with these, from data}
 \usage{
-setup_populations_real_data(demography_filename, risk_propns, risk_factors,
-  n_riskgroups)
+setup_populations_real_data(demography_filename, risk_propns, risk_factors)
 }
 \arguments{
 \item{demography_filename}{character vector of length 1: file where demographic

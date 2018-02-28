@@ -1,3 +1,133 @@
+#' @export
+setup_inputs <- function(wd, simulation_flags, life_params, travel_params){
+    if(simulation_flags[["real_data"]]){
+        setup <- setup_real_data(wd=wd, simulation_flags=simulation_flags, travel_params=travel_params)
+    } else {
+        setup <- setup_sim_data(simulation_flags=simulation_flags, travel_params=travel_params)
+    }
+    return(setup)
+}
+
+#' @export
+setup_real_data <- function(simulation_flags,
+                            life_params=NULL,
+                            travel_params=NULL,
+                            wd="~/Documents/vaxedemic/",
+                            demography_filename="data/demographic_data_intersect.csv",
+                            contact_filename="data/contact_data_intersect.csv",
+                            travel_filename="data/flight_data_intersect.csv",
+                            latitude_filename="data/latitudes_intersect.csv",
+                            risk_filename="data/risk_group_data.csv"){   
+    ## Read in demography data
+    dem_tmp <- read.csv(paste0(wd,demography_filename), sep=",")
+    n_countries <- nrow(dem_tmp)
+    n_ages <- ncol(dem_tmp)-2
+
+    ## Risk group data
+    risk_propns <- as.matrix(read.csv(paste0(wd,risk_filename),sep=",",header=FALSE))
+    n_riskgroups <- ncol(risk_propns)
+    
+    if(nrow(risk_propns) != n_ages) {
+        stop("number of age groups inconsistent between data sets")
+    }
+    if(ncol(risk_propns) !=n_riskgroups) {
+        stop("number of risk groups inconsistent between data sets")
+    }
+
+    ############
+    ## THIS IS WHERE WE'D CHANGE TO READ IN RISK FACTORS
+    ############
+    risk_factors <- rep(1, n_riskgroups) ## Assume that each risk group has same modifier
+
+    ## Enumerate out risk factors for each age group
+    age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),
+                                             ncol=n_riskgroups)   
+    
+    ## construct demography matrix
+    demography_matrix <- setup_populations_real_data(paste0(wd,demography_filename),
+                                                     risk_propns, risk_factors)
+
+    ## construct travel matrix
+    travelMatrix <- setup_travel_real_data(paste0(wd,travel_filename), demography_matrix$pop_size, travel_params)
+    
+    ## construct latitude vector
+    latitudes <- read_latitude_data(paste0(wd, latitude_filename))
+    
+    ## Generate risk factor modifier. ie. modifier for each age/risk group pair, same dimensions as C2
+    ## The risk factor modifier modifies the susceptibility of age/risk groups
+    risk <- c(t(age_specific_riskgroup_factors))
+    risk_matrix <- t(kronecker(risk,matrix(1,1,n_riskgroups*n_ages)))
+    
+    ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups).
+    ## ie. get age specific, then enumerate out by risk group.
+    ## If we have country specific contact rates, we get a list
+    ## of these matrices of length n_countries
+    C1 <- read_contact_data(paste0(wd,contact_filename))
+    if(is.list(C1)) { # for country specific contact rates
+        C2 <- lapply(C1, function(x) kronecker(x, matrix(1,n_riskgroups,n_riskgroups)))
+        C3 <- lapply(C2, function(x) x*risk_matrix)
+    } else {
+        C2 <- kronecker(C1, matrix(1,n_riskgroups,n_riskgroups))
+        C3 <- C2*risk_matrix
+    }
+    return(list("popns"=demography_matrix$X,"labels"=demography_matrix$labels,
+                "contactMatrix"=C3,"travelMatrix"=travelMatrix,"latitudes"=latitudes,
+                "n_countries"=n_countries,"n_ages"=n_ages,"n_riskgroups"=n_riskgroups))
+}
+
+#' @export
+setup_sim_data <- function(simulation_flags,
+                           life_params=NULL,
+                           travel_params=NULL,
+                           popn_size=100000,
+                           n_riskgroups=2,
+                           n_ages=4,
+                           age_propns=c(5,14,45,16)/80,
+                           n_countries=10){
+    ## Setup risk group data
+    risk_propns <- rep(1/n_riskgroups,n_riskgroups) ## Assume risk groups are uniformly distributed
+    risk_propns <- matrix(rep(risk_propns,each=n_ages),ncol=n_riskgroups) ## Assume that proportion of ages in each risk group are the same for all ages
+    risk_factors <- rep(1, n_riskgroups) ## Assume that each risk group has same modifier
+    ## Enumerate out risk factors for each age group
+    age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),ncol=n_riskgroups)
+    
+    ## construct demography matrix
+    tmp <- setup_populations(popn_size,n_countries,age_propns, 
+                             risk_propns, risk_factors)
+    ## construct travel matrix
+    travelMatrix <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
+    ## construct latitude vector
+    latitudes <- matrix(seq_len(n_countries), n_countries, 1)
+
+    ## Generate a contact matrix with dimensions (n_ages*n_riskgroups) * (n_ages*n_riskgroups).
+    ## ie. get age specific, then enumerate out by risk group.
+    ## If we have country specific contact rates, we get a list
+    ## of these matrices of length n_countries
+    ## Contact rates
+    contactRates <- c(6.92,.25,.77,.45,.19,3.51,.57,.2,.42,.38,1.4,.17,.36,.44,1.03,1.83)
+    contactDur <- c(3.88,.28,1.04,.49,.53,2.51,.75,.5,1.31,.8,1.14,.47,1,.85,.88,1.73)
+
+    ## Generate risk factor modifier. ie. modifier for each age/risk group pair, same dimensions as C2
+    ## The risk factor modifier modifies the susceptibility of age/risk groups
+    risk <- c(t(age_specific_riskgroup_factors))
+    risk_matrix <- t(kronecker(risk,matrix(1,1,n_riskgroups*n_ages)))
+    
+    ## for now, make contact matrices same for all countries
+    C1 <- generate_contact_matrix(contactRates, contactDur, n_ages, simulation_flags[["ageMixing"]])
+    if(simulation_flags[["country_specific_contact"]]) {
+        C1 <- rep(list(C1), n_countries)
+        C2 <- lapply(C1, function(x) kronecker(x, matrix(1,n_riskgroups,n_riskgroups)))
+        C3 <- lapply(C2, function(x) x*risk_matrix)
+    } else {
+        C2 <- kronecker(C1, matrix(1,n_riskgroups,n_riskgroups))
+        C3 <- C2*risk_matrix
+    }
+    return(list("popns"=demography_matrix$X,"labels"=demography_matrix$labels,
+                "contactMatrix"=C3,"travelMatrix"=travelMatrix,"latitudes"=latitudes,
+                "n_countries"=n_countries,"n_ages"=n_ages,"n_riskgroups"=n_riskgroups))
+}
+
+
 #' function to setup synthetic population sizes for each location, age, risk group, 
 #' and labels associated with these
 #' 
@@ -48,7 +178,7 @@ setup_populations <- function(popn_size, n_countries,
     
     ## Enumerate out country/age propns to same dimensions as risk groups (ie. n_riskgroups*n_ages*n_countries x 1)
     age_group_risk <- c(kronecker(matrix(1,n_riskgroups,1), age_groups))
-    
+
     ## Multiply together to get proportion of population in each location/age/risk group combo
     X <- round(risk_matrix*age_group_risk)
     
@@ -76,13 +206,14 @@ setup_populations <- function(popn_size, n_countries,
 #' size in each country.
 #' @export
 setup_populations_real_data <- function(demography_filename,
-                                        risk_propns, risk_factors,
-                                        n_riskgroups){
+                                        risk_propns, risk_factors){
     
     n_riskgroups <- ncol(risk_propns)
     
     ## read in demographic data
     demographic_data <- read.csv(demography_filename,sep = ",")
+    n_countries <- nrow(demographic_data)
+    n_ages <- ncol(demographic_data)-2
     
     ## ensure proportions sum to 1 -- eliminate rounding errors
     demographic_data[,ncol(demographic_data)] <- 1 - rowSums(demographic_data[,seq(3,ncol(demographic_data) - 1)])

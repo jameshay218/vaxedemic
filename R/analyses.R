@@ -60,8 +60,6 @@ time_end <- function(results){
 
 # vector of deaths... What does each entry corresponds to? I presume split by
 #  coutry, risk group, age group?
-
-# Check if need popns or X...
 deaths <- function(results){
   tend <- time_end(results)
   popns - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
@@ -75,7 +73,7 @@ worldwide_deaths <- function(results){
 
 # global attack rate
 global_attack <- function(results){
-  pop_total <- sum(X)
+  pop_total <- sum(popns)
   tend <- time_end(results)
   sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results)) / pop_total
 }

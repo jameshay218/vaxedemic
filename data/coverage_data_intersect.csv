@@ -23,7 +23,6 @@
 "Chile",246.711873876181
 "China",7.80759428384069
 "Colombia",98.4569313138131
-"Republic_of_Congo",0
 "Costa_Rica",131.251409425086
 "Croatia",71.4143398012305
 "Denmark",101.038454941652
@@ -89,6 +88,7 @@
 "Poland",36.8361512056859
 "Portugal",154.513836536201
 "Qatar",39.2198488416652
+"Republic_of_Congo",0
 "Republic_of_Korea",335.696397835245
 "Romania",38.2306587099929
 "Russia",44.8913715987945
@@ -110,6 +110,7 @@
 "Switzerland",132.818664158881
 "Syrian_Arab_Republic",2.81068629037789
 "Tajikistan",0
+"Tanzania",0
 "Thailand",89.0282731174703
 "Tunisia",26.1831188330203
 "Turkey",37.0258766834942
@@ -117,7 +118,6 @@
 "Ukraine",9.9972978669659
 "United_Arab_Emirates",18.4219984797202
 "United_Kingdom",280.40711258923
-"Tanzania",0
 "Uruguay",146.232504048654
 "USA",472.015154667851
 "Uzbekistan",3.55351703590615

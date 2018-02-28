@@ -72,6 +72,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     Beta1 <- function(lats,n_countries){
       trop <- 23.5 #Tropics (in degrees)
       Y=matrix(1,n_countries,1) #Flat outside of tropics - could modify (DH/SR)
+      
       in_tropics <- abs(lats) < trop # find countries in tropics
       Y[in_tropics] <- lats[in_tropics]/trop # linear with abs(latitude) in tropics
       Y[lats < (-trop)] <- -1 # opposite sign in southern hemisphere
@@ -86,6 +87,7 @@ run_simulation <- function(simulation_flags, life_history_params,
       timevec <- seq(1/tdiv,tmax,by=1/tdiv)
       wave <- sin((timevec-tdelay)*2*pi/365)
       wave <- t(colMeans(matrix(wave, nrow=season_res)))
+      
       Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
     } else {
       Phi <- 1
@@ -434,6 +436,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         
         ## stop simulation if there are no more exposed/infectious individuals
         if(sum(E + I + EV + IV) == 0) {
+          
             remaining_idx <- seq((i+1), ncol(Smat))
             
             # make a function to fill in the remaining parts of the state matrix

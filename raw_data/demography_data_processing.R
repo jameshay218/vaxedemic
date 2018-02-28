@@ -56,7 +56,6 @@ contact_country_names_df <- correct_original_id_col(contact_country_names_df, co
 correct_contact_country_names <- as.character(contact_country_names_df$country_name)
 
 read_contact_data_closure <- function(first_name_in_sheet_2, contact_filenames){
-
   
   f <- function(country_name){
     name_in_2 <- (country_name == first_name_in_sheet_2) ||
@@ -92,10 +91,10 @@ condense_age_groups <- function(contact_data, propn_ages){
   condense_age_individual
 }
 
-read_contact_data <- read_contact_data_closure(first_name_in_sheet_2, 
+read_contact_data1 <- read_contact_data_closure(first_name_in_sheet_2, 
                             contact_filenames)
 
-contact_data <- lapply(contact_country_names, read_contact_data)
+contact_data <- lapply(contact_country_names, read_contact_data1)
 
 flight_data <- read.table("JH_cleaning/Huang2013/huang2013_melted.csv", sep = ",", header = TRUE)
 flight_data <- correct_original_id_col(flight_data, countries, "Destination")
@@ -108,16 +107,28 @@ names(coverage_data) <- c("originalID", "country", "dose_per_1000")
 coverage_data <- correct_original_id_col(coverage_data,countries,"country")
 coverage_data <- coverage_data[,c("country", "dose_per_1000")]
 coverage_names <- coverage_data$country
+
+latitude_data <- read.table("JH_cleaning/LocationData/latitudes.csv", sep = ",", header = TRUE)
+names(latitude_data) <- c("countryCode", "latitude", "longitude", "country", "originalID", "Data")
+latitude_data <- correct_original_id_col(latitude_data,countries,"country")
+latitude_data <- latitude_data[c("country", "countryID", "countryCode", 
+                                 "latitude", "longitude", "Data")]
+names(latitude_data)[c(1, 2)] <- c("Location", "LocationID")
+latitude_names <- latitude_data$Location
 countries_in_all_datasets <- intersect(demographic_country_names, 
                              intersect(correct_contact_country_names,
                              intersect(coverage_names,
-                                       flight_data_names)))
+                             intersect(latitude_names,
+                                       flight_data_names))))
 
 demographic_data <- demographic_data[demographic_data$countryID %in% countries_in_all_datasets,]
 contact_data <- lapply(which(correct_contact_country_names %in% countries_in_all_datasets), function(x) contact_data[[x]])
 flight_data <- flight_data[flight_data$Destination %in% countries_in_all_datasets &
                              flight_data$Origin %in% countries_in_all_datasets,]
 coverage_data <- coverage_data[coverage_data$country %in% countries_in_all_datasets,]
+coverage_data <- coverage_data[order(coverage_data$country),]
+latitude_data <- latitude_data[latitude_data$Location %in% countries_in_all_datasets,]
+latitude_data <- latitude_data[order(latitude_data$Location),]
 
 flight_data <- reshape2::dcast(flight_data,Origin~Destination)
 flight_data <- as.matrix(flight_data[,-1])
@@ -133,19 +144,20 @@ write.table(demographic_data,file = "demographic_data_intersect.csv",sep = ",", 
 write.table(contact_data,file = "contact_data_intersect.csv",sep = ",", row.names = FALSE)
 write.table(flight_data,file = "flight_data_intersect.csv",sep = ",", row.names = FALSE)
 write.table(coverage_data,file = "coverage_data_intersect.csv",sep = ",", row.names = FALSE)
+write.table(latitude_data,file = "latitudes_intersect.csv",sep = ",", row.names = FALSE)
 write(countries_in_all_datasets, file = "countries_intersect.csv", sep = ",")
 
-risk_group_data <- read.csv("at_risk_propns_baguelin2013.csv",
-                            stringsAsFactors = FALSE)
-
-upper_ages <- c(4, 14, 64, Inf)
-cumsum_select_ages <- 
-  vapply(upper_ages, function(x) colSums(risk_group_data[risk_group_data$upperAge <= x,]),
-         double(ncol(risk_group_data)))
-sum_select_ages <- apply(cumsum_select_ages, 1, diff)
-sum_select_ages <- as.data.frame(rbind(t(cumsum_select_ages[,1]), sum_select_ages))
-propn_atRisk <- sum_select_ages[["N_atRisk"]] / sum_select_ages[["N"]]
-
-risk_group_data <- data.frame(propn_atRisk, 1 - propn_atRisk)
-write.table(risk_group_data,file = "risk_group_data.csv",sep = ",", 
-            row.names = FALSE, col.names = FALSE)
+# risk_group_data <- read.csv("JH_cleaning/at_risk_propns_baguelin2013.csv",
+#                             stringsAsFactors = FALSE)
+# 
+# upper_ages <- c(4, 14, 64, Inf)
+# cumsum_select_ages <- 
+#   vapply(upper_ages, function(x) colSums(risk_group_data[risk_group_data$upperAge <= x,]),
+#          double(ncol(risk_group_data)))
+# sum_select_ages <- apply(cumsum_select_ages, 1, diff)
+# sum_select_ages <- as.data.frame(rbind(t(cumsum_select_ages[,1]), sum_select_ages))
+# propn_atRisk <- sum_select_ages[["N_atRisk"]] / sum_select_ages[["N"]]
+# 
+# risk_group_data <- data.frame(propn_atRisk, 1 - propn_atRisk)
+# write.table(risk_group_data,file = "risk_group_data.csv",sep = ",", 
+#             row.names = FALSE, col.names = FALSE)

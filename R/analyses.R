@@ -60,29 +60,29 @@ time_end <- function(results){
 
 # vector of deaths... What does each entry corresponds to? I presume split by
 #  coutry, risk group, age group?
-deaths <- function(results){
+deaths <- function(results, popns){
   tend <- time_end(results)
   popns - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
     results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
 }
 
 # total number of deaths
-worldwide_deaths <- function(results){
-  sum(deaths(results))
+worldwide_deaths <- function(results, popns){
+  sum(deaths(results, popns))
 }
 
 # global attack rate
-global_attack <- function(results){
+global_attack <- function(results, popns){
   pop_total <- sum(popns)
   tend <- time_end(results)
-  sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results)) / pop_total
+  sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results, popns)) / pop_total
 }
 
 # Create a data frame from of the simulation results - worldwide deaths, global 
 #  attack rate
-deaths_GAR_df <- function(results){
-    data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1)), 
-             "global_attack" = vapply(results, global_attack, double(1)))
+deaths_GAR_df <- function(results, popns){
+    data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1), popns), 
+             "global_attack" = vapply(results, global_attack, double(1), popns))
   }
 
 

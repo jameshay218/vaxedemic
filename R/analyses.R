@@ -16,7 +16,7 @@
 #' @param n_vax_allocated numeric vector of length n_countries.  number of vaccines allocated to each country
 #'
 #' @export
-user_specified_vax_alloc_func <- function(sum_age_risk_func, 
+vaccinate_by_incidence <- function(sum_age_risk_func, 
                                           travel_matrix,
                                           vax_allocation_params,
                                           S, E, I, R, vax_pool) {
@@ -38,7 +38,7 @@ user_specified_vax_alloc_func <- function(sum_age_risk_func,
 #' @param t scalar time
 #' @return needs to return a scalar: the number of vaccines ever produced up to time t
 #' @export
-user_specified_cum_vax_pool_func <- function(vax_production_params, t) {
+produce_vax_linear_with_delay <- function(vax_production_params, t) {
   t_since_production <- t - (vax_production_params[["detection_delay"]] + 
                                vax_production_params[["production_delay"]])
   if(t_since_production < 0) {

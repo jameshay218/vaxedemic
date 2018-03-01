@@ -1,3 +1,5 @@
+#' returns a function to sum a state vector across age and risk groups
+#' 
 #' returns a function to sum a state vector (e.g. the current number of susceptibles in each
 #' country, age and risk group) across age and risk groups
 #' 
@@ -11,6 +13,8 @@ sum_age_risk_closure <- function(labels) {
   }
 }
 
+#' returns a function which distributes vaccines between age and risk groups
+#' 
 #' returns a function which, 
 #' given the number of vaccines allocated to each country, distributes vaccines
 #'  between age and risk groups
@@ -147,9 +151,11 @@ gen_int_sum_int <- function(n_int, sum_int) {
   round_preserve_sum(normalise(runif(n_int)) * sum_int)
 }
 
-# a closure to make a function which returns a vector of length
-# n = n_countries * n_ages * n_risk_groups:
-# the number of vaccines to be allocated to each location, age, risk group
+#' closure to make vaccine allocation function
+#' 
+#' a closure to make a function which returns a vector of length
+#' n = n_countries * n_ages * n_risk_groups:
+#' the number of vaccines to be allocated to each location, age, risk group
 #'
 #' @param user_specified_vax_alloc_func function to allocate vaccines
 #' given the arguments
@@ -170,6 +176,7 @@ gen_int_sum_int <- function(n_int, sum_int) {
 #' @return a function which returns a vector of length
 # n_countries * n_ages * n_risk_groups:
 # the number of vaccines to be allocated to each location, age, risk group
+#' @export
 vaccine_allocation_closure <- function(user_specified_vax_alloc_func, 
                                        travel_matrix, vax_allocation_params, labels) {
   
@@ -216,6 +223,8 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
   }
 }
 
+#' closure to make vaccine production function
+#' 
 #' a closure to make a function which returns a scalar:
 # the number of vaccines which have ever existed at time t
 # (may involve integrating the production rate curve if you want,
@@ -225,6 +234,7 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
 #' @param vax_production_params: list of parameters for vaccine production
 #' @return function of t which returns
 #' the number of vaccines which have ever existed at time t
+#' @export
 cum_vax_pool_func_closure <- function(user_specified_cum_vax_pool_func, vax_production_params) {
   f <- function(t) {
     user_specified_cum_vax_pool_func(vax_production_params, t)

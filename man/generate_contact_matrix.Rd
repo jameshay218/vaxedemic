@@ -24,4 +24,3 @@ the matrix of age-specific contact rates
 \description{
 Generates the age-mixing contact matrix taking into account contact rates and durations
 }
-

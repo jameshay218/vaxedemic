@@ -2,6 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{vaccine_allocation_closure}
 \alias{vaccine_allocation_closure}
+\title{closure to make vaccine allocation function}
 \usage{
 vaccine_allocation_closure(user_specified_vax_alloc_func, travel_matrix,
   vax_allocation_params, labels)
@@ -30,4 +31,8 @@ in location y}
 \value{
 a function which returns a vector of length
 }
-
+\description{
+a closure to make a function which returns a vector of length
+n = n_countries * n_ages * n_risk_groups:
+the number of vaccines to be allocated to each location, age, risk group
+}

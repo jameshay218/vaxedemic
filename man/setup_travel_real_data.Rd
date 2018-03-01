@@ -23,4 +23,3 @@ square travel matrix of side length n_countries (unnormalised)
 \description{
 function to construct travel matrix from data
 }
-

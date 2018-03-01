@@ -20,4 +20,3 @@ where type includes age and risk groups.
 \description{
 function to construct contact matrix from data
 }
-

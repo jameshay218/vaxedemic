@@ -2,32 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{distribute_vax_among_age_risk_closure}
 \alias{distribute_vax_among_age_risk_closure}
-\title{returns a function which, 
-given the number of vaccines allocated to each country, distributes vaccines
- between age and risk groups
- 
- @param priorities data frame with rows n_groups = n_ages * n_riskgroups.
- Contains the columns "RiskGroup","Age" and "Priority".
- If x vaccines are allocated to a country, and the unvaccinated population in
- each age/risk group in that country is given by a vector p of length n_groups,
- then the number of vaccines allocated to each age/risk group is
- x * p * y / sum(p * y) where y is a normalised version of priorities$Priority.
- For example, to give vaccines only to risk/age group 1, y = [1,0,0,...].
- For non-discriminatory distribution, y = [1,1,1,...] / n_groups.
- Note that if y_i = 0 for any age/risk group i, vaccines will never be allocated
- to that age/risk group even if all other age/risk groups have been fully vaccinated --
- best to use y_i = epsilon << 1 instead.
- For consistency with labels, 
- @param labels data frame with n rows, and columns "Location", "RiskGroup" and "Age".
- n = n_countries * n_ages * n_riskgroups.
- @return a function f.
- f takes the arguments
- n_vax_allocated: numeric vector of length n_countries. 
- The number of vaccines allocated to each country.
- n_unvaccinated: numeric vector of length n.
- The number of unvaccinated individuals in each location, age, risk group.
- f returns a numeric vector of length n: the
- number of vaccines allocated to each country, age, risk group}
+\title{returns a function which distributes vaccines between age and risk groups}
 \usage{
 distribute_vax_among_age_risk_closure(priorities, labels)
 }
@@ -59,4 +34,3 @@ given the number of vaccines allocated to each country, distributes vaccines
  f returns a numeric vector of length n: the
  number of vaccines allocated to each country, age, risk group
 }
-

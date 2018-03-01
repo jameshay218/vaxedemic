@@ -5,10 +5,10 @@
 \title{Model visualisations - MAIN FUNCTION}
 \usage{
 model_plots(res, n_ages, n_riskgroups,
-  countryFile = "~/Documents/vaxedemic/data/countries_intersect.csv",
-  latitudeFile = "~/Documents/vaxedemic/data/latitudes_intersect.csv",
-  regionFile = "~/Documents/vaxedemic/data/regions_clean.csv",
-  vitalFile = "~/Documents/vaxedemic/data/unified/demographic_data_intersect.csv")
+  countryFile = "data/countries_intersect.csv",
+  latitudeFile = "data/latitudes_intersect.csv",
+  regionFile = "data/regions_clean.csv",
+  vitalFile = "data/demographic_data_intersect.csv")
 }
 \arguments{
 \item{n_ages}{the number of age groups}
@@ -32,4 +32,3 @@ TO DO: 1) need to make sure that the denominator is correct and that we are grou
 This is very much a work in progress. Takes the output of \code{\link{run_simulation}} and returns 
 a set of incidence curve and heatmaps for per capita incidence by region. Requires data table and ggplot2.
 }
-

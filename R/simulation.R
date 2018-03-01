@@ -196,7 +196,7 @@ run_simulation <- function(simulation_flags, life_history_params,
        res
      }
     
-    list(result)
+    result
 }
 
 

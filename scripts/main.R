@@ -55,11 +55,15 @@ simulation_flags <- list(ageMixing=TRUE,
 
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
 
-## example parameters for vaccine production (see cum_vax_pool_func_closure)
+## vaccine production function
+user_specified_cum_vax_pool_func <- produce_vax_linear_with_delay
+## parameters for vaccine production (see cum_vax_pool_func_closure)
 vax_production_params <- list(detection_delay = 0, production_delay = 365/2, 
                               production_rate = 550e6/(365/12*3), max_vax = Inf)
 
-## example parameters for vaccine allocation
+## vaccination strategy
+user_specified_vax_alloc_func <- vaccinate_by_incidence
+## parameters for vaccine allocation
 vax_allocation_params <- list(priorities = NULL)
 
 ## allocate and distribute vaccine every vac_alloc_period time divisions
@@ -145,4 +149,4 @@ res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_par
 countries <- sample(1:n_countries,20)
 p <- model_plot_simple(res[[1]],labels, countries)
 
-summary_stats <- deaths_GAR_df(res)
+summary_stats <- deaths_GAR_df(res, popns)

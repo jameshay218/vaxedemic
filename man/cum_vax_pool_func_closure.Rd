@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{cum_vax_pool_func_closure}
 \alias{cum_vax_pool_func_closure}
-\title{a closure to make a function which returns a scalar:}
+\title{closure to make vaccine production function}
 \usage{
 cum_vax_pool_func_closure(user_specified_cum_vax_pool_func,
   vax_production_params)
@@ -20,4 +20,3 @@ the number of vaccines which have ever existed at time t
 \description{
 a closure to make a function which returns a scalar:
 }
-

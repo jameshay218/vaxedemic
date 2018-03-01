@@ -189,12 +189,12 @@ run_simulation <- function(simulation_flags, life_history_params,
                          "case_fatality_ratio" = case_fatality_ratio_vec)
     
     ## run simulation
-    result <- #foreach(i = 1:n_runs) %dopar% {        
-      main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
+    result <- foreach(i = 1:n_runs) %dopar% {        
+      res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
                         SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                         vax_allocation_func)
-    #   res
-    # }
+       res
+     }
     
     list(result)
 }

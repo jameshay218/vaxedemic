@@ -139,26 +139,19 @@ sim_params <- list(n_countries=n_countries,
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
                       cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period,
-                      n_runs=5)
-regionDat <- read.csv("data/regions_clean.csv")
-latitudeDat <- read.csv("data/latitudes_intersect.csv")
+                      n_runs=2)
+
+p <- calculate_summaries(res, labels, NULL)
 p <- plot_peak_times(res, labels, regionDat, latitudeDat)
-
-obj <- setup_cluster_JH("~/net/home/vaxedemic")
-
-wow <- calibrating_amp_and_travel(0.7,0.001, regionDat, latitudeDat, simulation_flags, life_history_params, vax_params, 
-                                  sim_params,case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
-                                  user_specified_cum_vax_pool_func, vax_production_params, user_specified_vax_alloc_func,
-                                  vax_allocation_params, tmax, tdiv, vax_alloc_period,
-                                  n_runs=3)
-job <- obj$enqueue(calibrating_amp_and_travel(0.7,0.001, regionDat, latitudeDat, simulation_flags, life_history_params, vax_params, 
-                                         sim_params,case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
-                                         user_specified_cum_vax_pool_func, vax_production_params, user_specified_vax_alloc_func,
-                                         vax_allocation_params, tmax, tdiv, vax_alloc_period,
-                                         n_runs=3))
-job$status()
 
 countries <- sample(1:n_countries,20)
 p <- model_plot_simple(res[[1]],labels, countries)
-
 summary_stats <- deaths_GAR_df(res)
+
+wow <- calibrating_amp_and_travel("test", 0.7, 0.0001, "~/Documents/vaxedemic/",
+                         4, tmax, tdiv, seasonality_resolution,
+                         life_history_params, travel_params, simulation_flags,
+                         vax_params,vax_production_params, vax_allocation_params, vax_alloc_period,
+                         seedCountries, seedSizes, seedAges, seedRiskGroups,
+                         180, regionDat, latitudeDat,requested_stats="peak_times")
+

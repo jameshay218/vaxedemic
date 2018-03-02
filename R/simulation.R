@@ -32,7 +32,9 @@
 #' @param tmax the number of days for which to run the simulation
 #' @param tdiv the number of timesteps per day
 #' @param vax_alloc_period allocate vaccines once every this many timesteps
-#' @return list containing results of main simulation loop (see main_simulation)
+#' @param n_runs number of repeats to run
+#' @param requested_stats string specifying which results/summaries should be calculated. Currently either "all_res" for the raw results or "peak_times" for pandemic peak times by country
+#' @return a list of lists containing results of main simulation loop (see main_simulation). The length of this list is equal to n_runs
 #' @export
 run_simulation <- function(simulation_flags, life_history_params,
                            vax_params, sim_params,
@@ -44,7 +46,8 @@ run_simulation <- function(simulation_flags, life_history_params,
                            vax_allocation_func,
                            tmax=100,tdiv=24, vax_alloc_period = 24 * 7,
                            n_runs=1,
-                           requested_stats=NULL){
+                           requested_stats="all_res",
+                           ...){
   
     #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
@@ -183,31 +186,20 @@ run_simulation <- function(simulation_flags, life_history_params,
         }
     }
     
-     ## gather model parameters
+    ## gather model parameters
     modelParameters <- list("gamma"=gamma, "sigma" = sigma, "efficacy" = efficacy,
-                         "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
-                         "Phi" = Phi, "seasonal" = seasonal, 
-                         "case_fatality_ratio" = case_fatality_ratio_vec)
-    
+                            "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
+                            "Phi" = Phi, "seasonal" = seasonal, 
+                            "case_fatality_ratio" = case_fatality_ratio_vec)
     ## run simulation
     result <- foreach(i = 1:n_runs) %dopar% {
         res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
                                SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                                vax_allocation_func)
-        if(n_runs > 1){
-            res <- calculate_summaries(res, labels, requested_stats)
-        }
+        res <- calculate_summaries(res, labels, requested_stats, ...)
         res
     }
     result
-                                        #result <- #foreach(i = 1:n_runs) %dopar% {        
-                                        #  main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
-                                        #                    SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-                                        #                    vax_allocation_func)
-                                        #   res
-                                        # }
-    
-                                        #list(result)
 }
 
 
@@ -299,7 +291,6 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     
     ## initialise matrices to store simulation outputs
     Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-    #Smat <- Emat <- Imat <- Rmat <- Matrix(0, n_groups, length(times))
     SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- Smat
     
     Smat[,1] <- S0
@@ -322,8 +313,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     if(any(diff(cum_vax_pool) < 0)) {
         stop("cumulative number of vaccines not a monotonically non-decreasing function")
     }
-    
-    for(i in 2:(tend+1)){      
+    for(i in 2:(tend+1)){
         ## check that current state is sensible
         stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
                   all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
@@ -471,16 +461,14 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         
         ## stop simulation if there are no more exposed/infectious individuals
 
-        if(sum(E + I + EV + IV) == 0) {
-          
+        if(i < (tend + 1) && sum(E + I + EV + IV) == 0) {
             remaining_idx <- seq((i+1), ncol(Smat))
-            
-            # make a function to fill in the remaining parts of the state matrix
-            # once we stop the simulation
+                                        # make a function to fill in the remaining parts of the state matrix
+                                        # once we stop the simulation
             
             fill_remaining_closure <- function(n_groups, remaining_idx) {
-              f <- function(vec) {
-                matrix(vec, n_groups, length(remaining_idx))
+                f <- function(vec) {
+                    matrix(vec, n_groups, length(remaining_idx))
               }
               f
             }

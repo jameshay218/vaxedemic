@@ -7,7 +7,7 @@
 run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
   case_fatality_ratio_vec, X, labels, contactMatrix, travelMatrix, latitudes,
   cum_vax_pool_func, vax_allocation_func, tmax = 100, tdiv = 24,
-  vax_alloc_period = 24 * 7, n_runs = 1, requested_stats = NULL)
+  vax_alloc_period = 24 * 7, n_runs = 1, requested_stats = "all_res", ...)
 }
 \arguments{
 \item{simulation_flags}{named vector (or list) with the logical elements "normaliseTravel"
@@ -55,9 +55,13 @@ gives the number of vaccines to allocate to each location, age, risk group}
 \item{tdiv}{the number of timesteps per day}
 
 \item{vax_alloc_period}{allocate vaccines once every this many timesteps}
+
+\item{n_runs}{number of repeats to run}
+
+\item{requested_stats}{string specifying which results/summaries should be calculated. Currently either "all_res" for the raw results or "peak_times" for pandemic peak times by country}
 }
 \value{
-list containing results of main simulation loop (see main_simulation)
+a list of lists containing results of main simulation loop (see main_simulation). The length of this list is equal to n_runs
 }
 \description{
 function to set up simulation from inputs, then run

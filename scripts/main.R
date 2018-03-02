@@ -141,6 +141,6 @@ sim_params <- list(n_countries=n_countries,
                    amp=.7)
 ###################################################
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
-                      case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
+                      case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes,
                       cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period,
-                      n_runs=5)
+                      n_runs=2)

@@ -143,17 +143,35 @@ shrink_data <- function(res){
   return(final)    
 }
 
-calculate_summaries <- function(res, labels, reqested_stats){
-  I <- data.table(res$I)
-  I <- cbind(labels, I)
-  I <- melt(I, id.vars=colnames(labels))
-  I$variable <- as.numeric(as.character(I$variable))
-  I <- data.table(I)
-  I[,sumI:=sum(value),key=c("Location","variable")]
-  I[,sumN:=sum(X),key=c("Location","variable")]
-  tmp <- unique(I[,c("Location","variable","sumI","sumN")])
-  peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
-  return(peakTimes)
+combine_incidence <- function(I, labels){
+  browser()
+    I <- cbind(labels, I)
+    I <- melt(I, id.vars=colnames(labels))
+    I$variable <- as.numeric(as.character(I$variable))
+    I <- data.table(I)
+    I[,sumI:=sum(value),key=c("Location","variable")]
+    I[,sumN:=sum(X),key=c("Location","variable")]
+    return(I)
+}
+
+calculate_summaries <- function(res, labels, requested_stats,...){
+  browser()
+    if(requested_stats == "all_res"){
+        return(res)
+    }    
+    I <- data.table(res$I)
+    I <- combine_incidence(I, labels)
+    tmp <- unique(I[,c("Location","variable","sumI","sumN")])
+    peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
+    #tmp <- merge(tmp, regionDat[,c("Location","region")], by="Location")
+    tmp <- merge(tmp, latitudeDat[,c("Location","latitude")])
+    tmp$loc <- ifelse(tmp$latitude > 0, "North", "South")
+    tmp[abs(tmp$latitude) < 23.5,"loc"] <- "Tropics"
+    tmp[,I:=sum(sumI),key=c("loc","variable")]
+    tmp[,N:=sum(sumN),key=c("loc","variable")]
+    tmp <- unique(tmp[,c("variable","I","N","loc")])
+    
+    return(list("I"=tmp,"peakTimes"=peakTimes))
 }
 
 #' @export

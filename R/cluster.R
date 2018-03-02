@@ -79,7 +79,6 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon, wd,
                           case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes, 
                           cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period,
                           n_runs=n_runs, requested_stats=requested_stats, regionDat=regionDat, latitudeDat=latitudeDat)
-    return(res)
     message("Simulations complete")
 
     ## Cbind country incidence

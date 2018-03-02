@@ -137,14 +137,14 @@ calculate_summaries <- function(res, labels, requested_stats,...){
     I <- combine_incidence(I, labels)
     tmp <- unique(I[,c("Location","variable","sumI","sumN")])
     peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
+    return(peakTimes)
     #tmp <- merge(tmp, regionDat[,c("Location","region")], by="Location")
-    tmp <- merge(tmp, latitudeDat[,c("Location","latitude")])
+    tmp <- merge(tmp, latitudeDat[,c("Location","latitude")],by="Location")
     tmp$loc <- ifelse(tmp$latitude > 0, "North", "South")
     tmp[abs(tmp$latitude) < 23.5,"loc"] <- "Tropics"
     tmp[,I:=sum(sumI),key=c("loc","variable")]
     tmp[,N:=sum(sumN),key=c("loc","variable")]
-    tmp <- unique(tmp[,c("variable","I","N","loc")])
-    
+    tmp <- unique(tmp[,c("variable","I","N","loc")])    
     return(list("I"=tmp,"peakTimes"=peakTimes))
 
 }

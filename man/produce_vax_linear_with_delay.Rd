@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyses.R
 \name{produce_vax_linear_with_delay}
 \alias{produce_vax_linear_with_delay}
-\title{example function of vaccine production:}
+\title{linear function of vaccine production}
 \usage{
 produce_vax_linear_with_delay(vax_production_params, t)
 }

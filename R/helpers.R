@@ -112,10 +112,16 @@ round_preserve_sum <- function(vec) {
     return(vec)
   }
   
+  # if vector doesn't sum to integer, 
+  # round down so it does sum to an integer (ensuring positivity)
   sum_vec <- sum(vec)
   rounded_sum <- round(sum_vec)
+  fractional_part <- rounded_sum - sum_vec
   if(!isTRUE(all.equal(rounded_sum - sum_vec, 0))) {
-    stop("vector passed to round_preserve_sum does not sum to integer")
+    larger_idx <- which(vec > fractional_part)
+    # subtract fractional_part from one of those groups, chosen randomly
+    subtract_idx <- sample(larger_idx, 1)
+    vec[subtract_idx] <- vec[subtract_idx] - fractional_part
   }
   
   n_round_up <- rounded_sum - sum(floor(vec))
@@ -195,17 +201,6 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
                                                      vax_allocation_params,
                                                      S, E, I, R, vax_pool)
     
-    # ensure that total number of vaccines allocated is an integer
-    fractional_part <- sum(n_vax_allocated) - round(sum(n_vax_allocated))
-    if (!all.equal(fractional_part, 0)) {
-      # find which groups got allocated at least fractional_part of a vaccine
-      alloc_idx <- which(n_vax_allocated > fractional_part)
-      # subtract fractional_part from one of those groups, chosen randomly
-      subtract_idx <- sample(alloc_idx, 1)
-      n_vax_allocated[subtract_idx] <- n_vax_allocated[subtract_idx] - fractional_part
-    }
-    
-    # ensure that number of vaccines allocated to each country is an integer
     n_vax_allocated <- round_preserve_sum(n_vax_allocated)
     
     # ensure that number of vaccines allocated to each country is fewer than or
@@ -215,6 +210,8 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
       sum_age_risk_func(I) +
       sum_age_risk_func(R)
     n_vax_allocated <- pmin(n_vax_allocated, total_individuals)
+    
+    n_vax_allocated <- round_preserve_sum(n_vax_allocated)
     
     # distribute vaccines in each country between individuals of different
     # ages, risk groups, and infection statuses

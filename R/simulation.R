@@ -33,6 +33,8 @@
 #' @param tdiv the number of timesteps per day
 #' @param vax_alloc_period allocate vaccines once every this many timesteps
 #' @return list containing results of main simulation loop (see main_simulation)
+#' @import foreach
+#' @importFrom Matrix Matrix
 #' @export
 run_simulation <- function(simulation_flags, life_history_params,
                            vax_params, sim_params,
@@ -44,7 +46,6 @@ run_simulation <- function(simulation_flags, life_history_params,
                            vax_allocation_func,
                            tmax=100,tdiv=24, vax_alloc_period = 24 * 7,
                            n_runs=1){
-  
     #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
     seasonal <- simulation_flags[["seasonal"]]
@@ -158,7 +159,6 @@ run_simulation <- function(simulation_flags, life_history_params,
     beta <- beta/tdiv
     gamma <- gamma/tdiv
     
-
     LD <- (Kdelta*M1)%*%KC ##DH: no beta
 
     #### calculation of force of infection matrix (LD) ends here
@@ -311,7 +311,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     if(any(diff(cum_vax_pool) < 0)) {
         stop("cumulative number of vaccines not a monotonically non-decreasing function")
     }
-    
+
     for(i in 2:(tend+1)){      
         ## check that current state is sensible
         stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
@@ -395,7 +395,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         #################
         ## Generate force of infection on each group/location
         lambda <- beta*LD1%*%(I + IV)
-        
+
         ## Generate probability of infection from this
         P_infection <- 1 - exp(-lambda)
         P_infection_vax <- 1 - exp(-lambda*(1 - efficacy))
@@ -438,7 +438,6 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
 
         newRecovered <- rbinom(n_groups, newRemovals, 1 - case_fatality_ratio)
         newRecoveredVax <- rbinom(n_groups, newRemovalsVax, 1 - case_fatality_ratio)
-        
         ## Update populations
         I <- I - newRemovals
         R <- R + newRecovered
@@ -460,7 +459,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         
         ## stop simulation if there are no more exposed/infectious individuals
 
-        if(sum(E + I + EV + IV) == 0) {
+        if(i < (tend + 1) && sum(E + I + EV + IV) == 0) {
           
             remaining_idx <- seq((i+1), ncol(Smat))
             

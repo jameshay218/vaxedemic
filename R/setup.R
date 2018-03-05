@@ -85,6 +85,7 @@ setup_sim_data <- function(simulation_flags,
                            age_propns=c(5,14,45,16)/80,
                            n_countries=10){
     ## Setup risk group data
+
     risk_propns <- rep(1/n_riskgroups,n_riskgroups) ## Assume risk groups are uniformly distributed
     risk_propns <- matrix(rep(risk_propns,each=n_ages),ncol=n_riskgroups) ## Assume that proportion of ages in each risk group are the same for all ages
     risk_factors <- rep(1, n_riskgroups) ## Assume that each risk group has same modifier
@@ -92,7 +93,7 @@ setup_sim_data <- function(simulation_flags,
     age_specific_riskgroup_factors <- matrix(rep(risk_factors,each=n_ages),ncol=n_riskgroups)
     
     ## construct demography matrix
-    tmp <- setup_populations(popn_size,n_countries,age_propns, 
+    demography_matrix <- setup_populations(popn_size,n_countries,age_propns, 
                              risk_propns, risk_factors)
     ## construct travel matrix
     travelMatrix <- matrix(1,n_countries,n_countries)+999*diag(n_countries) #Travel coupling - assumed independent of age (but can be changed)
@@ -385,7 +386,6 @@ read_coverage_data <- function(coverage_filename, labels) {
   sum_age_risk_func <- sum_age_risk_closure(labels)
   pop_size <- sum_age_risk_func(labels$X)
   coverage_df <- read.table(coverage_filename, sep = ",", header = TRUE, stringsAsFactors = FALSE)
-  browser()
   stopifnot(all(coverage_df$country == levels(labels$Location)))
   coverage <- coverage_df$dose_per_1000 * pop_size
   normalise(coverage)

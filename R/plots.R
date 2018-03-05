@@ -38,7 +38,7 @@ model_plot_simple <- function(res, labels, n_countries){
 #' @param latitudeFile the full file path to the clean country latitude file
 #' @param regionFile the full file path to the clean country by region file
 #' @param vitalFile the full file path to the clean country demography (ie. needs "N") file
-#' @import(data.table)
+#' @import data.table
 #' @export
 model_plots <- function(res, n_ages, n_riskgroups, 
                         countryFile="data/countries_intersect.csv", 
@@ -181,4 +181,58 @@ format_data_for_plots <- function(data,
   
   p2 <- ggplot(I, aes(x=variable,y=value,col=RiskGroup)) + geom_line() + facet_grid(Age~Location) + theme_bw()
   
+}
+
+#'@export
+plot_peak_times <- function(res, labels, regionDat, latitudeDat){
+  peakTimes = do.call("cbind",res)
+  summaryPeaks <- t(apply(peakTimes, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
+  colnames(summaryPeaks) <- c("mean","lower95","median","upper95")
+  summaryPeaks <- data.frame(Location=unique(labels$Location), summaryPeaks)
+  dat <- merge(summaryPeaks,regionDat[,c("Location","region")])
+  dat <- merge(dat,latitudeDat)
+  tmp <- unique(dat[,c("Location","latitude")])
+  my_latitudes <- order(tmp$latitude)
+  dat$Location <- factor(dat$Location, levels=tmp$Location[my_latitudes])
+  dat$Hemisphere <- ifelse(dat$latitude < 0,"Southern","Northern")
+  
+  p <- ggplot(dat) +
+    geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
+    geom_point(aes(y=Location,x=median),size=0.5) +
+    scale_x_continuous(limits=c(0,365)) +
+    xlab("Peak time (days), median and 95% quantiles") +
+    facet_grid(region~.,scales="free_y", space="free",switch="both") +
+    theme(axis.text.y=element_text(size=6)) + theme_bw()
+  return(list("plot"=p,"data"=dat))
+}
+
+plot_country_attack_rates <- function(country_attack_rate, labels) {
+  regionFile <- "data/regions_clean.csv"
+  latitudeFile <- "data/latitudes_intersect.csv"
+  
+  latitudeDat <- read.csv(latitudeFile,stringsAsFactors=FALSE)
+  regionDat <- read.csv(regionFile,stringsAsFactors=FALSE)
+  
+  regionDat <- data.table(regionDat)
+  latitudeDat <- data.table(latitudeDat)
+  
+  country_attack_rate = do.call("cbind",country_attack_rate)
+  summary_attack_rate <- t(apply(country_attack_rate, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
+  colnames(summary_attack_rate) <- c("mean","lower95","median","upper95")
+  summary_attack_rate <- data.frame(Location=unique(labels$Location), summary_attack_rate)
+  dat <- merge(summary_attack_rate,regionDat[,c("Location","region")])
+  dat <- merge(dat,latitudeDat)
+  tmp <- unique(dat[,c("Location","latitude")])
+  my_latitudes <- order(tmp$latitude)
+  dat$Location <- factor(dat$Location, levels=tmp$Location[my_latitudes])
+  dat$Hemisphere <- ifelse(dat$latitude < 0,"Southern","Northern")
+  
+  p <- ggplot(dat) +
+    geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
+    geom_point(aes(y=Location,x=median),size=0.5) +
+    scale_x_continuous(limits=c(0,1)) +
+    xlab("Attack rate, median and 95% quantiles") +
+    facet_grid(region~.,scales="free_y", space="free",switch="both") +
+    theme(axis.text.y=element_text(size=6)) + theme_bw()
+  return(list("plot"=p,"data"=dat))
 }

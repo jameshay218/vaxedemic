@@ -336,9 +336,10 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
             vax_alloc <- 1
             actual_alloc <- 0
             sum_vax_alloc <- S * 0
+            alloc_this_round <- Inf
             
             # notes on while loop to follow
-            while(!isTRUE(all.equal(vax_alloc, actual_alloc))) {
+            while(alloc_this_round > 0 && vax_pool >= 1) {
                 
                 # first pass at allocating vaccines.
                 # may allocate more vaccines to a location / age / risk group/ infection status
@@ -356,12 +357,11 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
                 
                 ## update current vax pool
                 alloc_this_round <- sum(unlist(actual_alloc))
-                if (alloc_this_round == 0 && vax_pool >= 1) {
-                  break
-                }
+                # if (alloc_this_round == 0 && vax_pool >= 1) {
+                #   break
+                # }
                 
                 vax_pool <- vax_pool - alloc_this_round
-                
                 ## update the vaccination status of individuals
                 S <- S - actual_alloc$S
                 E <- E - actual_alloc$E

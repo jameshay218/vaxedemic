@@ -200,7 +200,6 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
     n_vax_allocated <- user_specified_vax_alloc_func(sum_age_risk_func, travel_matrix,
                                                      vax_allocation_params,
                                                      S, E, I, R, vax_pool)
-    
     n_vax_allocated <- round_preserve_sum(n_vax_allocated)
     
     # ensure that number of vaccines allocated to each country is fewer than or

@@ -306,9 +306,9 @@ calc_approx_final_size_distribution <- function(R_0, pop_size) {
   list("mu" = mu, "sigma" = sigma)
 }
 
-calc_final_size_propn_deterministic <- function(R_0) {
+calc_final_size_propn_deterministic <- function(R_0, S_0 = 1) {
   final_size_equation <- function(z) {
-    1 - z - exp(-R_0 * z)
+    1 - z - S_0*exp(-R_0 * z)
   }
   
   epsilon <- 1e-10
@@ -343,4 +343,10 @@ print_z_test_result <- function(z_test_result, n_tests = 1) {
   }
   print(paste0("z test p-value = ", format_results(z_test_result$min_p)))
   print(paste0("z test n_tests = ", z_test_result$n_tests * n_tests))
+}
+
+result_z_test_adjust_alpha <- function(result_z_test, alpha) {
+  adjusted_alpha <- alpha/result_z_test$n_tests
+  significant <- result_z_test$min_p < adjusted_alpha
+  significant
 }

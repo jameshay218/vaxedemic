@@ -79,11 +79,13 @@ produce_vax_linear_with_delay <- function(vax_production_params, t) {
 # Functions for manipulating simulation output
 ######################################################################
 
+#' @export
 # this is tend... I presume the final time?
 time_end <- function(results){
   ncol(results$S)
 }
 
+#' @export
 # vector of deaths... What does each entry corresponds to? I presume split by
 #  coutry, risk group, age group?
 deaths <- function(results, popns){
@@ -92,11 +94,13 @@ deaths <- function(results, popns){
     results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
 }
 
+#' @export
 # total number of deaths
 worldwide_deaths <- function(results, popns){
   sum(deaths(results, popns))
 }
 
+#' @export
 # global attack rate
 global_attack <- function(results, popns){
   pop_total <- sum(popns)
@@ -104,12 +108,14 @@ global_attack <- function(results, popns){
   sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results, popns)) / pop_total
 }
 
+#' @export
 # Create a data frame from of the simulation results - worldwide deaths, global 
 #  attack rate
 deaths_GAR_df <- function(results, popns){
     data.frame("worldwide_deaths" = vapply(results, worldwide_deaths, double(1), popns), 
              "global_attack" = vapply(results, global_attack, double(1), popns))
   }
+
 
 # attack rate by country
 country_attack <- function(results, popns, labels){
@@ -119,4 +125,13 @@ country_attack <- function(results, popns, labels){
   final_size_by_group <- results$R[ ,tend] + results$RV[ ,tend] + deaths(results, popns)
   country_attack_rate <- sum_age_risk(final_size_by_group) / sum_age_risk(popns)
 }
+
+#' @export
+# extract the number of deaths from each list element in the results list.
+many_dead <- function(results, popns){
+  dead <- lapply(results, deaths, popns = popns)
+  dead <- do.call("cbind", dead)
+  dead <- cbind(labels, dead)
+}
+
 

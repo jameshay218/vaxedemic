@@ -155,7 +155,6 @@ combine_incidence <- function(I, labels){
 }
 
 calculate_summaries <- function(res, labels, requested_stats,...){
-  browser()
     if(requested_stats == "all_res"){
         return(res)
     }    

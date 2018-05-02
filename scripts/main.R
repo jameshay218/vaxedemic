@@ -4,7 +4,7 @@ library(Matrix)
 library(data.table)
 library(foreach)
 library(doMC)
-registerDoMC(cores=4)
+registerDoMC(cores=1)
 wd <- "~/Documents/vaxedemic/" 
 devtools::load_all(wd)
 
@@ -14,9 +14,9 @@ devtools::load_all(wd)
 ## Number of simulations to run
 n_runs <- 1
 ## run simulation for tmax days
-tmax <- 365
+tmax <- 1000
 ## tdiv timesteps per day
-tdiv <- 24
+tdiv <- 12
 ## Seasonality resolution
 seasonality_resolution <- tmax*tdiv/12 # Average seasonality into 12 blocks of time
 ###################################################
@@ -29,7 +29,7 @@ seasonality_resolution <- tmax*tdiv/12 # Average seasonality into 12 blocks of t
 life_history_params <- list(R0=1.4, TR=2.6, LP = 1.5, case_fatality_ratio = rep(2e-2,2))
 
 ## travel parameters: scaling of off-diagonals
-travel_params <- list(epsilon = 1e-3)
+travel_params <- list(epsilon = 5e-5)
 ###################################################
 
 
@@ -137,8 +137,8 @@ sim_params <- list(n_countries=n_countries,
                    n_riskgroups=n_riskgroups,
                    seed_vec = seed_vec,
                    seasonality_resolution=seasonality_resolution,
-                   tdelay=180,
-                   amp=.7)
+                   tdelay=0,
+                   amp=.2)
 ###################################################
 res <- run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
                       case_fatality_ratio_vec, popns, labels, contactMatrix, travelMatrix, latitudes,

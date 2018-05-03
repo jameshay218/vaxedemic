@@ -7,49 +7,26 @@
 #' @param vax_params named vector (or list) with the numeric elements "efficacy"
 #' and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
 #' across location, age and risk groups)
-#' @param sim_params list with the numeric elements n_countries, n_ages,
-#' n_riskgroups,  seed_vec and simulation_resolution.  The seed_vec is a vector specifying the 
-#' initial number of exposed individuals in each location, age and risk group
-#' @param case_fatality_ratio_vec vector of case fatality ratio in each location, age, risk group:
-#' length n_countries * n_ages * n_riskgroups
-#' @param X vector of population size in each location, age, risk group:
-#' length n_countries * n_ages * n_riskgroups
-#' @param contactMatrix either a square matrix with side length n_ages * n_riskgroups,
-#' or a list of such matrices, of length n_countries.  
-#' If a single matrix, the contact matrix is assumed to be constant across countries.
-#' contactMatrix[i,j] denotes the amount of influence an individual of type i
-#' has on an individual of type j, where type includes age and risk groups.
-#' @param travelMatrix a square matrix with side length n_countries.
-#' travelMatrix[i,j] denotes the proportion of time an individual in country i
-#' spends in country j.  If simulation_flags[["normaliseTravel"]] == TRUE,
-#' the code will row normalise travelMatrix for you.
-#' @param latitudes a matrix with 1 column and n_countries rows, giving the latitude
-#' of each country in degrees.
-#' @param cum_vax_pool_func a function of time which gives the numebr of vaccines
-#' ever produced at that time
-#' @param vax_allocation_func a function of the current state of the simulation which
-#' gives the number of vaccines to allocate to each location, age, risk group
-#' @param tmax the number of days for which to run the simulation
-#' @param tdiv the number of timesteps per day
+#' @param seasonality_params list of seasonality parameters.
+#' contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.
+#' tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
+#' division: Average seasonality into this many blocks of time
+#' amp: amplitude of seasonality
+#' @param time_params list of parameters to do with time steps in simulation.
+# contains the elements tmax (Maximum time of simulation), tdiv (Number of time steps per day)
 #' @param vax_alloc_period allocate vaccines once every this many timesteps
+#' @param processed_inputs list. output of setup_inputs function
 #' @param n_runs number of repeats to run
 #' @param requested_stats string specifying which results/summaries should be calculated. Currently either "all_res" for the raw results or "peak_times" for pandemic peak times by country
+#' @param other_info list which provides information needed to calculate the summaries
 #' @return a list of lists containing results of main simulation loop (see main_simulation). The length of this list is equal to n_runs
 #' @import foreach
 #' @importFrom Matrix Matrix
 #' @export
-run_simulation <- function(simulation_flags, life_history_params,
-                           vax_params, sim_params,
-                           case_fatality_ratio_vec, X, labels,
-                           contactMatrix,
-                           travelMatrix,
-                           latitudes,
-                           cum_vax_pool_func,
-                           vax_allocation_func,
-                           tmax=100,tdiv=24, vax_alloc_period = 24 * 7,
+run_simulation <- function(simulation_flags, life_history_params, vax_params, seasonality_params,
+                           time_params, vax_alloc_period, processed_inputs,
                            n_runs=1,
-                           requested_stats="all_res",
-                           ...){
+                           requested_stats="all_res", other_info){
       #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
     seasonal <- simulation_flags[["seasonal"]]
@@ -61,14 +38,24 @@ run_simulation <- function(simulation_flags, life_history_params,
     propn_vax0 <- vax_params[["propn_vax0"]] # initial proportion of vaccinated individuals
     gamma <- 1/TR # recovery rate
     sigma <- 1/LP # rate of exposed -> infectious
-    tdelay <- sim_params[["tdelay"]] #Delay from peak summer in northern hemisphere######## ##DH
-    amp <- sim_params[["amp"]] #Amplitude of seasonality########
+    tdelay <- seasonality_params[["tdelay"]] #Delay from peak summer in northern hemisphere######## ##DH
+    amp <- seasonality_params[["amp"]] #Amplitude of seasonality########
+    tmax <- time_params[["tmax"]]
+    tdiv <- time_params[["tdiv"]]
 
-    n_countries <- sim_params[["n_countries"]]
-    n_ages <- sim_params[["n_ages"]]
-    n_riskgroups <- sim_params[["n_riskgroups"]]
-    season_res <- sim_params[["seasonality_resolution"]]
+    n_countries <- processed_inputs[["n_countries"]]
+    n_ages <- processed_inputs[["n_ages"]]
+    n_riskgroups <- processed_inputs[["n_riskgroups"]]
+    season_res <- time_params[["tmax"]]*time_params[["tdiv"]]/seasonality_params[["division"]]
     
+    travelMatrix <- processed_inputs[["travelMatrix"]]
+    contactMatrix <- processed_inputs[["contactMatrix"]]
+    X <- processed_inputs[["popns"]]
+    labels <- processed_inputs[["labels"]]
+    cum_vax_pool_func <- processed_inputs[["cum_vax_pool_func"]]
+    vax_allocation_func <- processed_inputs[["vax_allocation_func"]]
+    seed_vec <- processed_inputs[["seed_vec"]]
+
     maxIndex <- n_countries*n_ages*n_riskgroups
     groupsPerLoc <- n_ages*n_riskgroups
     
@@ -88,7 +75,7 @@ run_simulation <- function(simulation_flags, life_history_params,
     ## calculate Phi, the amplifying factor due to seasonality at each simulation time,
     ## for each location, age, risk group
     if(seasonal){
-      beta1 <- Beta1(latitudes,n_countries)
+      beta1 <- Beta1(processed_inputs[["latitudes"]],n_countries)
       B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv/season_res),beta1)
       timevec <- seq(1/tdiv,tmax,by=1/tdiv)
       wave <- sin((timevec-tdelay)*2*pi/365)
@@ -168,7 +155,6 @@ run_simulation <- function(simulation_flags, life_history_params,
     #### calculation of force of infection matrix (LD) ends here
     
     ## set initial conditions
-    seed_vec <- sim_params[["seed_vec"]]
 
     # intial exposed are distributed among vaccinated and unvaccinated proportionally
     EV <- round(seed_vec * propn_vax0)
@@ -190,13 +176,17 @@ run_simulation <- function(simulation_flags, life_history_params,
     modelParameters <- list("gamma"=gamma, "sigma" = sigma, "efficacy" = efficacy,
                             "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
                             "Phi" = Phi, "seasonal" = seasonal, 
-                            "case_fatality_ratio" = case_fatality_ratio_vec)
+                            "case_fatality_ratio" = processed_inputs[["case_fatality_ratio_vec"]])
     # run simulation
     result <- foreach(i = 1:n_runs) %dopar% {
         res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
                                SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                                vax_allocation_func)
-        res <- calculate_summaries(res, labels, requested_stats, ...)
+        calculate_summaries_args <- c(list(res = res,
+                                         labels = labels,
+                                         requested_stats = requested_stats),
+                                      other_info)
+        res <- do.call(calculate_summaries, calculate_summaries_args)
         res
     }
     result

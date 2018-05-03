@@ -144,7 +144,6 @@ shrink_data <- function(res){
 }
 
 combine_incidence <- function(I, labels){
-  browser()
     I <- cbind(labels, I)
     I <- melt(I, id.vars=colnames(labels))
     I$variable <- as.numeric(as.character(I$variable))

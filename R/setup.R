@@ -1,16 +1,84 @@
+#' process inputs to run simulation
+#' 
+#' @param simulation_flags named vector (or list) with the logical elements "normaliseTravel"
+#'  "seasonal" and "real_data"
+#' @param life_history_params named vector (or list) with the numeric elements
+#' "R0", "TR" (time to recovery) and "LP" (latent period)
+#' @param travel_params list of parameters relating to travel. This should have the following elements: 1) epsilon, which scales the off-diagonals of the travel matrix
+#' @param seed_params named vector (or list) of parameters to do with seeding the pandemic.
+#' contains the elements seedCountries: vector of country names in which to seed
+# Sizes: vector of how many to seed in each country
+# Ages: vector of which age group to seed in each country
+# RiskGroups: vector of which risk group to seed in each country
+#' @param time_params list of parameters to do with time steps in simulation.
+# contains the elements tmax (Maximum time of simulation), tdiv (Number of time steps per day)
+#' @param seasonality_params list of seasonality parameters.
+#' contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.
+#' tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
+#' division: Average seasonality into this many blocks of time
+#' amp: amplitude of seasonality
+
+
+#' @param vax_params named vector (or list) with the numeric elements "efficacy"
+#' and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
+#' across location, age and risk groups)
+#' @param user_specified_cum_vax_pool_func function or character string of function to produce vaccine pool
+#' @param vax_production_params named vector (or list) with named elements matching the arguments of user_specified_cum_vax_pool_func
+#' @param user_specified_vax_alloc_func function or character string of function to allocate vaccines
+#' @param vax_allocation_params named vector (or list) with named elements matching the arguments of user_specified_vax_alloc_func
+#' @return a list of arguments to go into run_simulation
 #' @export
-setup_inputs <- function(simulation_flags, life_params, travel_params){
+setup_inputs <- function(simulation_flags, life_history_params, travel_params, 
+                         seed_params, 
+                         user_specified_cum_vax_pool_func, vax_production_params,
+                         user_specified_vax_alloc_func, vax_allocation_params){
     if(simulation_flags[["real_data"]]){
-        setup <- setup_real_data(simulation_flags=simulation_flags, travel_params=travel_params)
+        demography <- setup_demography_real_data(simulation_flags=simulation_flags, travel_params=travel_params)
     } else {
-        setup <- setup_sim_data(simulation_flags=simulation_flags, travel_params=travel_params)
+      demography <- setup_demography_sim_data(simulation_flags=simulation_flags, travel_params=travel_params)
     }
-    return(setup)
+  
+  case_fatality_ratio_vec <- expand.grid("Location"=seq_len(demography[["n_countries"]]), 
+                                         "case_fatality_ratio" = life_history_params$case_fatality_ratio,
+                                         "Age"=seq_len(demography[["n_ages"]]))
+  case_fatality_ratio_vec <- case_fatality_ratio_vec$case_fatality_ratio
+  
+  seed_vec <- double(length(demography[["popns"]]))
+  labels <- demography[["labels"]]
+  seed_vec[(which(labels$Location == seed_params[["Countries"]] & 
+                    labels$Age == seed_params[["Ages"]] &
+                    labels$RiskGroup == seed_params[["RiskGroups"]]))[1]] <- 
+    seed_params[["Sizes"]]
+  
+  
+  ## process the vaccine production function
+  if(is.character(user_specified_cum_vax_pool_func)) {
+    user_specified_cum_vax_pool_func <- eval(parse(text = user_specified_cum_vax_pool_func))
+  }
+  cum_vax_pool_func <- cum_vax_pool_func_closure(user_specified_cum_vax_pool_func, vax_production_params)
+  
+  ## process the vaccine allocation function
+  if(is.character(user_specified_vax_alloc_func)) {
+    user_specified_vax_alloc_func <- eval(parse(text = user_specified_vax_alloc_func))
+  }
+  vax_allocation_func <- vaccine_allocation_closure(user_specified_vax_alloc_func,
+                                                    travelMatrix, vax_allocation_params, labels)
+  
+  return(list(popns = demography[["popns"]],
+         labels = demography[["labels"]],
+         contactMatrix = demography[["contactMatrix"]],
+         travelMatrix = demography[["travelMatrix"]],
+         latitudes = demography[["latitudes"]],
+         n_countries = demography[["n_countries"]],
+         n_ages = demography[["n_ages"]],
+         n_riskgroups = demography[["n_riskgroups"]],
+         cum_vax_pool_func = cum_vax_pool_func,
+         vax_allocation_func = vax_allocation_func,
+         case_fatality_ratio_vec = case_fatality_ratio_vec,
+         seed_vec = seed_vec))
 }
 
-#' @export
-setup_real_data <- function(simulation_flags,
-                            life_params=NULL,
+setup_demography_real_data <- function(simulation_flags,
                             travel_params=NULL,
                             demography_filename="data/demographic_data_intersect.csv",
                             contact_filename="data/contact_data_intersect.csv",
@@ -74,9 +142,7 @@ setup_real_data <- function(simulation_flags,
                 "n_countries"=n_countries,"n_ages"=n_ages,"n_riskgroups"=n_riskgroups))
 }
 
-#' @export
-setup_sim_data <- function(simulation_flags,
-                           life_params=NULL,
+setup_demography_sim_data <- function(simulation_flags,
                            travel_params=NULL,
                            popn_size=100000,
                            n_riskgroups=2,
@@ -149,7 +215,6 @@ setup_sim_data <- function(simulation_flags,
 #' nrow(labels) = length(X)
 #' pop_size: numeric vector of length n_countries containing the total population
 #' size in each country.
-#' @export
 setup_populations <- function(popn_size, n_countries,
                               age_propns, risk_propns, risk_factors){
     
@@ -204,7 +269,6 @@ setup_populations <- function(popn_size, n_countries,
 #' nrow(labels) = length(X)
 #' pop_size: numeric vector of length n_countries containing the total population
 #' size in each country.
-#' @export
 setup_populations_real_data <- function(demography_filename,
                                         risk_propns, risk_factors){
     
@@ -247,7 +311,6 @@ setup_populations_real_data <- function(demography_filename,
 #' for each matrix, contactMatrix[i,j] denotes the amount of influence 
 #' an individual of type i has on an individual of type j, 
 #' where type includes age and risk groups.
-#' @export
 read_contact_data <- function(contact_filename){
     
     contact_data <- read.table(contact_filename,sep = ",",stringsAsFactors = FALSE,row.names = 1,header = TRUE)
@@ -269,7 +332,6 @@ read_contact_data <- function(contact_filename){
 #' a numeric vector of length 1 which scales the off-diagonal terms of the 
 #' travel matrix.  Roughly, the ratio of off-diagonal to on-diagonal term size.
 #' @return square travel matrix of side length n_countries (unnormalised)
-#' @export
 setup_travel_real_data <- function(travel_filename, pop_size, travel_params) {
     
     travel_data <- read.table(travel_filename,sep = ",",stringsAsFactors = FALSE,header = TRUE)
@@ -290,15 +352,12 @@ setup_travel_real_data <- function(travel_filename, pop_size, travel_params) {
 #' data is located
 #' @return matrix with 1 column and nrow = n_countries.
 #' The latitude of each country in degrees.
-#' @export
 read_latitude_data <- function(latitude_filename){
-    
     latitude_data <- read.table(latitude_filename, sep = ",", header = TRUE)
     latitudes <- latitude_data$latitude
     # alphabetise
     latitudes <- latitudes[order(latitude_data$Location)]
     return(matrix(latitudes, ncol = 1))
-    
 }
 
 #' Uniform location age matrix
@@ -307,7 +366,6 @@ read_latitude_data <- function(latitude_filename){
 #' @param ages the vector of age boundaries
 #' @param maxAge the maximum age
 #' @return the matrix of proportions in each age goup
-#' @export
 generate_age_matrix_uniform <- function(ages,maxAge){
     ageProp <- matrix(ages/maxAge, length(ages),1)
     ageProp
@@ -318,7 +376,6 @@ generate_age_matrix_uniform <- function(ages,maxAge){
 #' Given a vector of proportions in each age group, converts this to a matrix
 #' @param ages the vector of ages
 #' @return the same vector but as an nx1 matrix
-#' @export
 generate_age_matrix <- function(ages){
     ageProp <- matrix(ages, nrow=length(ages),ncol=1)
     ageProp    
@@ -333,7 +390,6 @@ generate_age_matrix <- function(ages){
 #' @param ON bool, if FALSE, turns off age mixing
 #' @param TRANSPOSE bool, if TRUE, returns the transpose of the created matrix
 #' @return the matrix of age-specific contact rates/durations
-#' @export
 generate_age_mixing <- function(contactVector, n_ages, ON=TRUE, TRANSPOSE=TRUE){
     if(!ON) return(matrix(1,n_ages,n_ages))
     if(is.vector(contactVector)){
@@ -354,7 +410,6 @@ generate_age_mixing <- function(contactVector, n_ages, ON=TRUE, TRANSPOSE=TRUE){
 #' @param ON bool, if FALSE, turns off age mixing
 #' @param TRANSPOSE bool, if TRUE, returns the transpose of the created matrix
 #' @return the matrix of age-specific contact rates
-#' @export
 generate_contact_matrix <- function(contactRates, contactDur, n_ages, ON=TRUE, TRANSPOSE=TRUE){
     Cnum <- generate_age_mixing(contactRates, n_ages, ON, TRANSPOSE)
     Cdur <- generate_age_mixing(contactDur, n_ages, ON, TRANSPOSE)
@@ -380,7 +435,6 @@ generate_risk_matrix <- function(propRisk, n_riskgroups, transpose=TRUE){
 #' @param coverage_filename the vector or matrix of age-specific contact rates
 #' @param labels a data frame containing the number of individuals in each location, age, risk group
 #' @return the proportion of doses distributed to each country
-#' @export
 read_coverage_data <- function(coverage_filename, labels) {
   sum_age_risk_func <- sum_age_risk_closure(labels)
   pop_size <- sum_age_risk_func(labels$X)

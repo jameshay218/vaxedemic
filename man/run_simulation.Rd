@@ -4,10 +4,9 @@
 \alias{run_simulation}
 \title{function to set up simulation from inputs, then run}
 \usage{
-run_simulation(simulation_flags, life_history_params, vax_params, sim_params,
-  case_fatality_ratio_vec, X, labels, contactMatrix, travelMatrix, latitudes,
-  cum_vax_pool_func, vax_allocation_func, tmax = 100, tdiv = 24,
-  vax_alloc_period = 24 * 7, n_runs = 1, requested_stats = "all_res", ...)
+run_simulation(simulation_flags, life_history_params, vax_params,
+  seasonality_params, time_params, vax_alloc_period, processed_inputs,
+  n_runs = 1, requested_stats = "all_res", other_info)
 }
 \arguments{
 \item{simulation_flags}{named vector (or list) with the logical elements "normaliseTravel"
@@ -20,45 +19,23 @@ and "seasonal"}
 and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
 across location, age and risk groups)}
 
-\item{sim_params}{list with the numeric elements n_countries, n_ages,
-n_riskgroups,  seed_vec and simulation_resolution.  The seed_vec is a vector specifying the 
-initial number of exposed individuals in each location, age and risk group}
+\item{seasonality_params}{list of seasonality parameters.
+contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.
+tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
+division: Average seasonality into this many blocks of time
+amp: amplitude of seasonality}
 
-\item{case_fatality_ratio_vec}{vector of case fatality ratio in each location, age, risk group:
-length n_countries * n_ages * n_riskgroups}
-
-\item{X}{vector of population size in each location, age, risk group:
-length n_countries * n_ages * n_riskgroups}
-
-\item{contactMatrix}{either a square matrix with side length n_ages * n_riskgroups,
-or a list of such matrices, of length n_countries.  
-If a single matrix, the contact matrix is assumed to be constant across countries.
-contactMatrix[i,j] denotes the amount of influence an individual of type i
-has on an individual of type j, where type includes age and risk groups.}
-
-\item{travelMatrix}{a square matrix with side length n_countries.
-travelMatrix[i,j] denotes the proportion of time an individual in country i
-spends in country j.  If simulation_flags[["normaliseTravel"]] == TRUE,
-the code will row normalise travelMatrix for you.}
-
-\item{latitudes}{a matrix with 1 column and n_countries rows, giving the latitude
-of each country in degrees.}
-
-\item{cum_vax_pool_func}{a function of time which gives the numebr of vaccines
-ever produced at that time}
-
-\item{vax_allocation_func}{a function of the current state of the simulation which
-gives the number of vaccines to allocate to each location, age, risk group}
-
-\item{tmax}{the number of days for which to run the simulation}
-
-\item{tdiv}{the number of timesteps per day}
+\item{time_params}{list of parameters to do with time steps in simulation.}
 
 \item{vax_alloc_period}{allocate vaccines once every this many timesteps}
+
+\item{processed_inputs}{list. output of setup_inputs function}
 
 \item{n_runs}{number of repeats to run}
 
 \item{requested_stats}{string specifying which results/summaries should be calculated. Currently either "all_res" for the raw results or "peak_times" for pandemic peak times by country}
+
+\item{other_info}{list which provides information needed to calculate the summaries}
 }
 \value{
 a list of lists containing results of main simulation loop (see main_simulation). The length of this list is equal to n_runs

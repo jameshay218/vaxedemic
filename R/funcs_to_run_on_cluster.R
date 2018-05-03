@@ -43,10 +43,6 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon,
                                        user_specified_cum_vax_pool_func,
                                        user_specified_vax_alloc_func,
                                        seed_params, requested_stats, other_info){
-  ## Set seed if specified
-  if(!is.null(simulation_flags[["rng_seed"]])) {
-    set.seed(simulation_flags[["rng_seed"]])
-  }
   
   ## change seasonality amplitude and travel parameter
   travel_params[["epsilon"]] <- epsilon
@@ -55,6 +51,11 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon,
   #############################################################################
   # the below lines should be the same for all functions to run on the cluster
   #############################################################################
+  
+  ## Set seed if specified
+  if(!is.null(simulation_flags[["rng_seed"]])) {
+    set.seed(simulation_flags[["rng_seed"]])
+  }
   ## setup inputs 
   processed_inputs <- setup_inputs(simulation_flags, 
                                    life_history_params, 
@@ -140,14 +141,15 @@ run_fixed_params <- function(n_runs, time_params, seasonality_params,
                                        user_specified_cum_vax_pool_func,
                                        user_specified_vax_alloc_func,
                                        seed_params, requested_stats, other_info){
-  ## Set seed if specified
-  if(!is.null(simulation_flags[["rng_seed"]])) {
-    set.seed(simulation_flags[["rng_seed"]])
-  }
   
   #############################################################################
   # the below lines should be the same for all functions to run on the cluster
   #############################################################################
+  
+  ## Set seed if specified
+  if(!is.null(simulation_flags[["rng_seed"]])) {
+    set.seed(simulation_flags[["rng_seed"]])
+  }
   ## setup inputs 
   processed_inputs <- setup_inputs(simulation_flags, 
                                    life_history_params, 

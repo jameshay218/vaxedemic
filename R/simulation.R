@@ -191,9 +191,9 @@ run_simulation <- function(simulation_flags, life_history_params,
                             "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
                             "Phi" = Phi, "seasonal" = seasonal, 
                             "case_fatality_ratio" = case_fatality_ratio_vec)
-    ## run simulation
+    # run simulation
     result <- foreach(i = 1:n_runs) %dopar% {
-        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R, 
+        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
                                SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                                vax_allocation_func)
         res <- calculate_summaries(res, labels, requested_stats, ...)

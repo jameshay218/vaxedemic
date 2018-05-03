@@ -3,13 +3,14 @@ library(ggplot2)
 library(Matrix)
 library(data.table)
 
-## Working directory with the vaxedemic package
-wd <- "~/Documents/vaxedemic/" 
-devtools::load_all(wd)
-setwd(wd)
+## local directory with the vaxedemic package
+user <- "ayan"
+package_dir <- "~/Documents/vaxedemic/"
+devtools::load_all(package_dir)
+setwd(package_dir)
 
 ## How many runs for each set of simulations?
-n_runs <- 100
+n_runs <- 3
 tmax <- 1000 # Maximum time of simulation
 tdiv <- 24 # Number of time steps per day
 seasonality_resolution <- tmax*tdiv/12 # Average seasonality into 12 blocks of time
@@ -54,7 +55,7 @@ latitudeDat <- read.csv("data/latitudes_intersect.csv")
 
 
 ## Setup an interface to the cluster
-obj <- setup_cluster_JH("~/net/home/vaxedemic")
+obj <- setup_cluster(user)
 
 ## Shifts the seasonality function - changing this effectively changes the seed time
 tdelay <- 180
@@ -62,8 +63,10 @@ tdelay <- 180
 ####################
 ## SEASONALITY CALIBRATION
 ## Values of travel connectivity and seasonality amplitude to test
-epsilons <- c(0.00001, 0.00005, 0.0001,0.0005,0.001,0.005,0.01)
-amps <- seq(0.1,1,by=0.05)
+epsilons <- c(0.00001, 0.00005)#, 0.0001,0.0005,0.001,0.005,0.01)
+amps <- seq(0.1,1)#,by=0.05)
+
+requested_stats <- "peak_times"
 
 ## Generate all combinations of these two parameters
 ## Generate a data frame for these parameters and a run name
@@ -78,10 +81,11 @@ runs$runName <- as.character(runs$runName)
 ## where "runs" specifies the inputs for the first three arguments. The rest of the
 ## arguments should be named and correspond to the rest of the arguments in 
 ## calibrating_amp_and_travel
-jobs <- queuer::enqueue_bulk(obj, runs, "calibrating_amp_and_travel","", n_runs=n_runs, tmax=tmax, tdiv=tdiv, 
-                             seasonality_resolution=seasonality_resolution,
-                             life_history_params=life_history_params, travel_params=travel_params, simulation_flags=simulation_flags,
-                             vax_params=vax_params,vax_production_params=vax_production_params, vax_allocation_params=vax_allocation_params, 
-                             vax_alloc_period=vax_alloc_period,
-                             seedCountries=seedCountries, seedSizes=seedSizes, seedAges=seedAges, seedRiskGroups=seedRiskGroups,
-                             tdelay=tdelay, regionDat=regionDat, latitudeDat=latitudeDat, requested_stats="peak_times", do_call=TRUE,timeout=0)
+
+submit_fn <- "calibrating_amp_and_travel"
+args_submit_fn <- formalArgs(submit_fn)
+stopifnot(all(colnames(runs) %in% args_submit_fn))
+args_submit_fn <- args_submit_fn[!(args_submit_fn %in% colnames(runs))]
+args_list <- list_vars_from_environment(args_submit_fn)
+args_list <- c(list(obj, runs, submit_fn), args_list, list(do_call = TRUE, timeout = 0))
+jobs <- do.call(queuer::enqueue_bulk, args_list)

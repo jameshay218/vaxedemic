@@ -293,56 +293,29 @@ run_and_get_deaths_recovered <- function(simulation_flags, life_history_params, 
   
 }
 
-#' Britton2010 10.1016/j.mbs.2010.01.006
-calc_approx_final_size_distribution <- function(R_0, pop_size) {
-  z_star <- calc_final_size_propn_deterministic(R_0)
-  mu <- z_star * pop_size
-  sigma <- sqrt(pop_size * z_star * (1 - z_star) * (1 + (1 - z_star) * R_0^2)) / 
-    (1 - (1 - z_star) * R_0)
-  list("mu" = mu, "sigma" = sigma)
+#' gather variables with given names from an environment into a list
+#' 
+#' @param var_names character vector of variable names to gather
+#' @param envir environment in which to find parameters
+#' @return list of variables with names var_names
+#' @export
+list_vars_from_environment <- function(var_names, envir = parent.frame()) {
+  env_vars <- as.list(envir)
+  env_vars <- get_vars_from_list_with_check(env_vars, var_names)
+  env_vars
 }
 
-calc_final_size_propn_deterministic <- function(R_0, S_0 = 1) {
-  final_size_equation <- function(z) {
-    1 - z - S_0*exp(-R_0 * z)
+#' extract variables from list, throwing an error if they are not found
+#' 
+#' @param x list of variables
+#' @param var_names character vector containing names of variables to extract
+#' @return list of selected variables
+#' @export
+get_vars_from_list_with_check <- function(x, var_names) {
+  missing_vars <- var_names[!(var_names %in% names (x))]
+  if(length(missing_vars) > 0) {
+    stop(cat("variables missing from list: ", paste0(missing_vars, collapse = " ")))
   }
-  
-  epsilon <- 1e-10
-  uniroot(final_size_equation, c(epsilon, 1 - epsilon))$root
-}
-
-parallel_wrapper <- function(X, FUN, ...) {
-  if(.Platform$OS.type == "unix") {
-    parallel::mclapply(X, FUN, ...)
-  } else {
-    # Windows option untested
-    cluster <- makePSOCKcluster(length(X))
-    parallel::parLapply(cluster, X, FUN, ...)
-  }
-}
-
-two_tailed_p_value <- function(q, mu, sigma) {
-  p <- pnorm(q, mu, sigma)
-  p <- min(p, 1 - p)
-  2 * p
-}
-
-z_test <- function(q, mu, sigma) {
-  p_values <- vapply(q, function(q) two_tailed_p_value(q, mu, sigma), double(1))
-  n_tests <- length(q)
-  list("min_p" = min(p_values), "n_tests" = n_tests)
-} 
-
-print_z_test_result <- function(z_test_result, n_tests = 1) {
-  format_results <- function(x) {
-    formatC(x, format = "e", digits = 2)
-  }
-  print(paste0("z test p-value = ", format_results(z_test_result$min_p)))
-  print(paste0("z test n_tests = ", z_test_result$n_tests * n_tests))
-}
-
-result_z_test_adjust_alpha <- function(result_z_test, alpha) {
-  adjusted_alpha <- alpha/result_z_test$n_tests
-  significant <- result_z_test$min_p < adjusted_alpha
-  significant
+  x <- x[var_names]
+  x
 }

@@ -1,16 +1,14 @@
-#' Cluster setup for JH
+#' Cluster setup
 #'
 #' This function sets up an object linking to the DIDE cluster in a very crude way. Each user will need to implement their own version of this that returns a valid didehpc object to submit jobs to.
-#' @param wd the working directory to run the cluster job from. This should be the user's network home drive eg. "~/net/home/vaxedemic"
+#' @param user a user identifier so that each user can specify their cluster options.
 #' @return a didehpc::queue_didehpc object
 #' @export
-setup_cluster_JH <- function(wd){
-    setwd(wd)
-    # options(didehpc.credentials = "~/.smbcredentials",
-    #         didehpc.cluster = "fi--didemrchnb")
-  options(didehpc.cluster = "fi--didemrchnb",
-          didehpc.username = "ayan")
-    src <- provisionr::package_sources(local = "~/Documents/vaxedemic/")
+setup_cluster <- function(user){
+    user_options <- get_user_options(user)
+    setwd(user_options$wd)
+    do.call(options, user_options$cluster_options)
+    src <- provisionr::package_sources(local = user_options$package_dir, expire = 1e-10)
     sources <- NULL
     
     ## Setup contexts
@@ -24,6 +22,30 @@ setup_cluster_JH <- function(wd){
     return(obj1)
 }
 
+#' specify user options for cluster
+#' 
+#' @param user a user identifier so that each user can specify their cluster options.
+#' @return a list with the working directory on the network drive; the directory
+#' in which the package code sits; and options for didehpc
+#' @export
+get_user_options <- function(user) {
+  # wd is the working directory to run the cluster job from. 
+  # This should be the user's network home drive eg. "~/net/home/vaxedemic"
+  if(user == "JH") {
+    list(wd = "~/net/home/vaxedemic/",
+         package_dir = "~/Documents/vaxedemic/",
+         cluster_options = list(didehpc.credentials = "~/.smbcredentials",
+                                        didehpc.cluster = "fi--didemrchnb"))
+  } else if(user == "ayan") {
+    list(wd = "~/net/home/vaxedemic2/",
+         package_dir = "~/Documents/vaxedemic/",
+         cluster_options = list(didehpc.username = "ayan",
+                                didehpc.cluster = "fi--didemrchnb"))
+  } else {
+    stop("unknown user")
+  }
+}
+
 
 
 #' Cluster submission for amp and epsilon calibration
@@ -32,7 +54,6 @@ setup_cluster_JH <- function(wd){
 #' @param runName the base of the filename to save outputs to. Will be appended to "outputs/calibration_". DO NOT SPECIFY A FILE EXTENSION - THIS IS HANDLED IN THE FUNCTION
 #' @param amp the amplitude of seasonal forcing
 #' @param epsilon connectivity of off-diagonal elements in the travel matrix
-#' @param wd the working directory to run the cluster job from. This should be available to the DIDE network ie. your network Q: drive. Note that this should have all of the files and subfolders needed to run \code{\link{setup_inputs}}
 #' @param n_runs number of simulations to run for this set of parameters
 #' @param tmax the number of days for which to run the simulation
 #' @param tdiv the number of timesteps per day
@@ -45,22 +66,22 @@ setup_cluster_JH <- function(wd){
 #' @param vax_params named vector (or list) with the numeric elements "efficacy"
 #' and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
 #' across location, age and risk groups)
-#' @param vax_production_params
-#' @param vax_allocation_params
-#' @param vax_allocation_period
-#' @param seedCountries
-#' @param seedSizes
-#' @param seedAges
-#' @param seedRiskGroups
-#' @param tdelay
-#' @param regionDat
-#' @param latitudeDat
-#' @param requested_stats
+#' @param vax_production_params temp description to suppress roxygen warnings
+#' @param vax_allocation_params temp description to suppress roxygen warnings
+#' @param vax_allocation_period temp description to suppress roxygen warnings
+#' @param seedCountries temp description to suppress roxygen warnings
+#' @param seedSizes temp description to suppress roxygen warnings
+#' @param seedAges temp description to suppress roxygen warnings
+#' @param seedRiskGroups temp description to suppress roxygen warnings
+#' @param tdelay temp description to suppress roxygen warnings
+#' @param regionDat temp description to suppress roxygen warnings
+#' @param latitudeDat temp description to suppress roxygen warnings
+#' @param requested_stats temp description to suppress roxygen warnings
 #' @return returns TRUE if the routine runs correctly. Will create a .csv file of peak time summaries for this run, and a .png plotting the distribution of peak times by country. The output filenames are:
 #' 1) outputs/calibration_***runName***_data.csv
 #' 2) outputs/calibration_***runName***_plot.png
 #' @export
-calibrating_amp_and_travel <- function(runName, amp, epsilon, wd,
+calibrating_amp_and_travel <- function(runName, amp, epsilon, 
                                        n_runs, tmax, tdiv, seasonality_resolution,
                                        life_history_params, travel_params, simulation_flags,
                                        vax_params,vax_production_params, vax_allocation_params, vax_alloc_period,
@@ -75,7 +96,7 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon, wd,
     travel_params[["epsilon"]] <- epsilon
 
     ## Generate 
-    all_inputs <- setup_inputs(wd, simulation_flags, life_params ,travel_params)
+    all_inputs <- setup_inputs(simulation_flags, life_params ,travel_params)
 
     ## Extract inputs from setup
     popns <- all_inputs$popns
@@ -101,9 +122,11 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon, wd,
                     labels$RiskGroup == seedRiskGroups))[1]] <- seedSizes
 
     ## process the vaccine production function
+    user_specified_cum_vax_pool_func <- produce_vax_linear_with_delay
     cum_vax_pool_func <- cum_vax_pool_func_closure(user_specified_cum_vax_pool_func, vax_production_params)
 
     ## process the vaccine allocation function
+    user_specified_vax_alloc_func <- vaccinate_by_incidence
     vax_allocation_func <- vaccine_allocation_closure(user_specified_vax_alloc_func,
                                                       travelMatrix, vax_allocation_params, labels)
 

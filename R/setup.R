@@ -49,7 +49,19 @@ setup_inputs <- function(simulation_flags, life_history_params, travel_params,
                     labels$Age == seed_params[["Ages"]] &
                     labels$RiskGroup == seed_params[["RiskGroups"]]))[1]] <- 
     seed_params[["Sizes"]]
-  
+
+  if ("coverage" %in% names(vax_allocation_params)) {
+    if (simulation_flags[["real_data"]]) {
+      coverage_filename <- "data/coverage_data_intersect.csv"
+      coverage <- read_coverage_data(coverage_filename, labels)
+    } else {
+      # every country has same seasonal coverage
+      # the below line is incorrect: ada to fix
+      # coverage <- rep(1/n_countries, n_countries)#
+      stop("uniform coverage not yet implemented")
+    }
+    vax_allocation_params$coverage <- coverage
+  }
   
   ## process the vaccine production function
   if(is.character(user_specified_cum_vax_pool_func)) {

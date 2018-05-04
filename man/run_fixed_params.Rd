@@ -2,12 +2,13 @@
 % Please edit documentation in R/funcs_to_run_on_cluster.R
 \name{run_fixed_params}
 \alias{run_fixed_params}
-\title{Cluster submission with fixed parameters}
+\title{submit job with fixed parameters}
 \usage{
 run_fixed_params(n_runs, time_params, seasonality_params, life_history_params,
   travel_params, simulation_flags, vax_params, vax_production_params,
   vax_allocation_params, user_specified_cum_vax_pool_func,
-  user_specified_vax_alloc_func, seed_params, requested_stats, other_info)
+  user_specified_vax_alloc_func, seed_params, calculate_summaries_func,
+  other_info)
 }
 \arguments{
 \item{n_runs}{number of simulations to run for this set of parameters}
@@ -43,15 +44,15 @@ across location, age and risk groups)}
 \item{seed_params}{named vector (or list) of parameters to do with seeding the pandemic.
 contains the elements seedCountries: vector of country names in which to seed}
 
-\item{requested_stats}{character string to be passed to calculate_summaries function, to tell it which summary statistics to calculate and save}
+\item{calculate_summaries_func}{string specifying what function to use to calculate summaries.}
 
 \item{other_info}{list which provides any other information needed, such as to calculate the summaries}
 }
 \value{
-returns TRUE if the routine runs correctly. Will create a .csv file of peak time summaries for this run, and a .png plotting the distribution of peak times by country. The output filenames are:
-1) outputs/default_data.csv
-2) outputs/default_plot.png
+returns a list containing the elements
+res: summary statistics for each run
+processed_inputs: results of pre-processing which might be needed for downstream analysis
 }
 \description{
-Function used to submit jobs to the cluster, solving the global model with specified parameters. This particular function is intended to test different values of amp and epsilon, which is why they are amongst the first arguments. To write your own function which can be submitted to the cluster, simply place the parameters that you want to change as the first few arguments.
+Function used to submit jobs, solving the global model with specified parameters. This particular function is intended to test different values of amp and epsilon, which is why they are amongst the first arguments. To write your own function which can be submitted to the cluster, simply place the parameters that you want to change as the first few arguments.
 }

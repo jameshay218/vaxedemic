@@ -6,7 +6,7 @@
 \usage{
 run_simulation(simulation_flags, life_history_params, vax_params,
   seasonality_params, time_params, vax_alloc_period, processed_inputs,
-  n_runs = 1, requested_stats = "all_res", other_info)
+  n_runs = 1, calculate_summaries_func = "return_all_res", other_info)
 }
 \arguments{
 \item{simulation_flags}{named vector (or list) with the logical elements "normaliseTravel"
@@ -33,7 +33,7 @@ amp: amplitude of seasonality}
 
 \item{n_runs}{number of repeats to run}
 
-\item{requested_stats}{string specifying which results/summaries should be calculated. Currently either "all_res" for the raw results or "peak_times" for pandemic peak times by country}
+\item{calculate_summaries_func}{string specifying what function to use to calculate summaries.}
 
 \item{other_info}{list which provides information needed to calculate the summaries}
 }

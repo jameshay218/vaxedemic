@@ -88,7 +88,6 @@ distribute_vax_among_age_risk_closure <- function(priorities, labels) {
     distribution_factor <- c(S, E, I, R) * y_long_vec
     distribution_factor <- apply_by_loc(normalise, distribution_factor)
     vax_alloc <- vax_alloc * distribution_factor
-
     # round ensuring that the number of vaccines allocated to each country stays the same  
     vax_alloc <- apply_by_loc(round_preserve_sum, vax_alloc)
 
@@ -314,8 +313,39 @@ list_vars_from_environment <- function(var_names, envir = parent.frame()) {
 get_vars_from_list_with_check <- function(x, var_names) {
   missing_vars <- var_names[!(var_names %in% names (x))]
   if(length(missing_vars) > 0) {
-    stop(cat("variables missing from list: ", paste0(missing_vars, collapse = " ")))
+    stop(paste0("variables missing from list: ", paste0(missing_vars, collapse = " ")))
   }
   x <- x[var_names]
   x
+}
+
+#' dump variables from a list to the parent frame
+#' 
+#' @param x list containing variables
+#' @param var_names character vector containing names of variables to dump into 
+#' parent frame
+#' @param overwrite optional parameter controlling the behaviour if any variables
+#' with the same name(s) alraedy exist in the parent frame. If set to "warn",
+#' throws a warning; if set to "error", throws an error
+#' @return NULL
+list2here <- function(x, var_names, overwrite) {
+  if(!missing(var_names)) {
+    x <- get_vars_from_list_with_check(x, var_names)
+  }
+  
+  
+  if(!missing(overwrite)) {
+    parent_frame_vars <- ls(parent.frame)
+    overwriting_vars <- intersect(names(x), parent_frame_vars)
+    if(length(overwriting_vars) > 0) {
+      if(overwrite == "warn") {
+        lapply(overwriting_vars, function(x) warning(cat("overwriting", x)))
+      } else if(overwrite == "error") {
+        stop(cat("Attempting to overwrite", x[1]))
+      }
+    }
+  }
+  
+  list2env(x, envir = parent.frame())
+  invisible(NULL)
 }

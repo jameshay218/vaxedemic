@@ -153,25 +153,6 @@ combine_incidence <- function(I, labels){
     return(I)
 }
 
-calculate_summaries <- function(res, labels, requested_stats,...){
-    if(requested_stats == "all_res"){
-        return(res)
-    }    
-    I <- data.table(res$I)
-    I <- combine_incidence(I, labels)
-    tmp <- unique(I[,c("Location","variable","sumI","sumN")])
-    peakTimes <- ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
-    return(peakTimes)
-    #tmp <- merge(tmp, regionDat[,c("Location","region")], by="Location")
-    tmp <- merge(tmp, latitudeDat[,c("Location","latitude")],by="Location")
-    tmp$loc <- ifelse(tmp$latitude > 0, "North", "South")
-    tmp[abs(tmp$latitude) < 23.5,"loc"] <- "Tropics"
-    tmp[,I:=sum(sumI),key=c("loc","variable")]
-    tmp[,N:=sum(sumN),key=c("loc","variable")]
-    tmp <- unique(tmp[,c("variable","I","N","loc")])    
-    return(list("I"=tmp,"peakTimes"=peakTimes))
-}
-
 #' @export
 # Create a data frame from of the simulation results - worldwide deaths, global 
 #  attack rate
@@ -180,20 +161,50 @@ deaths_GAR_df <- function(results, popns){
              "global_attack" = vapply(results, global_attack, double(1), popns))
 }
 
-
-# attack rate by country
-country_attack <- function(results, popns, labels){
-  pop_total <- sum(popns)
-  tend <- time_end(results)
-  sum_age_risk <- sum_age_risk_closure(labels)
-  final_size_by_group <- results$R[ ,tend] + results$RV[ ,tend] + deaths(results, popns)
-  country_attack_rate <- sum_age_risk(final_size_by_group) / sum_age_risk(popns)
-}
-
 #' @export
 # extract the number of deaths from each list element in the results list.
 many_dead <- function(results, popns){
   dead <- lapply(results, deaths, popns = popns)
   dead <- do.call("cbind", dead)
   dead <- cbind(labels, dead)
+}
+
+#' @export
+calc_peak_times <- function(res, labels){
+  I <- data.table::data.table(res$I)
+  I <- combine_incidence(I, labels)
+  tmp <- unique(I[,c("Location","variable","sumI","sumN")])
+  peakTimes <- plyr::ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
+  return(peakTimes)
+}
+
+#' @export
+return_all_res <- function(res){
+  return(res)
+}
+
+# attack rate by country
+# X is the vector of population sizes
+#' @export
+calc_country_attack <- function(res, X, labels){
+  pop_total <- sum(X)
+  tend <- time_end(res)
+  sum_age_risk <- sum_age_risk_closure(labels)
+  final_size_by_group <- res$R[ ,tend] + res$RV[ ,tend] + deaths(res, X)
+  country_attack_rate <- sum_age_risk(final_size_by_group) / sum_age_risk(X)
+  return(country_attack_rate)
+}
+
+calc_median_ci_by_country <- function(res, labels, regionDat, latitudeDat) {
+  res = do.call("cbind",res)
+  summary_stats <- t(apply(res, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
+  colnames(summary_stats) <- c("mean","lower95","median","upper95")
+  summary_stats <- data.frame(Location=unique(labels$Location), summary_stats)
+  dat <- merge(summary_stats,regionDat[,c("Location","region")])
+  dat <- merge(dat,latitudeDat)
+  tmp <- unique(dat[,c("Location","latitude")])
+  my_latitudes <- order(tmp$latitude)
+  dat$Location <- factor(dat$Location, levels=tmp$Location[my_latitudes])
+  dat$Hemisphere <- ifelse(dat$latitude < 0,"Southern","Northern")
+  return(dat)
 }

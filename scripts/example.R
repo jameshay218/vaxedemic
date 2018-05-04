@@ -1,13 +1,11 @@
-library(reshape2)
-library(ggplot2)
-library(Matrix)
-library(data.table)
-
 cluster <- TRUE # run on cluster or locally
-run_fixed <- FALSE # run for one fixed set of parameters, or many combinations of parameters
-
 # user identifier -- only needed if running on cluster
 user <- "ayan"
+
+# if FALSE, run for one fixed set of parameters;
+# if TRUE, run for many combinations of parameters
+run_fixed <- FALSE
+
 # load vaxedemic package
 # local directory with the vaxedemic package
 package_dir <- "~/Documents/vaxedemic/"
@@ -22,10 +20,10 @@ setwd(package_dir)
 # vax_params,vax_production_params, vax_allocation_params,
 # user_specified_cum_vax_pool_func,
 # user_specified_vax_alloc_func,
-# seed_params, requested_stats, other_info
+# seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 3
+n_runs <- 2
 
 # parameters to do with time steps in simulation
 time_params <- list(tmax = 1000, # Maximum time of simulation
@@ -52,7 +50,7 @@ simulation_flags <- list(ageMixing=TRUE,
                          real_data = TRUE,
                          country_specific_contact = TRUE,
                          seasonal = TRUE,
-                         rng_seed = 0)
+                         rng_seed = NULL)
 
 # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
@@ -60,12 +58,18 @@ vax_params <- list(efficacy = .7, propn_vax0 = 0)
 vax_production_params <- list(detection_delay = 0, production_delay = 365/2, 
                               production_rate = 550e6/(365/12*3), max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
-vax_allocation_params <- list(priorities = NULL, period = 24 * 7)
+vax_allocation_params <- list(priorities = NULL, period = 24 * 7, coverage = NULL)
 
 # name of vaccine production function in vaxedemic package.  must specify as character string for do.call to work
+# currently available options:
+# produce_vax_linear_with_delay: no vaccine production, then constant production
+# rate until maximum number of vaccines reached
 user_specified_cum_vax_pool_func <- "produce_vax_linear_with_delay"
 # name of vaccine allocation function in vaxedemic package.  must specify as character string for do.call to work
-user_specified_vax_alloc_func <- "vaccinate_by_incidence"
+# currently available options:
+# vaccinate_by_incidence: allocate vaccines according to absolute incidence
+# vaccinate_by_current_seasonal_alloc: allocate vaccines according to current seasonal allocation
+user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
 
 # parameters to do with seeding the pandemic
 if(simulation_flags[["real_data"]]) {
@@ -79,8 +83,29 @@ seed_params <- list(Countries = seedCountries, # where to seed
                     Ages = 3, # which age group to seed in each country
                     RiskGroups = 1) # which risk group to seed in each country
 
-# parameter to be passed to calculate_summaries function, to tell it which summary statistics to calculate and save
-requested_stats <- "peak_times"
+# character string specifying function used to calculate summaries of each run.
+# currently available options: 
+# return_all_res: full simulation results (requires large amounts of storage, would not recommend)
+# calc_peak_times: timing of peak in each country
+# when writing these functions, the argument names must be things that can found in the environment
+# after running the main simulation
+calculate_summaries_func <- "calc_peak_times"
+
+# character string specifying function to do postprocessing
+# currently available options:
+# postprocessing_simple_save: save summaries for each run as .rds object
+# postprocessing_peak_times: save median and 95% CI for peak times across runs for each country,
+# and plot them
+# postprocessing_country_attack: save median and 95% CI for attack rates across runs for each country,
+# and plot them
+postprocessing_func <- "postprocessing_peak_times"
+
+# certain postprocessing funcs require certain summaries to be calculated -- check
+if((postprocessing_func == "postprocessing_country_attack" && calculate_summaries_func != "calc_country_attack") ||
+   (postprocessing_func == "postprocessing_plot_peak_times" && calculate_summaries_func != "calc_peak_times")) {
+  stop("postprocessing function does not match summary function")
+}
+
 # other_info provides any other information needed, such as to calculate the summaries
 # or post-process results.
 # in this case, we need region and latitude information for each country to make the plots.
@@ -89,22 +114,26 @@ latitudeDat <- read.csv("data/latitudes_intersect.csv")
 other_info <- list(regionDat = regionDat,
                    latitudeDat = latitudeDat)
 
+if(cluster) {
+  # Setup an interface to the cluster
+  # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
+  obj <- setup_cluster(user)
+} else {
+  library(doMC)
+  registerDoMC(cores=4)
+}
+
 if(run_fixed) {
   ################################################################################
   # run for fixed parameters
   ################################################################################
-  submit_fn <- "run_fixed_params"
+  submit_fn <- "run_fixed_params_and_postprocess"
   if(cluster) {
-    # Setup an interface to the cluster
-    # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
-    obj <- setup_cluster(user)
     # submit to cluster
     args_list <- make_arg_list(runs = NULL, submit_fn, obj)
     job <- obj$enqueue(do.call(submit_fn, args_list))
   } else {
     # run a single job
-    library(doMC)
-    registerDoMC(cores=4)
     args_list <- make_arg_list(runs = NULL, submit_fn, obj = NULL)
     do.call(submit_fn, args_list)
   }
@@ -119,8 +148,8 @@ if(run_fixed) {
   
   # set up the variable parameters.
   # in this case, we change the travel connectivity and seasonality amplitude.
-  epsilons <- c(0.00001, 0.00005)#, 0.0001,0.0005,0.001,0.005,0.01)
-  amps <- seq(0.1,1)#,by=0.05)
+  epsilons <- c(0.00001, 0.00005)
+  amps <- c(0.1,1)
   
   ## Generate all combinations of these two parameters
   ## Generate a data frame for these parameters and a run name
@@ -133,21 +162,12 @@ if(run_fixed) {
   
   # run in cluster or locally
   if(cluster) {
-    # Setup an interface to the cluster
-    # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
-    obj <- setup_cluster(user)
     # submit to cluster
     args_list <- make_arg_list(runs, submit_fn, obj)
     jobs <- do.call(queuer::enqueue_bulk, args_list)
   } else {
     # run a single job
-    library(doMC)
-    registerDoMC(cores=4)
     args_list <- make_arg_list(runs, submit_fn, obj = NULL)
     lapply(args_list, function(x) do.call(submit_fn, x))
   }
 }
-
-
-
-

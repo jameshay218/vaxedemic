@@ -17,7 +17,7 @@
 #' @param vax_alloc_period allocate vaccines once every this many timesteps
 #' @param processed_inputs list. output of setup_inputs function
 #' @param n_runs number of repeats to run
-#' @param requested_stats string specifying which results/summaries should be calculated. Currently either "all_res" for the raw results or "peak_times" for pandemic peak times by country
+#' @param calculate_summaries_func string specifying what function to use to calculate summaries.
 #' @param other_info list which provides information needed to calculate the summaries
 #' @return a list of lists containing results of main simulation loop (see main_simulation). The length of this list is equal to n_runs
 #' @import foreach
@@ -26,7 +26,7 @@
 run_simulation <- function(simulation_flags, life_history_params, vax_params, seasonality_params,
                            time_params, vax_alloc_period, processed_inputs,
                            n_runs=1,
-                           requested_stats="all_res", other_info){
+                           calculate_summaries_func="return_all_res", other_info){
       #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
     seasonal <- simulation_flags[["seasonal"]]
@@ -177,17 +177,44 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
                             "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
                             "Phi" = Phi, "seasonal" = seasonal, 
                             "case_fatality_ratio" = processed_inputs[["case_fatality_ratio_vec"]])
+    
+    # put arguments of other_info into global environment, so that they can be passed
+    # to calculate_summaries_func.  Warns if we're overwriting anything.
+    message("a")
+    list2here(other_info)
+    message("b")
+    calculate_summaries_arg_names <- formalArgs(calculate_summaries_func)
+    message("c")
+    calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
+    message("d")
+    calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
+    message("e")
     # run simulation
-    result <- foreach(i = 1:n_runs) %dopar% {
-        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
-                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-                               vax_allocation_func)
-        calculate_summaries_args <- c(list(res = res,
-                                         labels = labels,
-                                         requested_stats = requested_stats),
-                                      other_info)
-        res <- do.call(calculate_summaries, calculate_summaries_args)
-        res
+    # result <- foreach(i = 1:n_runs) %dopar% {
+    #     res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+    #                            SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+    #                            vax_allocation_func)
+    #     res <- c(list(res = res), calculate_summaries_args)
+    #     res <- do.call(calculate_summaries_func, res)
+    #     res
+    # }
+    # series version for debugging
+    result <- list(n_runs)
+    message("f")
+    for(i in 1:n_runs) {
+          res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+                                 SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                                 vax_allocation_func)
+          message("g")
+          # put arguments of other_info into global environment, so that they can be passed
+          # to calculate_summaries_func.  Warns if we're overwriting anything.
+          list2here(other_info)
+          message("h")
+          calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
+          message("i")
+          res <- do.call(calculate_summaries_func, calculate_summaries_args)
+          message("j")
+          result[[i]] <- res
     }
     result
 }

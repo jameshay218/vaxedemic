@@ -108,28 +108,6 @@ global_attack <- function(results, popns){
   sum(results$R[ ,tend] + results$RV[ ,tend] + deaths(results, popns)) / pop_total
 }
 
-#' @export
-find_peak_times_list <- function(res){
-  return(lapply(res, find_peak_times))
-  
-}
-
-#' @export
-find_peak_times <- function(res){
-  peakTimes <- (apply(res$I, 1, function(x) as.numeric(colnames(res$I)[which.max(x)])))
-  return(peakTimes)
-}
-
-find_peak_summaries <- function(res, labels){
-  peakTimes <- find_peak_times_list(res)
-  peakTimes <- do.call("cbind",peakTimes)
-  summaryPeaks <- t(apply(peakTimes, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))
-  colnames(summaryPeaks) <- c("mean","lower95","median","upper95")
-  summaryPeaks <- cbind(labels, summaryPeaks)
-  return(summaryPeaks)
-}
-
-
 shrink_data <- function(res){
   compartments <- names(res)
   final <- NULL
@@ -169,6 +147,22 @@ many_dead <- function(results, popns){
   dead <- cbind(labels, dead)
 }
 
+#' return the full results of main_simulation
+#' 
+#' @param res output of main_simulation
+#' @return output of main_simulation
+#' @export
+return_all_res <- function(res){
+  return(res)
+}
+
+#' calculate the peak time by country
+#'
+#' @param res output of main_simulation
+#' @param X the vector of population sizes in each location/age/risk group
+#' @param labels data frame outputted by setup_inputs containing the location/
+#' age/risk group for each row in res
+#' @return a numeric vector of length n_countries: the peak time for each country
 #' @export
 calc_peak_times <- function(res, labels){
   I <- data.table::data.table(res$I)
@@ -178,13 +172,13 @@ calc_peak_times <- function(res, labels){
   return(peakTimes)
 }
 
-#' @export
-return_all_res <- function(res){
-  return(res)
-}
-
-# attack rate by country
-# X is the vector of population sizes
+#' calculate the attack rate by country
+#'
+#' @param res output of main_simulation
+#' @param X the vector of population sizes in each location/age/risk group
+#' @param labels data frame outputted by setup_inputs containing the location/
+#' age/risk group for each row in res
+#' @return a numeric vector of length n_countries: the attack rate for each country
 #' @export
 calc_country_attack <- function(res, X, labels){
   pop_total <- sum(X)
@@ -195,6 +189,18 @@ calc_country_attack <- function(res, X, labels){
   return(country_attack_rate)
 }
 
+#' calculate the mean, median and 2.5%, 97.5% percentiles of a summary statistic by country
+#' 
+#' @param res summary statistics outputted by run_simulation.  Should be a list
+#' of length n_runs, where each element is a numeric vector of length n_countries.
+#' @param labels data frame outputted by setup_inputs containing country names
+#' @param regionDat data frame containing a column for Location and a column for
+#' the region that location is in. read from data/regions_clean.csv
+#' @param latitudeDat data frame containing a column for Location and a column for
+#' the latitude of the location. read from data/latitudes_intersect.csv
+#' @return a data frame with the mean, median, 2.5% and 97.5% percentiles for
+#' each country; the region and hemisphere each country belongs to; and the latitude
+#' of each country
 calc_median_ci_by_country <- function(res, labels, regionDat, latitudeDat) {
   res = do.call("cbind",res)
   summary_stats <- t(apply(res, 1, function(x) c(mean(x),quantile(x, c(0.025,0.5,0.975)))))

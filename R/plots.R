@@ -183,6 +183,13 @@ format_data_for_plots <- function(data,
   
 }
 
+#' plot the median and 95% quantiles of the peak time in each country across simulations
+#' 
+#' @param dat a data frame outputted by calc_median_ci_by_country.
+#' contains the mean, median, 2.5% and 97.5% percentiles for the peak time in
+#' each country; the region and hemisphere each country belongs to; and the latitude
+#' of each country
+#' @return a ggplot object
 #'@import ggplot2
 plot_peak_times <- function(dat){
   ggplot(dat) +
@@ -194,6 +201,13 @@ plot_peak_times <- function(dat){
     theme(axis.text.y=element_text(size=6)) + theme_bw()
 }
 
+#' plot the median and 95% quantiles of the attack rate in each country across simulations
+#' 
+#' @param dat a data frame outputted by calc_median_ci_by_country.
+#' contains the mean, median, 2.5% and 97.5% percentiles for the attack rate in
+#' each country; the region and hemisphere each country belongs to; and the latitude
+#' of each country
+#' @return a ggplot object
 #'@import ggplot2
 plot_country_attack_rates <- function(dat) {
   ggplot(dat) +

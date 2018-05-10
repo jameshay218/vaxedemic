@@ -87,6 +87,7 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # currently available options: 
 # return_all_res: full simulation results (requires large amounts of storage, would not recommend)
 # calc_peak_times: timing of peak in each country
+# calc_country_attack: attack rate in each country
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
 calculate_summaries_func <- "calc_peak_times"

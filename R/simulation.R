@@ -180,42 +180,33 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     
     # put arguments of other_info into global environment, so that they can be passed
     # to calculate_summaries_func.  Warns if we're overwriting anything.
-    message("a")
+
     list2here(other_info)
-    message("b")
     calculate_summaries_arg_names <- formalArgs(calculate_summaries_func)
-    message("c")
     calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
-    message("d")
     calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
-    message("e")
     # run simulation
-    # result <- foreach(i = 1:n_runs) %dopar% {
-    #     res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
-    #                            SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-    #                            vax_allocation_func)
-    #     res <- c(list(res = res), calculate_summaries_args)
-    #     res <- do.call(calculate_summaries_func, res)
-    #     res
-    # }
-    # series version for debugging
-    result <- list(n_runs)
-    message("f")
-    for(i in 1:n_runs) {
-          res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
-                                 SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-                                 vax_allocation_func)
-          message("g")
-          # put arguments of other_info into global environment, so that they can be passed
-          # to calculate_summaries_func.  Warns if we're overwriting anything.
-          list2here(other_info)
-          message("h")
-          calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
-          message("i")
-          res <- do.call(calculate_summaries_func, calculate_summaries_args)
-          message("j")
-          result[[i]] <- res
+    result <- foreach(i = 1:n_runs) %dopar% {
+        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                               vax_allocation_func)
+        res <- c(list(res = res), calculate_summaries_args)
+        res <- do.call(calculate_summaries_func, res)
+        res
     }
+    # series version for debugging
+    # result <- list(n_runs)
+    # for(i in 1:n_runs) {
+    #       res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+    #                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+    #                              vax_allocation_func)
+    #       # put arguments of other_info into global environment, so that they can be passed
+    #       # to calculate_summaries_func.  Warns if we're overwriting anything.
+    #       list2here(other_info)
+    #       calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
+    #       res <- do.call(calculate_summaries_func, calculate_summaries_args)
+    #       result[[i]] <- res
+    # }
     result
 }
 

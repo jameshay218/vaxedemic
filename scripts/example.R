@@ -1,10 +1,10 @@
-cluster <- TRUE # run on cluster or locally
+cluster <- FALSE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
 # if FALSE, run for one fixed set of parameters;
 # if TRUE, run for many combinations of parameters
-run_fixed <- FALSE
+run_fixed <- TRUE
 
 # load vaxedemic package
 # local directory with the vaxedemic package
@@ -61,14 +61,10 @@ vax_production_params <- list(detection_delay = 0, production_delay = 365/2,
 vax_allocation_params <- list(priorities = NULL, period = 24 * 7, coverage = NULL)
 
 # name of vaccine production function in vaxedemic package.  must specify as character string for do.call to work
-# currently available options:
-# produce_vax_linear_with_delay: no vaccine production, then constant production
-# rate until maximum number of vaccines reached
+# see current options in get_vaxedemic_func_options()
 user_specified_cum_vax_pool_func <- "produce_vax_linear_with_delay"
 # name of vaccine allocation function in vaxedemic package.  must specify as character string for do.call to work
-# currently available options:
-# vaccinate_by_incidence: allocate vaccines according to absolute incidence
-# vaccinate_by_current_seasonal_alloc: allocate vaccines according to current seasonal allocation
+# see current options in get_vaxedemic_func_options()
 user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
 
 # parameters to do with seeding the pandemic
@@ -84,21 +80,13 @@ seed_params <- list(Countries = seedCountries, # where to seed
                     RiskGroups = 1) # which risk group to seed in each country
 
 # character string specifying function used to calculate summaries of each run.
-# currently available options: 
-# return_all_res: full simulation results (requires large amounts of storage, would not recommend)
-# calc_peak_times: timing of peak in each country
-# calc_country_attack: attack rate in each country
+# see current options in get_vaxedemic_func_options()
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
 calculate_summaries_func <- "calc_peak_times"
 
 # character string specifying function to do postprocessing
-# currently available options:
-# postprocessing_simple_save: save summaries for each run as .rds object
-# postprocessing_peak_times: save median and 95% CI for peak times across runs for each country,
-# and plot them
-# postprocessing_country_attack: save median and 95% CI for attack rates across runs for each country,
-# and plot them
+# see current options in get_vaxedemic_func_options()
 postprocessing_func <- "postprocessing_peak_times"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check
@@ -128,24 +116,25 @@ if(run_fixed) {
   ################################################################################
   # run for fixed parameters
   ################################################################################
-  submit_fn <- "run_fixed_params_and_postprocess"
+  run_func <- "run_fixed_params_and_postprocess"
   if(cluster) {
     # submit to cluster
-    args_list <- make_arg_list(runs = NULL, submit_fn, obj)
-    job <- obj$enqueue(do.call(submit_fn, args_list))
+    args_list <- make_arg_list(runs = NULL, run_func, obj)
+    job <- obj$enqueue(do.call(run_func, args_list))
   } else {
     # run a single job
-    args_list <- make_arg_list(runs = NULL, submit_fn, obj = NULL)
-    do.call(submit_fn, args_list)
+    args_list <- make_arg_list(runs = NULL, run_func, obj = NULL)
+    do.call(run_func, args_list)
   }
 } else {
   ################################################################################
   # run for different combinations of parameters
   ################################################################################
   
-  # the function to be run to vary parameters. write your own in funcs_to_run_on_cluster.R.
+  # the function to be run to vary parameters. write your own in run_funcs.R
   # must specify as character string for do.call to work
-  submit_fn <- "calibrating_amp_and_travel"
+  # see current options in get_vaxedemic_func_options()
+  run_func <- "calibrating_amp_and_travel"
   
   # set up the variable parameters.
   # in this case, we change the travel connectivity and seasonality amplitude.
@@ -156,7 +145,7 @@ if(run_fixed) {
   ## Generate a data frame for these parameters and a run name
   ## identifier for each combination. The column names for this 
   ## data frame must correspond to the first 
-  ## arguments of submit_fn
+  ## arguments of run_func
   runs <- expand.grid(amp=amps, epsilon=epsilons)
   runs <- cbind("runName"=paste0("test",1:nrow(runs)),runs)
   runs$runName <- as.character(runs$runName)
@@ -164,11 +153,11 @@ if(run_fixed) {
   # run in cluster or locally
   if(cluster) {
     # submit to cluster
-    args_list <- make_arg_list(runs, submit_fn, obj)
+    args_list <- make_arg_list(runs, run_func, obj)
     jobs <- do.call(queuer::enqueue_bulk, args_list)
   } else {
     # run a single job
-    args_list <- make_arg_list(runs, submit_fn, obj = NULL)
-    lapply(args_list, function(x) do.call(submit_fn, x))
+    args_list <- make_arg_list(runs, run_func, obj = NULL)
+    lapply(args_list, function(x) do.call(run_func, x))
   }
 }

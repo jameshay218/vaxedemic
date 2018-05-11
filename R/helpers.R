@@ -349,3 +349,50 @@ list2here <- function(x, var_names, overwrite) {
   list2env(x, envir = parent.frame())
   invisible(NULL)
 }
+
+#' return names of all functions in a .R file
+#' 
+#' @param filename location of .R file
+#' @return character vector where each entry is the name of a function in the file
+get_func_names <- function(filename) {
+  suppress_final_line_warning <- function(w) {
+    if(any(grepl("incomplete final line found on", w, fixed = TRUE))) {
+      invokeRestart("muffleWarning")
+    }
+  }
+  code <- withCallingHandlers(readLines(filename), warning = suppress_final_line_warning)
+  code <- gsub(" ", "", code)
+  func_str <- "<-function("
+  code <- code[grep(func_str, code, fixed = TRUE)]
+  code <- strsplit(code, split = func_str, fixed = TRUE)
+  code <- vapply(code, function(x) x[1], character(1))
+  code
+}
+
+#' return function options for vaxedemic
+#' 
+#' user_specified_cum_vax_pool_func: options for vaccine production functions
+#' user_specified_vax_alloc_func: options for vaccine allocation functions
+#' calculate_summaries_func: options for functions to calculate summary statistics
+#' postprocessing_func: options for postprocessing functions
+#' run_func: options for functions to run simulation
+#' this function relies on the above functions being in the right .R files 
+#' @param package_dir vaxedemic repository directory
+#' @return a list with elements user_specified_cum_vax_pool_func, 
+#' user_specified_vax_alloc_func etc. where each element is a character vector
+#' and each element in that vector is an option for that function
+#' @export
+get_vaxedemic_func_options <- function(package_dir = getwd()) {
+  filenames <- c("user_specified_cum_vax_pool_func" = "vax_production_funcs.R",
+                 "user_specified_vax_alloc_func" = "vax_alloc_funcs.R",
+                 "calculate_summaries_func" = "calc_summaries_funcs.R",
+                 "postprocessing_func" = "postprocessing_funcs.R",
+                 "run_func" = "run_funcs.R")
+  
+  func_options_names <- names(filenames)
+  filenames <- paste0(package_dir, "/R/", filenames)
+  filenames <- gsub("//", "/", filenames, fixed = TRUE)
+  func_options <- lapply(filenames, get_func_names)
+  names(func_options) <- func_options_names
+  func_options
+}

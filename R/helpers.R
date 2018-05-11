@@ -366,11 +366,36 @@ get_func_names <- function(filename) {
   code <- gsub(" ", "", code)
   # identify lines which define functions
   func_str <- "<-function("
-  code <- code[grep(func_str, code, fixed = TRUE)]
+  potential_func_lines <- grep(func_str, code, fixed = TRUE)
+  
+  # determine whether each function is an outermost function
+  is_outside_func <- function(code, potential_func_line) {
+    # assume functions on first line are outside functions
+    if(potential_func_line == 1) {
+      return(TRUE)
+    }
+    # paste all code up to name of potential function
+    pasted_code <- paste0(code[seq_len(potential_func_line - 1)], collapse = "")
+    potential_func_subline <- strsplit(code, split = func_str, fixed = TRUE)
+    potential_func_subline <- potential_func_subline[1]
+    pasted_code <- paste0(pasted_code, potential_func_subline, collapse = "")
+    # count number of open and close curly brackets up to potential function name
+    count_characters <- function(pasted_code, char_in) {
+      n <- gregexpr(char_in, pasted_code, fixed = TRUE)
+      length(n[[1]])
+    }
+    n_brackets <- vapply(c("{", "}"), function(x) count_characters(pasted_code, x), numeric(1))
+    # the functino is an outermost function if the number of open and close brackets is the same
+    n_brackets[1] == n_brackets[2]
+  }
+  
+  func_lines <- potential_func_lines[vapply(potential_func_lines, 
+                                            function(x) is_outside_func(code, x),
+                                            logical(1))]
   # split off the function names
-  code <- strsplit(code, split = func_str, fixed = TRUE)
-  code <- vapply(code, function(x) x[1], character(1))
-  code
+  func_lines <- strsplit(code[func_lines], split = func_str, fixed = TRUE)
+  func_lines <- vapply(func_lines, function(x) x[1], character(1))
+  func_lines
 }
 
 #' return function options for vaxedemic

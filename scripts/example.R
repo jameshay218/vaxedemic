@@ -61,14 +61,10 @@ vax_production_params <- list(detection_delay = 0, production_delay = 365/2,
 vax_allocation_params <- list(priorities = NULL, period = 24 * 7, coverage = NULL)
 
 # name of vaccine production function in vaxedemic package.  must specify as character string for do.call to work
-# currently available options:
-# produce_vax_linear_with_delay: no vaccine production, then constant production
-# rate until maximum number of vaccines reached
+# see current options in get_vaxedemic_func_options()
 user_specified_cum_vax_pool_func <- "produce_vax_linear_with_delay"
 # name of vaccine allocation function in vaxedemic package.  must specify as character string for do.call to work
-# currently available options:
-# vaccinate_by_incidence: allocate vaccines according to absolute incidence
-# vaccinate_by_current_seasonal_alloc: allocate vaccines according to current seasonal allocation
+# see current options in get_vaxedemic_func_options()
 user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
 
 # parameters to do with seeding the pandemic
@@ -84,21 +80,13 @@ seed_params <- list(Countries = seedCountries, # where to seed
                     RiskGroups = 1) # which risk group to seed in each country
 
 # character string specifying function used to calculate summaries of each run.
-# currently available options: 
-# return_all_res: full simulation results (requires large amounts of storage, would not recommend)
-# calc_peak_times: timing of peak in each country
-# calc_country_attack: attack rate in each country
+# see current options in get_vaxedemic_func_options()
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
 calculate_summaries_func <- "calc_peak_times"
 
 # character string specifying function to do postprocessing
-# currently available options:
-# postprocessing_simple_save: save summaries for each run as .rds object
-# postprocessing_peak_times: save median and 95% CI for peak times across runs for each country,
-# and plot them
-# postprocessing_country_attack: save median and 95% CI for attack rates across runs for each country,
-# and plot them
+# see current options in get_vaxedemic_func_options()
 postprocessing_func <- "postprocessing_peak_times"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check
@@ -143,8 +131,9 @@ if(run_fixed) {
   # run for different combinations of parameters
   ################################################################################
   
-  # the function to be run to vary parameters. write your own in funcs_to_run_on_cluster.R.
+  # the function to be run to vary parameters. write your own in run_funcs.R
   # must specify as character string for do.call to work
+  # see current options in get_vaxedemic_func_options()
   run_func <- "calibrating_amp_and_travel"
   
   # set up the variable parameters.

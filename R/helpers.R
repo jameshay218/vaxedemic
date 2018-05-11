@@ -360,10 +360,14 @@ get_func_names <- function(filename) {
       invokeRestart("muffleWarning")
     }
   }
+  # read the .R file, suppressing warnings about incomplete final line
   code <- withCallingHandlers(readLines(filename), warning = suppress_final_line_warning)
+  # remove spaces
   code <- gsub(" ", "", code)
+  # identify lines which define functions
   func_str <- "<-function("
   code <- code[grep(func_str, code, fixed = TRUE)]
+  # split off the function names
   code <- strsplit(code, split = func_str, fixed = TRUE)
   code <- vapply(code, function(x) x[1], character(1))
   code
@@ -383,6 +387,7 @@ get_func_names <- function(filename) {
 #' and each element in that vector is an option for that function
 #' @export
 get_vaxedemic_func_options <- function(package_dir = getwd()) {
+  # where the functions live
   filenames <- c("user_specified_cum_vax_pool_func" = "vax_production_funcs.R",
                  "user_specified_vax_alloc_func" = "vax_alloc_funcs.R",
                  "calculate_summaries_func" = "calc_summaries_funcs.R",
@@ -390,8 +395,11 @@ get_vaxedemic_func_options <- function(package_dir = getwd()) {
                  "run_func" = "run_funcs.R")
   
   func_options_names <- names(filenames)
+  
+  # append directory
   filenames <- paste0(package_dir, "/R/", filenames)
   filenames <- gsub("//", "/", filenames, fixed = TRUE)
+  # read the function names in the .R files
   func_options <- lapply(filenames, get_func_names)
   names(func_options) <- func_options_names
   func_options

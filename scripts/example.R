@@ -2,8 +2,8 @@ cluster <- FALSE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
-# if FALSE, run for one fixed set of parameters;
-# if TRUE, run for many combinations of parameters
+# if TRUE, run for one fixed set of parameters;
+# if FALSE, run for many combinations of parameters
 run_fixed <- TRUE
 
 # load vaxedemic package
@@ -107,7 +107,7 @@ if(cluster) {
   # Setup an interface to the cluster
   # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
   obj <- setup_cluster(user)
-} else {
+} else if(.Platform$OS.type == "unix") {
   library(doMC)
   registerDoMC(cores=4)
 }

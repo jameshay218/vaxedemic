@@ -67,6 +67,11 @@ get_user_options <- function(user) {
          package_dir = "~/Documents/vaxedemic/",
          cluster_options = list(didehpc.username = "ayan",
                                 didehpc.cluster = "fi--didemrchnb"))
+  } else if(user == "cwalters") {
+    list(wd = "Q:/vaxedemic_cluster_res",
+         package_dir = "Q:/vaxedemic",
+         cluster_options = list(didehpc.username = "cwalters",
+                                didehpc.cluster = "fi--dideclusthn"))
   } else {
     stop("unknown user")
   }

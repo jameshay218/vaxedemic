@@ -83,15 +83,16 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # see current options in get_vaxedemic_func_options()
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
-calculate_summaries_func <- "calc_peak_times"
+calculate_summaries_func <- "calc_peak_times_and_attack_rates"
 
 # character string specifying function to do postprocessing
 # see current options in get_vaxedemic_func_options()
-postprocessing_func <- "postprocessing_peak_times"
+postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check
 if((postprocessing_func == "postprocessing_country_attack" && calculate_summaries_func != "calc_country_attack") ||
-   (postprocessing_func == "postprocessing_plot_peak_times" && calculate_summaries_func != "calc_peak_times")) {
+   (postprocessing_func == "postprocessing_plot_peak_times" && calculate_summaries_func != "calc_peak_times") ||
+   (postprocessing_func == "postprocessing_peak_times_and_attack_rates" && calculate_summaries_func != "calc_peak_times_and_attack_rates")) {
   stop("postprocessing function does not match summary function")
 }
 

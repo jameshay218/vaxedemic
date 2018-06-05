@@ -94,3 +94,28 @@ calc_median_ci_by_country <- function(res, labels, regionDat, latitudeDat) {
   dat$Hemisphere <- ifelse(dat$latitude < 0,"Southern","Northern")
   return(dat)
 }
+
+#' format the summary statistic by country over all n_runs
+#' 
+#' @param res summary statistics outputted by run_simulation.  Should be a list
+#' of length n_runs, where each element is a numeric vector of length n_countries.
+#' @param labels data frame outputted by setup_inputs containing country names
+#' @param regionDat data frame containing a column for Location and a column for
+#' the region that location is in. read from data/regions_clean.csv
+#' @param latitudeDat data frame containing a column for Location and a column for
+#' the latitude of the location. read from data/latitudes_intersect.csv
+#' @return a data frame with the summary statistic for each run for
+#' each country; the region and hemisphere each country belongs to; and the latitude
+#' of each country
+neaten_raw_output_by_country <- function(res, labels, regionDat, latitudeDat) {
+  res = do.call("cbind",res)
+  colnames(res) <- seq_len(ncol(res))
+  summary_stats <- data.frame(Location=unique(labels$Location), res)
+  dat <- merge(summary_stats,regionDat[,c("Location","region")])
+  dat <- merge(dat,latitudeDat)
+  tmp <- unique(dat[,c("Location","latitude")])
+  my_latitudes <- order(tmp$latitude)
+  dat$Location <- factor(dat$Location, levels=tmp$Location[my_latitudes])
+  dat$Hemisphere <- ifelse(dat$latitude < 0,"Southern","Northern")
+  return(dat)
+}

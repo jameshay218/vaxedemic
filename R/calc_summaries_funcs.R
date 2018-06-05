@@ -7,10 +7,25 @@ return_all_res <- function(res){
   return(res)
 }
 
-#' calculate the peak time by country
+#' calculate the peak time and attack rate by country
 #'
 #' @param res output of main_simulation
 #' @param X the vector of population sizes in each location/age/risk group
+#' @param labels data frame outputted by setup_inputs containing the location/
+#' age/risk group for each row in res
+#' @return a list with two entries.
+#' peakTimes: numeric vector of length n_countries: the peak time for each country
+#' country_attack_rate: numeric vector of length n_countries: the attack rate for each country
+#' @export
+calc_peak_times_and_attack_rates <- function(res, X, labels){
+  peakTimes <- calc_peak_times(res, labels)
+  country_attack_rate <- calc_country_attack(res, X, labels)
+  return(list(peakTimes = peakTimes, country_attack_rate = country_attack_rate))
+}
+
+#' calculate the peak time by country
+#'
+#' @param res output of main_simulation
 #' @param labels data frame outputted by setup_inputs containing the location/
 #' age/risk group for each row in res
 #' @return a numeric vector of length n_countries: the peak time for each country

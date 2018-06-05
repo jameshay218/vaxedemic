@@ -11,8 +11,6 @@ calc_peak_times(res, labels)
 
 \item{labels}{data frame outputted by setup_inputs containing the location/
 age/risk group for each row in res}
-
-\item{X}{the vector of population sizes in each location/age/risk group}
 }
 \value{
 a numeric vector of length n_countries: the peak time for each country

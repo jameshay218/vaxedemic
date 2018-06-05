@@ -12,6 +12,8 @@ postprocessing_peak_times(res_list, runName, other_info)
 \item{runName}{character string to make filename out of}
 
 \item{other_info}{list which provides any other information needed, such as to calculate the summaries}
+
+\item{output_prefix}{character vector of length 1.  Prefix for output filenames}
 }
 \description{
 postprocess simulations to plot the peak time and save outputs

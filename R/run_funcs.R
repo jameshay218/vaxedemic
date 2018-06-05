@@ -33,6 +33,7 @@
 #' @param postprocessing_func character string specifying function to do postprocessing
 #' @param other_info list which provides any other information needed, such as to calculate the summaries
 # or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
 #' @return returns TRUE if the routine runs correctly. Will create a .csv file of peak time summaries for this run, and a .png plotting the distribution of peak times by country. The output filenames are:
 #' 1) outputs/calibration_***runName***_data.csv
 #' 2) outputs/calibration_***runName***_plot.png
@@ -43,7 +44,9 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon,
                                        vax_params,vax_production_params, vax_allocation_params, 
                                        user_specified_cum_vax_pool_func,
                                        user_specified_vax_alloc_func,
-                                       seed_params, calculate_summaries_func, postprocessing_func, other_info){
+                                       seed_params, calculate_summaries_func, 
+                                       postprocessing_func, other_info,
+                                       output_prefix){
   
   ## change seasonality amplitude and travel parameter
   travel_params[["epsilon"]] <- epsilon
@@ -96,6 +99,7 @@ calibrating_amp_and_travel <- function(runName, amp, epsilon,
 #' @param postprocessing_func character string specifying function to do postprocessing
 #' @param other_info list which provides any other information needed, such as to calculate the summaries
 # or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
 #' @return returns TRUE if the routine runs correctly. Will create a .csv file of peak time summaries for this run, and a .png plotting the distribution of peak times by country. The output filenames are:
 #' 1) outputs/default_data.csv
 #' 2) outputs/default_plot.png
@@ -106,7 +110,7 @@ run_fixed_params_and_postprocess <- function(n_runs, time_params, seasonality_pa
                                        user_specified_cum_vax_pool_func,
                                        user_specified_vax_alloc_func,
                                        seed_params, calculate_summaries_func, postprocessing_func,
-                                       other_info) {
+                                       other_info, output_prefix) {
   
   runName <- "fixed" # need to provide a runName to make filenames for postprocessing
   

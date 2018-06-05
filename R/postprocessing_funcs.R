@@ -4,9 +4,10 @@
 #' @param runName character string to make filename out of
 #' @param other_info list which provides any other information needed, such as to calculate the summaries
 # or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
 #' @return NULL
 #' @export
-postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_info) {
+postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_info, output_prefix) {
   # postprocessing: plot peak times
   
   # res_list$res is a list of length n_runs.  Each element is a list containing
@@ -23,7 +24,7 @@ postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_
   p <- plot_peak_times(median_ci)
   
   # save the plot
-  filename <- paste0("outputs/peakTimes",runName)
+  filename <- paste0("outputs/", output_prefix, "_peakTimes_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p)
@@ -48,7 +49,7 @@ postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_
   p <- plot_country_attack_rates(median_ci)
   
   # save the plot
-  filename <- paste0("outputs/country_attack_rates",runName)
+  filename <- paste0("outputs/", output_prefix, "_country_attack_rates_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p)
@@ -70,6 +71,7 @@ postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_
 #' @param runName character string to make filename out of
 #' @param other_info list which provides any other information needed, such as to calculate the summaries
 # or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
 #' @return NULL
 #' @export
 postprocessing_peak_times <- function(res_list, runName, other_info) {
@@ -85,7 +87,7 @@ postprocessing_peak_times <- function(res_list, runName, other_info) {
   p <- plot_peak_times(median_ci)
   
   # save the plot
-  filename <- paste0("outputs/",runName)
+  filename <- paste0("outputs/", output_prefix, "_peakTimes_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p)
@@ -107,6 +109,7 @@ postprocessing_peak_times <- function(res_list, runName, other_info) {
 #' @param runName character string to make filename out of
 #' @param other_info list which provides any other information needed, such as to calculate the summaries
 # or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
 #' @return NULL
 #' @export
 postprocessing_country_attack <- function(res_list, runName, other_info) {
@@ -122,7 +125,7 @@ postprocessing_country_attack <- function(res_list, runName, other_info) {
   p <- plot_country_attack_rates(median_ci)
   
   # save the plot
-  filename <- paste0("outputs/",runName)
+  filename <- paste0("outputs/", output_prefix, "_country_attack_rates_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p)
@@ -142,6 +145,7 @@ postprocessing_country_attack <- function(res_list, runName, other_info) {
 #' 
 #' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
 #' @param runName character string to make filename out of
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
 #' @return NULL
 #' @export
 postprocessing_simple_save <- function(res_list, runName) {
@@ -149,7 +153,7 @@ postprocessing_simple_save <- function(res_list, runName) {
   res <- res_list$res
   
   # save the plot
-  filename <- paste0("outputs/calibration_",runName, "_output.rds")
+  filename <- paste0("outputs/", output_prefix, "_",runName, "_output.rds")
   saveRDS(res, filename)
   return(NULL)
 }

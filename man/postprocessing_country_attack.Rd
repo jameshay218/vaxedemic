@@ -12,6 +12,8 @@ postprocessing_country_attack(res_list, runName, other_info)
 \item{runName}{character string to make filename out of}
 
 \item{other_info}{list which provides any other information needed, such as to calculate the summaries}
+
+\item{output_prefix}{character vector of length 1.  Prefix for output filenames}
 }
 \description{
 postprocess simulations to plot the country attack rate and save outputs

@@ -10,6 +10,8 @@ postprocessing_simple_save(res_list, runName)
 \item{res_list}{summary statistics for each run and processed inputs produced by run_fixed_params}
 
 \item{runName}{character string to make filename out of}
+
+\item{output_prefix}{character vector of length 1.  Prefix for output filenames}
 }
 \description{
 just save summary statistics from simulations as an .rds file

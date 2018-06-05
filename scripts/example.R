@@ -104,6 +104,8 @@ latitudeDat <- read.csv("data/latitudes_intersect.csv")
 other_info <- list(regionDat = regionDat,
                    latitudeDat = latitudeDat)
 
+output_prefix <- "my_prefix"
+
 if(cluster) {
   # Setup an interface to the cluster
   # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run

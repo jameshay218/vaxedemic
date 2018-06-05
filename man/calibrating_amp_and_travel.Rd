@@ -8,7 +8,7 @@ calibrating_amp_and_travel(runName, amp, epsilon, n_runs, time_params,
   seasonality_params, life_history_params, travel_params, simulation_flags,
   vax_params, vax_production_params, vax_allocation_params,
   user_specified_cum_vax_pool_func, user_specified_vax_alloc_func, seed_params,
-  calculate_summaries_func, postprocessing_func, other_info)
+  calculate_summaries_func, postprocessing_func, other_info, output_prefix)
 }
 \arguments{
 \item{runName}{the base of the filename to save outputs to. Will be appended to "outputs/calibration_". DO NOT SPECIFY A FILE EXTENSION - THIS IS HANDLED IN THE FUNCTION}
@@ -55,6 +55,8 @@ contains the elements seedCountries: vector of country names in which to seed}
 \item{postprocessing_func}{character string specifying function to do postprocessing}
 
 \item{other_info}{list which provides any other information needed, such as to calculate the summaries}
+
+\item{output_prefix}{character vector of length 1.  Prefix for output filenames}
 }
 \value{
 returns TRUE if the routine runs correctly. Will create a .csv file of peak time summaries for this run, and a .png plotting the distribution of peak times by country. The output filenames are:

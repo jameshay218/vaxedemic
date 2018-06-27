@@ -123,10 +123,12 @@ if(run_fixed) {
   if(cluster) {
     # submit to cluster
     args_list <- make_arg_list(runs = NULL, run_func, obj)
+    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
     job <- obj$enqueue(do.call(run_func, args_list))
   } else {
     # run a single job
     args_list <- make_arg_list(runs = NULL, run_func, obj = NULL)
+    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
     do.call(run_func, args_list)
   }
 } else {
@@ -157,10 +159,12 @@ if(run_fixed) {
   if(cluster) {
     # submit to cluster
     args_list <- make_arg_list(runs, run_func, obj)
+    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
     jobs <- do.call(queuer::enqueue_bulk, args_list)
   } else {
     # run a single job
     args_list <- make_arg_list(runs, run_func, obj = NULL)
+    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
     lapply(args_list, function(x) do.call(run_func, x))
   }
 }

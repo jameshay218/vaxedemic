@@ -10,7 +10,7 @@
 #' @param seasonality_params list of seasonality parameters.
 #' contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.
 #' tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
-#' division: Average seasonality into this many blocks of time
+#' days_per_block: average seasonality over blocks of this many days
 #' amp: amplitude of seasonality
 #' @param time_params list of parameters to do with time steps in simulation.
 # contains the elements tmax (Maximum time of simulation), tdiv (Number of time steps per day)
@@ -47,8 +47,13 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     n_countries <- processed_inputs[["n_countries"]]
     n_ages <- processed_inputs[["n_ages"]]
     n_riskgroups <- processed_inputs[["n_riskgroups"]]
-    season_res <- time_params[["tmax"]]*time_params[["tdiv"]]/seasonality_params[["division"]]
-    
+    if(seasonal) {
+      n_divisions_in_block <- seasonality_params[["days_per_block"]] * tdiv
+      n_blocks <- tmax / seasonality_params[["days_per_block"]]
+      if(round(n_blocks) != n_blocks) {
+        stop("time_params$tmax must be a multiple of seasonality_params$days_per_block")
+      }
+    }
     travelMatrix <- processed_inputs[["travelMatrix"]]
     contactMatrix <- processed_inputs[["contactMatrix"]]
     X <- processed_inputs[["popns"]]
@@ -77,10 +82,10 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     ## for each location, age, risk group
     if(seasonal){
       beta1 <- Beta1(processed_inputs[["latitudes"]],n_countries)
-      B <- kronecker(matrix(1,groupsPerLoc,tmax*tdiv/season_res),beta1)
+      B <- kronecker(matrix(1,groupsPerLoc,n_blocks),beta1)
       timevec <- seq(1/tdiv,tmax,by=1/tdiv)
       wave <- sin((timevec-tdelay)*2*pi/365)
-      wave <- t(colMeans(matrix(wave, nrow=season_res)))
+      wave <- t(colMeans(matrix(wave, nrow=n_divisions_in_block)))
       Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
     } else {
       Phi <- 1
@@ -288,13 +293,13 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
 
     ## If we have seasonality, find the resolution
     ## of the seasonality vector. We re-calculate seasonal impact on FOI
-    ## every season_res iterations
+    ## every n_blocks iterations
     switch_freq <- tend+1
     index <- 1
     LD1 <- LD
     if(is.list(LD)){
-        season_res <- length(LD)
-        switch_freq <- tend/season_res
+      n_blocks <- length(LD)
+        switch_freq <- tend/n_blocks
         LD1 <- LD[[index]]
     }
     

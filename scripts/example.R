@@ -23,17 +23,26 @@ setwd(package_dir)
 # seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 2
+n_runs <- 3
+
+# if TRUE, run a short test before the full number of runs
+short_test <- TRUE
+# if cluster && (!test_local), run test on cluster, otherwise run locally
+test_local <- TRUE
+# number of runs per test
+n_runs_test <- 2
+# if n_runs <= n_runs_test, don't run teh test regardless of teh value of short_test set above
+short_test <- short_test && (n_runs > n_runs_test)
 
 # parameters to do with time steps in simulation
-time_params <- list(tmax = 1000, # Maximum time of simulation
-                    tdiv = 24) # Number of time steps per day
+time_params <- list(tmax = 1000, # Maximum time of simulation (in days) -- 
+                    # needs to be multiple of seasonality_params[["days_per_block"]]
+                    tdiv = 6) # Number of time steps per day
 
 # seasonality parameters
-seasonality_params <- list(tdelay = 180, # Shifts the seasonality function - changing this effectively changes the seed time.
+seasonality_params <- list(tdelay = 180, # (in days) Shifts the seasonality function - changing this effectively changes the seed time.
                            # tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
-                           # Average seasonality into 12 blocks of time
-                           division = 12,
+                           days_per_block = 1000/12, # average seasonality over blocks of this many days
                            amp = 0.1) # amplitude of seasonality
 
 ## Life history parameters, including R0

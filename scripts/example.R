@@ -124,11 +124,31 @@ if(run_fixed) {
     # submit to cluster
     args_list <- make_arg_list(runs = NULL, run_func, obj)
     saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    
+    if(short_test) {
+      if(test_local) {
+        args_list_temp <- make_arg_list(runs = NULL, run_func, obj = NULL)
+        args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
+        do.call(run_func, args_list_temp)
+      } else {
+        args_list_temp <- args_list
+        args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
+        job_test <- obj$enqueue(do.call(run_func, args_list_temp))
+      }
+    }
+
     job <- obj$enqueue(do.call(run_func, args_list))
   } else {
     # run a single job
     args_list <- make_arg_list(runs = NULL, run_func, obj = NULL)
     saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    
+    if(short_test) {
+      args_list_temp <- args_list
+      args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
+      do.call(run_func, args_list_temp)
+    }
+    
     do.call(run_func, args_list)
   }
 } else {
@@ -160,11 +180,33 @@ if(run_fixed) {
     # submit to cluster
     args_list <- make_arg_list(runs, run_func, obj)
     saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    
+    if(short_test) {
+      if(test_local) {
+        # run test for first parameter set only
+        args_list_temp <- make_arg_list(runs, run_func, obj = NULL)
+        args_list_temp <- args_list_temp[[1]]
+        args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
+        do.call(run_func, args_list_temp)
+      } else {
+        args_list_temp <- args_list[[1]]
+        args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
+        job_test <- obj$enqueue(do.call(run_func, args_list_temp))
+      }
+    }
+    
     jobs <- do.call(queuer::enqueue_bulk, args_list)
   } else {
-    # run a single job
+    # run locally
     args_list <- make_arg_list(runs, run_func, obj = NULL)
     saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    
+    if(short_test) {
+        args_list_temp <- args_list[[1]]
+        args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
+        do.call(run_func, args_list_temp)
+    }
+    
     lapply(args_list, function(x) do.call(run_func, x))
   }
 }

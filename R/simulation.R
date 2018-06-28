@@ -27,6 +27,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
                            time_params, vax_alloc_period, processed_inputs,
                            n_runs=1,
                            calculate_summaries_func="return_all_res", other_info){
+  
       #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
     normaliseTravel <- simulation_flags[["normaliseTravel"]]
     seasonal <- simulation_flags[["seasonal"]]

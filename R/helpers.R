@@ -429,3 +429,14 @@ get_vaxedemic_func_options <- function(package_dir = getwd()) {
   names(func_options) <- func_options_names
   func_options
 }
+
+#' make argument list with shorter number of runs
+#' 
+#' @param args_list an argument list to run simulations on or off the cluster
+#' @param n_runs_test shorter number of runs
+#' @return an argument list to run simulations on or off the cluster
+shorten_runs <- function(args_list, n_runs_test) {
+  args_list$n_runs <- n_runs_test
+  args_list$output_prefix <- paste0("test_", args_list$output_prefix)
+  args_list
+}

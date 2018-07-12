@@ -36,3 +36,4 @@ a closure to make a function which returns a vector of length
 n = n_countries * n_ages * n_risk_groups:
 the number of vaccines to be allocated to each location, age, risk group
 }
+

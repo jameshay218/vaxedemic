@@ -53,6 +53,16 @@ combine_incidence <- function(I, labels){
     return(I)
 }
 
+combine_incidence_region <- function(I, labels){
+    I <- cbind(labels, I)
+    I <- melt(I, id.vars=colnames(labels))
+    I$variable <- as.numeric(as.character(I$variable))
+    I <- data.table(I)
+    I[,sumI:=sum(value),key=c("region","variable")]
+    I[,sumN:=sum(X),key=c("region","variable")]
+    return(I)
+}
+
 #' @export
 # Create a data frame from of the simulation results - worldwide deaths, global 
 #  attack rate
@@ -104,10 +114,12 @@ calc_median_ci_by_country <- function(res, labels, regionDat, latitudeDat) {
 #' the region that location is in. read from data/regions_clean.csv
 #' @param latitudeDat data frame containing a column for Location and a column for
 #' the latitude of the location. read from data/latitudes_intersect.csv
+#' @param melted if TRUE, returns the data frame melted by the outcome variable of interest.
+#' otherwise, enumerates outcome variable across columns
 #' @return a data frame with the summary statistic for each run for
 #' each country; the region and hemisphere each country belongs to; and the latitude
 #' of each country
-neaten_raw_output_by_country <- function(res, labels, regionDat, latitudeDat) {
+neaten_raw_output_by_country <- function(res, labels, regionDat, latitudeDat, melted=FALSE) {
   res = do.call("cbind",res)
   colnames(res) <- seq_len(ncol(res))
   summary_stats <- data.frame(Location=unique(labels$Location), res)
@@ -117,5 +129,11 @@ neaten_raw_output_by_country <- function(res, labels, regionDat, latitudeDat) {
   my_latitudes <- order(tmp$latitude)
   dat$Location <- factor(dat$Location, levels=tmp$Location[my_latitudes])
   dat$Hemisphere <- ifelse(dat$latitude < 0,"Southern","Northern")
+  if(melted){
+      dat <- reshape2::melt(dat, id.vars=setdiff(colnames(dat),paste0("X",colnames(res))))
+      dat$Location <- factor(dat$Location, levels=tmp$Location[my_latitudes])
+  }
+  
   return(dat)
 }
+

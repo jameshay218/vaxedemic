@@ -7,6 +7,16 @@ return_all_res <- function(res){
   return(res)
 }
 
+
+#' @export
+calc_region_time_series <- function(res, X, labels){
+    time_series <- data.table::data.table(res$I)
+    I <- combine_incidence_region(I, labels)
+    tmp <- unique(I[,c("Location","variable","sumI","sumN")])
+    return(tmp)
+}
+
+
 #' calculate the peak time and attack rate by country
 #'
 #' @param res output of main_simulation

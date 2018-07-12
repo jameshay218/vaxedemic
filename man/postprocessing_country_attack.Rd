@@ -18,3 +18,4 @@ postprocessing_country_attack(res_list, runName, other_info)
 \description{
 postprocess simulations to plot the country attack rate and save outputs
 }
+

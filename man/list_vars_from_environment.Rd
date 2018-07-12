@@ -17,3 +17,4 @@ list of variables with names var_names
 \description{
 gather variables with given names from an environment into a list
 }
+

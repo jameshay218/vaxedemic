@@ -1,3 +1,11 @@
+#' @export
+postprocessing_time_series_plot <- function(res_list, runName, other_info, output_prefix){
+    print(res_list)
+    write.table(res,paste0("outputs/",output_prefix, "_timeseries_",runName),sep=",",row.names=FALSE)
+    return(NULL)
+}
+
+
 #' postprocess simulations to plot the peak time and save outputs
 #' 
 #' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
@@ -13,55 +21,87 @@ postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_
   # res_list$res is a list of length n_runs.  Each element is a list containing
   # two elements: peakTimes and country_attack_rate.
   # this lapply pulls out the peakTimes element for each run.
-  res <- lapply(res_list$res, function(x) x$peakTimes)
-  labels <- res_list$processed_inputs[["labels"]]
-  regionDat <- other_info[["regionDat"]]
-  latitudeDat <- other_info[["latitudeDat"]]
-  
-  median_ci <- calc_median_ci_by_country(res, labels, 
-                                   regionDat, 
-                                   latitudeDat)
-  p <- plot_peak_times(median_ci)
-  
-  # save the plot
-  filename <- paste0("outputs/", output_prefix, "_peakTimes_",runName)
-  
-  png(paste0(filename, "_plot.png"),width=800,height=1200)
-  plot(p)
-  dev.off()
-  
-  # save the output
-  # median and cis
-  write.table(median_ci, paste0(filename, "_median_ci.csv"),sep=",",row.names=FALSE)
-  
-  # peak times for all runs
-  res <- neaten_raw_output_by_country(res, labels, 
-                                            regionDat, 
-                                            latitudeDat)
-  write.table(res, paste0(filename, "_all_runs.csv"),sep=",",row.names=FALSE)
-  
-  # postprocessing: plot attack rates
-  res <- lapply(res_list$res, function(x) x$country_attack_rate)
+    res_PT <- lapply(res_list$res, function(x) x$peakTimes)
+    labels <- res_list$processed_inputs[["labels"]]
+    regionDat <- other_info[["regionDat"]]
+    latitudeDat <- other_info[["latitudeDat"]]
+    
+    median_ci <- calc_median_ci_by_country(res_PT, labels, 
+                                           regionDat, 
+                                           latitudeDat)
+    p <- plot_peak_times(median_ci)
+    
+                                        # save the plot
+    filename <- paste0("outputs/", output_prefix, "_peakTimes_",runName)
+    
+    png(paste0(filename, "_plot.png"),width=800,height=1200)
+    plot(p)
+    dev.off()
+    
+                                        # save the output
+                                        # median and cis
+    write.table(median_ci, paste0(filename, "_median_ci.csv"),sep=",",row.names=FALSE)
+    
+                                        # peak times for all runs
+    res_PT_clean<- neaten_raw_output_by_country(res_PT, labels, 
+                                                regionDat, 
+                                                latitudeDat)
+    write.table(res_PT_clean, paste0(filename, "_all_runs.csv"),sep=",",row.names=FALSE)
 
-  median_ci <- calc_median_ci_by_country(res, labels, 
-                                   regionDat, 
-                                   latitudeDat)
-  p <- plot_country_attack_rates(median_ci)
-  
-  # save the plot
-  filename <- paste0("outputs/", output_prefix, "_country_attack_rates_",runName)
-  
-  png(paste0(filename, "_plot.png"),width=800,height=1200)
-  plot(p)
-  dev.off()
-  
-  # save the output
-  write.table(median_ci, paste0(filename, "_median_ci.csv"),sep=",",row.names=FALSE)
-  
-  res <- neaten_raw_output_by_country(res, labels, 
-                                      regionDat, 
-                                      latitudeDat)
-  write.table(res, paste0(filename, "_all_runs.csv"),sep=",",row.names=FALSE)
+    ## melted, for density plot
+    ## To plot density strips of attack rates
+    res_PT_melted<- neaten_raw_output_by_country(res_PT, labels, 
+                                                 regionDat, 
+                                                 latitudeDat,
+                                                 melt=TRUE)
+    ## If we want to save the melted raw output - commented out as this is a large file
+    #write.table(res_PT_melted, paste0(filename, "_all_runs_melted.csv"),sep=",",row.names=FALSE)
+    p_PT_dens <- density_country_peak_times(res_PT_melted)
+                                        # save the plot
+    filename <- paste0("outputs/", output_prefix, "_peakTimes_density_",runName)
+    
+    png(paste0(filename, "_plot.png"),width=800,height=1200)
+    plot(p_PT_dens)
+    dev.off()
+    
+                                        # postprocessing: plot attack rates
+    res_AR <- lapply(res_list$res, function(x) x$country_attack_rate)
+
+    median_ci <- calc_median_ci_by_country(res_AR, labels, 
+                                           regionDat, 
+                                           latitudeDat)
+    p <- plot_country_attack_rates(median_ci)
+    
+                                        # save the plot
+    filename <- paste0("outputs/", output_prefix, "_country_attack_rates_",runName)
+    
+    png(paste0(filename, "_plot.png"),width=800,height=1200)
+    plot(p)
+    dev.off()
+    
+                                        # save the output
+    write.table(median_ci, paste0(filename, "_median_ci.csv"),sep=",",row.names=FALSE)
+    
+    res_AR_clean<- neaten_raw_output_by_country(res_AR, labels, 
+                                                regionDat, 
+                                                latitudeDat)    
+    write.table(res_AR_clean, paste0(filename, "_all_runs.csv"),sep=",",row.names=FALSE)
+
+    ## To plot density strips of peak times
+    res_AR_melted<- neaten_raw_output_by_country(res_AR, labels, 
+                                                 regionDat, 
+                                                 latitudeDat,
+                                                 melt=TRUE)
+    ## If we want to save the melted raw output - commented out as this is a large file
+    #write.table(res_AR_melted, paste0(filename, "_all_runs_melted.csv"),sep=",",row.names=FALSE)
+    p_AR_dens <- density_country_attack_rates(res_AR_melted)
+                                        # save the plot
+    filename <- paste0("outputs/", output_prefix, "_country_attack_rates_density_",runName)
+    
+    png(paste0(filename, "_plot.png"),width=800,height=1200)
+    plot(p_AR_dens)
+    dev.off() 
+    
   return(NULL)
 }
 
@@ -149,11 +189,14 @@ postprocessing_country_attack <- function(res_list, runName, other_info) {
 #' @return NULL
 #' @export
 postprocessing_simple_save <- function(res_list, runName) {
+
   # postprocessing: plot peak times
   res <- res_list$res
   
-  # save the plot
-  filename <- paste0("outputs/", output_prefix, "_",runName, "_output.rds")
-  saveRDS(res, filename)
+                                        # save the plot
+    filename <- paste0("outputs/", output_prefix, "_",runName, "_output.rds")
+    filename <- paste0("outputs/", output_prefix, "_",runName, "_output.RData")
+    save(res_list, file=filename)
+                                        #  saveRDS(res, filename)
   return(NULL)
 }

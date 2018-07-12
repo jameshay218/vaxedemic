@@ -22,3 +22,4 @@ number vector of length 100: final sizes of 100 simulations.
 function to simulate thefinal size distribution for a single country, for a 
 give effective reproduction number.
 }
+

@@ -48,11 +48,14 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     n_ages <- processed_inputs[["n_ages"]]
     n_riskgroups <- processed_inputs[["n_riskgroups"]]
     if(seasonal) {
-      n_divisions_in_block <- seasonality_params[["days_per_block"]] * tdiv
-      n_blocks <- tmax / seasonality_params[["days_per_block"]]
-      if(round(n_blocks) != n_blocks) {
-        stop("time_params$tmax must be a multiple of seasonality_params$days_per_block")
-      }
+        n_divisions_in_block <- seasonality_params[["days_per_block"]] * tdiv
+        n_blocks <- tmax / seasonality_params[["days_per_block"]]
+        if(round(n_blocks) != n_blocks) {
+            stop("time_params$tmax must be a multiple of seasonality_params$days_per_block")
+        }
+        if(round(n_divisions_in_block) != n_divisions_in_block){
+            stop("time_params$tdiv must be a multiple of seasonality_params$days_per_block")
+        }
     }
     travelMatrix <- processed_inputs[["travelMatrix"]]
     contactMatrix <- processed_inputs[["contactMatrix"]]

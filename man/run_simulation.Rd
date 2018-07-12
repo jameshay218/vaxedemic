@@ -22,7 +22,7 @@ across location, age and risk groups)}
 \item{seasonality_params}{list of seasonality parameters.
 contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.
 tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
-division: Average seasonality into this many blocks of time
+days_per_block: average seasonality over blocks of this many days
 amp: amplitude of seasonality}
 
 \item{time_params}{list of parameters to do with time steps in simulation.}
@@ -43,3 +43,4 @@ a list of lists containing results of main simulation loop (see main_simulation)
 \description{
 function to set up simulation from inputs, then run
 }
+

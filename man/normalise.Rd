@@ -15,3 +15,4 @@ normalised vector of same length as vec
 \description{
 normalises a vector so that it sums to 1
 }
+

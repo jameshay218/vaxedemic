@@ -22,3 +22,4 @@ country_attack_rate: numeric vector of length n_countries: the attack rate for e
 \description{
 calculate the peak time and attack rate by country
 }
+

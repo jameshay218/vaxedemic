@@ -34,3 +34,4 @@ allocate vaccines according to absolute incidence in each location, then
 allocate uniformly within each country (without discriminating between
 ages/risk groups/infection statuses)
 }
+

@@ -18,3 +18,4 @@ a numeric vector of length n_countries: the peak time for each country
 \description{
 calculate the peak time by country
 }
+

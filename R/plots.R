@@ -16,8 +16,9 @@ model_plot_simple <- function(res, labels, n_countries){
     N <- data.table(aggregate(data=labels, X~Location + Age,FUN=sum))
     N <- N[N$Location %in% unique(I_aggregated$Location),]
     I_aggregated <- merge(I_aggregated,N,by=c("Location","Age"))
-      
-    ggplot(I_aggregated[I_aggregated$Location %in% unique(I_aggregated$Location)[n_countries],],aes(x=variable,y=x/X,col=Age)) +
+    use_countries <- sample(unique(I_aggregated$Location), n_countries)
+#    ggplot(I_aggregated[I_aggregated$Location %in% unique(I_aggregated$Location)[n_countries],],aes(x=variable,y=x/X,col=Age)) +
+    ggplot(I_aggregated[I_aggregated$Location %in% use_countries,],aes(x=variable,y=x/X,col=Age)) +
         geom_line() +
         facet_wrap(~Location) +
         theme_bw()
@@ -210,11 +211,56 @@ plot_peak_times <- function(dat){
 #' @return a ggplot object
 #'@import ggplot2
 plot_country_attack_rates <- function(dat) {
-  ggplot(dat) +
-    geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
-    geom_point(aes(y=Location,x=median),size=0.5) +
-    scale_x_continuous(limits=c(0,1)) +
-    xlab("Attack rate, median and 95% quantiles") +
-    facet_grid(region~.,scales="free_y", space="free",switch="both") +
-    theme(axis.text.y=element_text(size=6)) + theme_bw()
+    ggplot(dat) +
+        geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
+        geom_point(aes(y=Location,x=median),size=0.5) +
+        scale_x_continuous(limits=c(0,1)) +
+        xlab("Attack rate, median and 95% quantiles") +
+        facet_grid(region~.,scales="free_y", space="free",switch="both") +
+        theme(axis.text.y=element_text(size=6)) + theme_bw()
 }
+
+#' plot the density strips of the attack rate in each country across simulations
+#' 
+#' @param dat a data frame outputted neaten_raw_output_by_country with
+#' "melted=TRUE"
+#' @return a ggplot object
+#'@import ggplot2
+density_country_attack_rates <- function(dat) {
+    ggplot(dat, aes(x=value,y=factor(Location))) + 
+        stat_density(aes(fill=..scaled..),geom="tile",position="identity")+ 
+        scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
+        scale_fill_gradient(low="white",high="black") +
+        labs(fill="Scaled density") +
+        ylab("Location") + 
+        theme_bw() +
+        theme(panel.grid=element_blank(),
+              legend.position="bottom",
+              legend.title.align = 0.5)+
+        facet_grid(region~.,scales="free_y", space="free",switch="both")
+
+}
+
+
+#' plot the density strips of the peak times in each country across simulations
+#' 
+#' @param dat a data frame outputted neaten_raw_output_by_country with
+#' "melted=TRUE"
+#' @return a ggplot object
+#'@import ggplot2
+density_country_peak_times <- function(dat) {
+    ggplot(dat, aes(x=value,y=factor(Location))) + 
+        stat_density(aes(fill=..scaled..),geom="tile",position="identity")+
+        scale_x_continuous(limits=c(0,365),expand=c(0,0)) +
+        scale_fill_gradient(low="white",high="black") +
+        labs(fill="Scaled density") +
+        ylab("Location") + 
+        theme_bw() +
+        theme(panel.grid=element_blank(),
+              legend.position="bottom",
+              legend.title.align = 0.5)+
+        facet_grid(region~.,scales="free_y", space="free",switch="both")
+
+}
+
+

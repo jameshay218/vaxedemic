@@ -34,3 +34,4 @@ allocate vaccines according to current seasonal allocation in each location, the
 allocate uniformly within each country (without discriminating between
 ages/risk groups/infection statuses)
 }
+

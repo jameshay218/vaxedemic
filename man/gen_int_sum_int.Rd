@@ -17,3 +17,4 @@ numeric vector of length n_int
 \description{
 generate n_int random integers that sum to sum_int
 }
+

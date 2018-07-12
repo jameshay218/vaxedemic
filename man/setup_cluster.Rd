@@ -15,3 +15,4 @@ a didehpc::queue_didehpc object
 \description{
 This function sets up an object linking to the DIDE cluster in a very crude way. Each user will need to implement their own version of this that returns a valid didehpc object to submit jobs to.
 }
+

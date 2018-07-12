@@ -1,6 +1,6 @@
 cluster <- FALSE # run on cluster or locally
 # user identifier -- only needed if running on cluster
-user <- "ayan"
+user <- "JH"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
@@ -11,6 +11,10 @@ run_fixed <- TRUE
 package_dir <- "~/Documents/vaxedemic/"
 devtools::load_all(package_dir)
 setwd(package_dir)
+
+# Where to save simulation results
+outputDir <- "~/net/home/vaxedemic/outputs_test"
+if(!file.exists(outputDir)) dir.create(outputDir)
 
 # set up the arguments to be passed to the function to be run, which
 # are constant across the sets of simulations.
@@ -26,7 +30,7 @@ setwd(package_dir)
 n_runs <- 3
 
 # if TRUE, run a short test before the full number of runs
-short_test <- TRUE
+short_test <- FALSE
 # if cluster && (!test_local), run test on cluster, otherwise run locally
 test_local <- TRUE
 # number of runs per test
@@ -35,21 +39,23 @@ n_runs_test <- 2
 short_test <- short_test && (n_runs > n_runs_test)
 
 # parameters to do with time steps in simulation
-time_params <- list(tmax = 1000, # Maximum time of simulation (in days) -- 
+n_years <- 3 # Run time of simulation in years
+time_params <- list(tmax = 365*n_years, # Maximum time of simulation (in days) -- 
                     # needs to be multiple of seasonality_params[["days_per_block"]]
-                    tdiv = 6) # Number of time steps per day
+                    tdiv = 12) # Number of time steps per day
 
 # seasonality parameters
+n_blocks <- n_years*12 # Number of seasonality blocks per year
 seasonality_params <- list(tdelay = 180, # (in days) Shifts the seasonality function - changing this effectively changes the seed time.
                            # tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
-                           days_per_block = 1000/12, # average seasonality over blocks of this many days
-                           amp = 0.1) # amplitude of seasonality
+                           days_per_block = time_params$tmax/n_blocks, # average seasonality over blocks of this many days
+                           amp = 0.3) # amplitude of seasonality
 
 ## Life history parameters, including R0
 life_history_params <- list(R0=1.4, TR=2.6, LP = 1.5, case_fatality_ratio = rep(2e-2,2))
 
 ## Travel parameters
-travel_params <- list(epsilon = 1e-3)
+travel_params <- list(epsilon = 5e-5)
 
 ## Options for the simulation
 simulation_flags <- list(ageMixing=TRUE,
@@ -93,10 +99,13 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
 calculate_summaries_func <- "calc_peak_times_and_attack_rates"
+calculate_summaries_func <- "return_all_res"
+
 
 # character string specifying function to do postprocessing
 # see current options in get_vaxedemic_func_options()
 postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
+postprocessing_func <- "postprocessing_simple_save"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check
 if((postprocessing_func == "postprocessing_country_attack" && calculate_summaries_func != "calc_country_attack") ||
@@ -132,7 +141,7 @@ if(run_fixed) {
   if(cluster) {
     # submit to cluster
     args_list <- make_arg_list(runs = NULL, run_func, obj)
-    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
     
     if(short_test) {
       if(test_local) {
@@ -150,7 +159,7 @@ if(run_fixed) {
   } else {
     # run a single job
     args_list <- make_arg_list(runs = NULL, run_func, obj = NULL)
-    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
     
     if(short_test) {
       args_list_temp <- args_list
@@ -188,7 +197,7 @@ if(run_fixed) {
   if(cluster) {
     # submit to cluster
     args_list <- make_arg_list(runs, run_func, obj)
-    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
     
     if(short_test) {
       if(test_local) {
@@ -208,7 +217,7 @@ if(run_fixed) {
   } else {
     # run locally
     args_list <- make_arg_list(runs, run_func, obj = NULL)
-    saveRDS(args_list, paste0("outputs/", output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
     
     if(short_test) {
         args_list_temp <- args_list[[1]]

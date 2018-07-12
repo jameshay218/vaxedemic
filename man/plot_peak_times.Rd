@@ -18,3 +18,4 @@ a ggplot object
 \description{
 plot the median and 95% quantiles of the peak time in each country across simulations
 }
+

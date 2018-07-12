@@ -60,3 +60,4 @@ returns TRUE if the routine runs correctly. Will create a .csv file of peak time
 \description{
 Function used to submit jobs, solving the global model with specified parameters. This particular function is intended to test different values of amp and epsilon, which is why they are amongst the first arguments. To write your own function which can be submitted to the cluster, simply place the parameters that you want to change as the first few arguments.
 }
+

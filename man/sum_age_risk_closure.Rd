@@ -17,4 +17,3 @@ country, age and risk group) across age and risk groups
 returns a function to sum a state vector (e.g. the current number of susceptibles in each
 country, age and risk group) across age and risk groups
 }
-

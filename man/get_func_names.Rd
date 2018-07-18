@@ -15,4 +15,3 @@ character vector where each entry is the name of a function in the file
 \description{
 return names of all functions in a .R file
 }
-

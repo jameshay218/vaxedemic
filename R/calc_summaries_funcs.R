@@ -30,7 +30,8 @@ calc_region_time_series <- function(res, X, labels){
 calc_peak_times_and_attack_rates <- function(res, X, labels){
   peakTimes <- calc_peak_times(res, labels)
   country_attack_rate <- calc_country_attack(res, X, labels)
-  return(list(peakTimes = peakTimes, country_attack_rate = country_attack_rate))
+  return(list(peakTimes = peakTimes$peakTimes, 
+              country_attack_rate = country_attack_rate$country_attack_rate))
 }
 
 #' calculate the peak time by country
@@ -38,14 +39,15 @@ calc_peak_times_and_attack_rates <- function(res, X, labels){
 #' @param res output of main_simulation
 #' @param labels data frame outputted by setup_inputs containing the location/
 #' age/risk group for each row in res
-#' @return a numeric vector of length n_countries: the peak time for each country
+#' @return a list containing a numeric vector of length n_countries: 
+#' the peak time for each country
 #' @export
 calc_peak_times <- function(res, labels){
   I <- data.table::data.table(res$I)
   I <- combine_incidence(I, labels)
   tmp <- unique(I[,c("Location","variable","sumI","sumN")])
   peakTimes <- plyr::ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
-  return(peakTimes)
+  return(list(peakTimes = peakTimes))
 }
 
 #' calculate the attack rate by country
@@ -54,7 +56,8 @@ calc_peak_times <- function(res, labels){
 #' @param X the vector of population sizes in each location/age/risk group
 #' @param labels data frame outputted by setup_inputs containing the location/
 #' age/risk group for each row in res
-#' @return a numeric vector of length n_countries: the attack rate for each country
+#' @return a list ocntaining a numeric vector of length n_countries: 
+#' the attack rate for each country
 #' @export
 calc_country_attack <- function(res, X, labels){
   pop_total <- sum(X)
@@ -62,5 +65,5 @@ calc_country_attack <- function(res, X, labels){
   sum_age_risk <- sum_age_risk_closure(labels)
   final_size_by_group <- res$R[ ,tend] + res$RV[ ,tend] + deaths(res, X)
   country_attack_rate <- sum_age_risk(final_size_by_group) / sum_age_risk(X)
-  return(country_attack_rate)
+  return(list(country_attack_rate = country_attack_rate))
 }

@@ -17,4 +17,3 @@ an argument list to run simulations on or off the cluster
 \description{
 make argument list with shorter number of runs
 }
-

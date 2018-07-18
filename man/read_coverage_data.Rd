@@ -17,4 +17,3 @@ the proportion of doses distributed to each country
 \description{
 Calculates the proportion of seasonal vaccine doses distributed to each country in 2013
 }
-

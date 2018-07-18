@@ -16,4 +16,3 @@ in which the package code sits; and options for didehpc
 \description{
 specify user options for cluster
 }
-

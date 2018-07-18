@@ -15,4 +15,3 @@ numeric vector of the same length as vec: rounded vector
 \description{
 rounds a numeric vector probabilistically such that its sum (an integer) is preserved
 }
-

@@ -9,4 +9,3 @@ model_plot_simple(res, labels, n_countries)
 \description{
 Simple plot of simulation outputs
 }
-

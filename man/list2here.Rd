@@ -19,4 +19,3 @@ throws a warning; if set to "error", throws an error}
 \description{
 dump variables from a list to the parent frame
 }
-

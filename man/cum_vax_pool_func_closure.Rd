@@ -20,4 +20,3 @@ the number of vaccines which have ever existed at time t
 \description{
 a closure to make a function which returns a scalar:
 }
-

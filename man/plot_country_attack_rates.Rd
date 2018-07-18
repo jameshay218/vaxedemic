@@ -18,4 +18,3 @@ a ggplot object
 \description{
 plot the median and 95% quantiles of the attack rate in each country across simulations
 }
-

@@ -68,4 +68,3 @@ vax_pool: numeric vector containing number of vaccines available at each timeste
 \description{
 main simulation loop
 }
-

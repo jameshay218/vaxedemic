@@ -21,4 +21,3 @@ the matrix of age-specific contact rates/durations
 \description{
 Converts a vector of age-mixing rates or contact durations into a matrix. If a matrix is passed, just returns the original matrix. Can be switched off to return a matrix of 1s
 }
-

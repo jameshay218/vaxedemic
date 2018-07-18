@@ -17,4 +17,3 @@ needs to return a scalar: the number of vaccines ever produced up to time t
 \description{
 no vaccine produced until time vax_production_params[["detection_delay"]] + vax_production_params[["production_delay"]], then constant production rate until max number of doses ever made reached, then no production
 }
-

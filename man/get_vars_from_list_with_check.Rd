@@ -17,4 +17,3 @@ list of selected variables
 \description{
 extract variables from list, throwing an error if they are not found
 }
-

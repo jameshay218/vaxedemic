@@ -26,4 +26,3 @@ of each country
 \description{
 calculate the mean, median and 2.5%, 97.5% percentiles of a summary statistic by country
 }
-

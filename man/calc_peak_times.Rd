@@ -13,9 +13,9 @@ calc_peak_times(res, labels)
 age/risk group for each row in res}
 }
 \value{
-a numeric vector of length n_countries: the peak time for each country
+a list containing a numeric vector of length n_countries: 
+the peak time for each country
 }
 \description{
 calculate the peak time by country
 }
-

@@ -34,4 +34,3 @@ given the number of vaccines allocated to each country, distributes vaccines
  f returns a numeric vector of length n: the
  number of vaccines allocated to each country, age, risk group
 }
-

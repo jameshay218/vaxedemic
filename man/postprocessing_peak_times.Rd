@@ -4,7 +4,7 @@
 \alias{postprocessing_peak_times}
 \title{postprocess simulations to plot the peak time and save outputs}
 \usage{
-postprocessing_peak_times(res_list, runName, other_info)
+postprocessing_peak_times(res_list, runName, other_info, output_prefix)
 }
 \arguments{
 \item{res_list}{summary statistics for each run and processed inputs produced by run_fixed_params}
@@ -18,4 +18,3 @@ postprocessing_peak_times(res_list, runName, other_info)
 \description{
 postprocess simulations to plot the peak time and save outputs
 }
-

@@ -43,4 +43,3 @@ a list of lists containing results of main simulation loop (see main_simulation)
 \description{
 function to set up simulation from inputs, then run
 }
-

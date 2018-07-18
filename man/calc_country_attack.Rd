@@ -15,9 +15,9 @@ calc_country_attack(res, X, labels)
 age/risk group for each row in res}
 }
 \value{
-a numeric vector of length n_countries: the attack rate for each country
+a list ocntaining a numeric vector of length n_countries: 
+the attack rate for each country
 }
 \description{
 calculate the attack rate by country
 }
-

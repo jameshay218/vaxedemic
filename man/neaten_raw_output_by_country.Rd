@@ -4,7 +4,8 @@
 \alias{neaten_raw_output_by_country}
 \title{format the summary statistic by country over all n_runs}
 \usage{
-neaten_raw_output_by_country(res, labels, regionDat, latitudeDat)
+neaten_raw_output_by_country(res, labels, regionDat, latitudeDat,
+  melted = FALSE)
 }
 \arguments{
 \item{res}{summary statistics outputted by run_simulation.  Should be a list
@@ -17,6 +18,9 @@ the region that location is in. read from data/regions_clean.csv}
 
 \item{latitudeDat}{data frame containing a column for Location and a column for
 the latitude of the location. read from data/latitudes_intersect.csv}
+
+\item{melted}{if TRUE, returns the data frame melted by the outcome variable of interest.
+otherwise, enumerates outcome variable across columns}
 }
 \value{
 a data frame with the summary statistic for each run for
@@ -26,4 +30,3 @@ of each country
 \description{
 format the summary statistic by country over all n_runs
 }
-

@@ -1,7 +1,7 @@
 #' @export
 postprocessing_time_series_plot <- function(res_list, runName, other_info, output_prefix){
     print(res_list)
-    write.table(res,paste0("outputs/",output_prefix, "_timeseries_",runName),sep=",",row.names=FALSE)
+    write.table(res,paste0(output_prefix, "_timeseries_",runName),sep=",",row.names=FALSE)
     return(NULL)
 }
 
@@ -47,7 +47,7 @@ postprocessing_peak_times <- function(res_list, runName, other_info, output_pref
   p <- plot_peak_times(median_ci)
   
   # save the plot
-  filename <- paste0("outputs/", output_prefix, "_peakTimes_",runName)
+  filename <- paste0(output_prefix, "_peakTimes_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p)
@@ -73,7 +73,7 @@ postprocessing_peak_times <- function(res_list, runName, other_info, output_pref
   #write.table(res_PT_melted, paste0(filename, "_all_runs_melted.csv"),sep=",",row.names=FALSE)
   p_PT_dens <- density_country_peak_times(res_PT_melted)
   # save the plot
-  filename <- paste0("outputs/", output_prefix, "_peakTimes_density_",runName)
+  filename <- paste0(output_prefix, "_peakTimes_density_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p_PT_dens)
@@ -103,7 +103,7 @@ postprocessing_country_attack <- function(res_list, runName, other_info, output_
   p <- plot_country_attack_rates(median_ci)
   
   # save the plot
-  filename <- paste0("outputs/", output_prefix, "_country_attack_rates_",runName)
+  filename <- paste0(output_prefix, "_country_attack_rates_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p)
@@ -126,7 +126,7 @@ postprocessing_country_attack <- function(res_list, runName, other_info, output_
   #write.table(res_AR_melted, paste0(filename, "_all_runs_melted.csv"),sep=",",row.names=FALSE)
   p_AR_dens <- density_country_attack_rates(res_AR_melted)
   # save the plot
-  filename <- paste0("outputs/", output_prefix, "_country_attack_rates_density_",runName)
+  filename <- paste0(output_prefix, "_country_attack_rates_density_",runName)
   
   png(paste0(filename, "_plot.png"),width=800,height=1200)
   plot(p_AR_dens)
@@ -147,8 +147,8 @@ postprocessing_simple_save <- function(res_list, runName) {
   res <- res_list$res
   
                                         # save the plot
-    filename <- paste0("outputs/", output_prefix, "_",runName, "_output.rds")
-    filename <- paste0("outputs/", output_prefix, "_",runName, "_output.RData")
+    filename <- paste0(output_prefix, "_",runName, "_output.rds")
+    filename <- paste0(output_prefix, "_",runName, "_output.RData")
     save(res_list, file=filename)
                                         #  saveRDS(res, filename)
   return(NULL)

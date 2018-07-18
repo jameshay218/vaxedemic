@@ -13,8 +13,10 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "~/net/home/vaxedemic/outputs_test"
+outputDir <- "outputs"
 if(!file.exists(outputDir)) dir.create(outputDir)
+output_prefix <- "my_prefix"
+output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
 # set up the arguments to be passed to the function to be run, which
 # are constant across the sets of simulations.
@@ -99,13 +101,13 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
 calculate_summaries_func <- "calc_peak_times_and_attack_rates"
-calculate_summaries_func <- "return_all_res"
+# calculate_summaries_func <- "return_all_res"
 
 
 # character string specifying function to do postprocessing
 # see current options in get_vaxedemic_func_options()
 postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
-postprocessing_func <- "postprocessing_simple_save"
+# postprocessing_func <- "postprocessing_simple_save"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check
 if((postprocessing_func == "postprocessing_country_attack" && calculate_summaries_func != "calc_country_attack") ||
@@ -121,8 +123,6 @@ regionDat <- read.csv("data/regions_clean.csv")
 latitudeDat <- read.csv("data/latitudes_intersect.csv")
 other_info <- list(regionDat = regionDat,
                    latitudeDat = latitudeDat)
-
-output_prefix <- "my_prefix"
 
 if(cluster) {
   # Setup an interface to the cluster
@@ -141,7 +141,7 @@ if(run_fixed) {
   if(cluster) {
     # submit to cluster
     args_list <- make_arg_list(runs = NULL, run_func, obj)
-    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
     
     if(short_test) {
       if(test_local) {
@@ -159,7 +159,7 @@ if(run_fixed) {
   } else {
     # run a single job
     args_list <- make_arg_list(runs = NULL, run_func, obj = NULL)
-    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
     
     if(short_test) {
       args_list_temp <- args_list
@@ -197,7 +197,7 @@ if(run_fixed) {
   if(cluster) {
     # submit to cluster
     args_list <- make_arg_list(runs, run_func, obj)
-    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
     
     if(short_test) {
       if(test_local) {
@@ -217,7 +217,7 @@ if(run_fixed) {
   } else {
     # run locally
     args_list <- make_arg_list(runs, run_func, obj = NULL)
-    saveRDS(args_list, paste0(outputDir, output_prefix,"_args_list.rds"))
+    saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
     
     if(short_test) {
         args_list_temp <- args_list[[1]]

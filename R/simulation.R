@@ -512,6 +512,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     colnames(vax_alloc_mat) <- colnames(incidence_mat) <- times
     
     return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec,
+                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, 
+                incidence = incidence_mat, vax_pool = vax_pool_vec,
                 vax_alloc = vax_alloc_mat))
 }

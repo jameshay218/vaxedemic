@@ -1,12 +1,22 @@
+#' postprocess simulations to plot the peak time and attack rates,
+#' and save outputs for the incidence, vaccinated, peak time and attack rates
+#' 
+#' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
+#' @param runName character string to make filename out of
+#' @param other_info list which provides any other information needed, such as to calculate the summaries
+# or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
+#' @return NULL
 #' @export
-postprocessing_time_series_plot <- function(res_list, runName, other_info, output_prefix){
-    print(res_list)
-    write.table(res,paste0(output_prefix, "_timeseries_",runName),sep=",",row.names=FALSE)
-    return(NULL)
+postprocessing_incidence_vaccinated_peak_times_attack_rates <- function(res_list, runName, other_info, output_prefix) {
+  postprocessing_save_country_incidence(res_list, runName, other_info, output_prefix)
+  postprocessing_save_country_vaccinated(res_list, runName, other_info, output_prefix)
+  postprocessing_peak_times(res_list, runName, other_info, output_prefix)
+  postprocessing_country_attack(res_list, runName, other_info, output_prefix)
+  return(NULL)
 }
 
-
-#' postprocess simulations to plot the peak time and save outputs
+#' postprocess simulations to plot the peak time and attack rates, and save outputs
 #' 
 #' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
 #' @param runName character string to make filename out of
@@ -18,6 +28,50 @@ postprocessing_time_series_plot <- function(res_list, runName, other_info, outpu
 postprocessing_peak_times_and_attack_rates <- function(res_list, runName, other_info, output_prefix) {
   postprocessing_peak_times(res_list, runName, other_info, output_prefix)
   postprocessing_country_attack(res_list, runName, other_info, output_prefix)
+  return(NULL)
+}
+
+#' postprocess simulations to save the daily incidence for each country
+#' 
+#' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
+#' @param runName character string to make filename out of
+#' @param other_info list which provides any other information needed, such as to calculate the summaries
+# or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
+#' @return NULL
+#' @export
+postprocessing_save_country_incidence <- function(res_list, runName, other_info, output_prefix){
+  
+  # thin country times series to one observation per day before saving
+  thin_incidence <- function(incidence) {
+    thin_time_series(incidence, thin_integer = TRUE, thin_by_sum = TRUE)
+  }
+  
+  res_list$res <- lapply(res_list$res, function(x) thin_incidence(x$incidence))
+  # save country time series as rds
+  saveRDS(res_list$res, paste0(output_prefix, "_incidence.rds"))
+  return(NULL)
+}
+
+#' postprocess simulations to save the daily number of vaccinated individuals for each country
+#' 
+#' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
+#' @param runName character string to make filename out of
+#' @param other_info list which provides any other information needed, such as to calculate the summaries
+# or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
+#' @return NULL
+#' @export
+postprocessing_save_country_vaccinated <- function(res_list, runName, other_info, output_prefix){
+  
+  # thin country times series to one observation per day before saving
+  thin_vaccinated <- function(vaccinated) {
+    thin_time_series(vaccinated, thin_integer = TRUE, thin_by_sum = FALSE)
+  }
+  
+  res_list$res <- lapply(res_list$res, function(x) thin_vaccinated(x$vaccinated))
+  # save country time series as rds
+  saveRDS(res_list$res, paste0(output_prefix, "_vaccinated.rds"))
   return(NULL)
 }
 

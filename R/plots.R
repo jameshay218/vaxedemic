@@ -4,24 +4,24 @@
 #' @import data.table
 #' @export
 model_plot_simple <- function(res, labels, n_countries){
-    times <- as.numeric(colnames(res$I))
-    I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
-    I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
-    I$Age <- as.factor(I$Age)
-    I$RiskGroup <- as.factor(I$RiskGroup)
-    I$variable <- as.numeric(I$variable)
-    I$variable <- times[I$variable]
-    I <- data.table(I)
-    I_aggregated <- I[,x:=sum(value),by=list(variable,Location,Age)]
-    N <- data.table(aggregate(data=labels, X~Location + Age,FUN=sum))
-    N <- N[N$Location %in% unique(I_aggregated$Location),]
-    I_aggregated <- merge(I_aggregated,N,by=c("Location","Age"))
-    use_countries <- sample(unique(I_aggregated$Location), n_countries)
-#    ggplot(I_aggregated[I_aggregated$Location %in% unique(I_aggregated$Location)[n_countries],],aes(x=variable,y=x/X,col=Age)) +
-    ggplot(I_aggregated[I_aggregated$Location %in% use_countries,],aes(x=variable,y=x/X,col=Age)) +
-        geom_line() +
-        facet_wrap(~Location) +
-        theme_bw()
+  times <- as.numeric(colnames(res$I))
+  I <- cbind(labels[,c("Location","Age","RiskGroup")], res$I + res$IV)
+  I <- melt(I, id.vars=c("Location","Age","RiskGroup"))
+  I$Age <- as.factor(I$Age)
+  I$RiskGroup <- as.factor(I$RiskGroup)
+  I$variable <- as.numeric(I$variable)
+  I$variable <- times[I$variable]
+  I <- data.table(I)
+  I_aggregated <- I[,x:=sum(value),by=list(variable,Location,Age)]
+  N <- data.table(aggregate(data=labels, X~Location + Age,FUN=sum))
+  N <- N[N$Location %in% unique(I_aggregated$Location),]
+  I_aggregated <- merge(I_aggregated,N,by=c("Location","Age"))
+  use_countries <- sample(unique(I_aggregated$Location), n_countries)
+  #    ggplot(I_aggregated[I_aggregated$Location %in% unique(I_aggregated$Location)[n_countries],],aes(x=variable,y=x/X,col=Age)) +
+  ggplot(I_aggregated[I_aggregated$Location %in% use_countries,],aes(x=variable,y=x/X,col=Age)) +
+    geom_line() +
+    facet_wrap(~Location) +
+    theme_bw()
 }
 
 
@@ -78,7 +78,7 @@ model_plots <- function(res, n_ages, n_riskgroups,
     x$RiskGroup <- as.factor(x$RiskGroup)
     x
   })
-
+  
   for(i in 1:length(melted_pops)) melted_pops[[i]][,compartment:=compartment_names[i]]
   popns <- rbindlist(melted_pops)
   popns <- data.table(popns)
@@ -211,13 +211,13 @@ plot_peak_times <- function(dat){
 #' @return a ggplot object
 #'@import ggplot2
 plot_country_attack_rates <- function(dat) {
-    ggplot(dat) +
-        geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
-        geom_point(aes(y=Location,x=median),size=0.5) +
-        scale_x_continuous(limits=c(0,1)) +
-        xlab("Attack rate, median and 95% quantiles") +
-        facet_grid(region~.,scales="free_y", space="free",switch="both") +
-        theme(axis.text.y=element_text(size=6)) + theme_bw()
+  ggplot(dat) +
+    geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
+    geom_point(aes(y=Location,x=median),size=0.5) +
+    scale_x_continuous(limits=c(0,1)) +
+    xlab("Attack rate, median and 95% quantiles") +
+    facet_grid(region~.,scales="free_y", space="free",switch="both") +
+    theme(axis.text.y=element_text(size=6)) + theme_bw()
 }
 
 #' plot the density strips of the attack rate in each country across simulations
@@ -227,18 +227,18 @@ plot_country_attack_rates <- function(dat) {
 #' @return a ggplot object
 #'@import ggplot2
 density_country_attack_rates <- function(dat) {
-    ggplot(dat, aes(x=value,y=factor(Location))) + 
-        stat_density(aes(fill=..scaled..),geom="tile",position="identity")+ 
-        scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
-        scale_fill_gradient(low="white",high="black") +
-        labs(fill="Scaled density") +
-        ylab("Location") + 
-        theme_bw() +
-        theme(panel.grid=element_blank(),
-              legend.position="bottom",
-              legend.title.align = 0.5)+
-        facet_grid(region~.,scales="free_y", space="free",switch="both")
-
+  ggplot(dat, aes(x=value,y=factor(Location))) + 
+    stat_density(aes(fill=..scaled..),geom="tile",position="identity")+ 
+    scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
+    scale_fill_gradient(low="white",high="black") +
+    labs(fill="Scaled density") +
+    ylab("Location") + 
+    theme_bw() +
+    theme(panel.grid=element_blank(),
+          legend.position="bottom",
+          legend.title.align = 0.5)+
+    facet_grid(region~.,scales="free_y", space="free",switch="both")
+  
 }
 
 
@@ -249,18 +249,157 @@ density_country_attack_rates <- function(dat) {
 #' @return a ggplot object
 #'@import ggplot2
 density_country_peak_times <- function(dat) {
-    ggplot(dat, aes(x=value,y=factor(Location))) + 
-        stat_density(aes(fill=..scaled..),geom="tile",position="identity")+
-        scale_x_continuous(limits=c(0,365),expand=c(0,0)) +
-        scale_fill_gradient(low="white",high="black") +
-        labs(fill="Scaled density") +
-        ylab("Location") + 
-        theme_bw() +
-        theme(panel.grid=element_blank(),
-              legend.position="bottom",
-              legend.title.align = 0.5)+
-        facet_grid(region~.,scales="free_y", space="free",switch="both")
+  ggplot(dat, aes(x=value,y=factor(Location))) + 
+    stat_density(aes(fill=..scaled..),geom="tile",position="identity")+
+    scale_x_continuous(limits=c(0,365),expand=c(0,0)) +
+    scale_fill_gradient(low="white",high="black") +
+    labs(fill="Scaled density") +
+    ylab("Location") + 
+    theme_bw() +
+    theme(panel.grid=element_blank(),
+          legend.position="bottom",
+          legend.title.align = 0.5)+
+    facet_grid(region~.,scales="free_y", space="free",switch="both")
+  
+}
+
+#' plot incidence time series for a country
+#' 
+#' plot 95% CI and ten runs
+#' 
+#' @param output list of n matrices, where n is the number of runs.
+#' Each row in each matrix corresponds to a country and each column to a time.
+#' the rownames of the matrices are the country names.
+#' @param country_name name of country for which to plot time series
+#' @param thin_every an integer.  If 0, ignore.  Otherwise, thin each matrix
+#' every this many columns
+#' @param thin_integer a logical. If TRUE, thin each matrix to integer values of 
+#' times.  If FALSE, ignore
+#' @return ggplot object with 95% CI and ten runs
+#' @export
+plot_country_incidence <- function(output, country_name,  
+                                     thin_every = 7, 
+                                     thin_integer = FALSE) {
+  
+  y_label <- make_y_label("incidence", thin_every, thin_integer)
+  
+  plot_country_time_series(output, 
+                           country_name, 
+                           y_label = y_label, 
+                           thin_every = thin_every, 
+                           thin_integer = thin_integer,
+                           thin_by_sum = TRUE)
+}
+
+#' plot vaccinated individuals time series for a country
+#' 
+#' plot 95% CI and ten runs
+#' 
+#' @param output list of n matrices, where n is the number of runs.
+#' Each row in each matrix corresponds to a country and each column to a time.
+#' the rownames of the matrices are the country names.
+#' @param country_name name of country for which to plot time series
+#' @param thin_every an integer.  If 0, ignore.  Otherwise, thin each matrix
+#' every this many columns
+#' @param thin_integer a logical. If TRUE, thin each matrix to integer values of 
+#' times.  If FALSE, ignore
+#' @return ggplot object with 95% CI and ten runs
+#' @export
+plot_country_vaccinated <- function(output, country_name,  
+                                   thin_every = 7, 
+                                   thin_integer = FALSE) {
+
+  y_label <- make_y_label("vaccinated", thin_every, thin_integer)
+  
+  plot_country_time_series(output, 
+                           country_name, 
+                           y_label = y_label, 
+                           thin_every = thin_every, 
+                           thin_integer = thin_integer,
+                           thin_by_sum = FALSE)
+}
+
+#' plot time series for a country
+#' 
+#' plot 95% CI and ten runs
+#' 
+#' @param output list of n matrices, where n is the number of runs.
+#' Each row in each matrix corresponds to a country and each column to a time.
+#' the rownames of the matrices are the country names.
+#' @param country_name name of country for which to plot time series
+#' @param y_label string. y-axis label
+#' @param thin_every an integer.  If 0, ignore.  Otherwise, thin each matrix
+#' every this many columns
+#' @param thin_integer a logical. If TRUE, thin each matrix to integer values of 
+#' times.  If FALSE, ignore
+#' @param thin_by_sum logical.  IF TRUE, thin by adding together columns (e.g.
+#' if thin_every = 2, add togeher columns 1-2, columns 3-4 etc.)  This is useful
+#' for thinning quantities such as incidence.  If FALSE, ignore.
+#' @return ggplot object with 95% CI and ten runs
+#' @import ggplot2
+#' @export
+plot_country_time_series <- function(output, country_name, y_label, 
+                                     thin_every = 0, 
+                                     thin_integer = FALSE,
+                                     thin_by_sum = FALSE) {
+  stopifnot(is_integer_like(thin_every) && thin_every >= 0)
+  country_time_series <- lapply(output, function(x) x[country_name,])
+  country_time_series <- do.call(rbind, country_time_series)
+  rownames(country_time_series) <- seq_len(nrow(country_time_series))
+  
+  if(thin_every > 0 || thin_integer) {
+    country_time_series <- thin_time_series(country_time_series, 
+                                            thin_every = thin_every, 
+                                            thin_integer = thin_integer,
+                                            thin_by_sum = thin_by_sum)
+  }
+  
+  quantiles <- c(.025, .975)
+  quantile_df <- t(apply(country_time_series, 2, function(x) quantile(x, quantiles)))
+  quantile_df <- as.data.frame(quantile_df)
+  quantile_df$time <- as.numeric(rownames(quantile_df))
+  colnames(quantile_df) <- c("lower", "upper", "time")
+  
+  max_plot_runs <- 10
+  
+  if(nrow(country_time_series) > max_plot_runs) {
+    country_time_series <- country_time_series[seq_len(max_plot_runs), ]
+  }
+
+  country_time_series <- melt(country_time_series)
+  colnames(country_time_series) <- c("run", "time", "y")
+  country_time_series$run <- factor(country_time_series$run)
+  
+  ggplot(country_time_series) + 
+    geom_line(aes(x = time, y = y, group = run)) + 
+    geom_ribbon(data = quantile_df, 
+                mapping = aes(x = time, ymin = lower, ymax = upper), 
+                fill = "red", 
+                alpha = .2) +
+    scale_x_continuous("Time (days)", expand = c(0, 0)) +
+    scale_y_log10(y_label, expand = c(0, 0)) +
+    coord_cartesian(xlim = c(0, max(country_time_series$time)),
+                    ylim = c(1, max(country_time_series$y) * 1.1)) +
+    theme_bw() +
+    theme(text = element_text(size = 24))
 
 }
 
-
+#' make a string to label the y-axis
+#' 
+#' @param y_label_base string
+#' @param thin_every an integer.  If 0, ignore.  Otherwise, the matrix was thinned
+#' every this many columns
+#' @param thin_integer a logical. If TRUE, the matrix was thinned to integer values of 
+#' times.  If FALSE, ignore
+#' @return a string
+make_y_label <- function(y_label_base, thin_every, thin_integer) {
+  if(thin_every %in% c(0, 1) || thin_integer) {
+    y_label <- paste0("Daily ", y_label_base)
+  } else if(thin_every == 7) {
+    y_label <- paste0("Weekly ", y_label_base)
+  } else {
+    y_label <- paste0(y_label_base, " every ", thin_every, " days")
+  }
+  y_label
+}

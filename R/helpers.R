@@ -443,32 +443,121 @@ shorten_runs <- function(args_list, n_runs_test) {
   args_list
 }
 
-thin_time_series <- function(time_series_matrix) {
+#' thin a time series matrix
+#' 
+#' @param time_series_matrix matrix where each column corresponds to a given
+#' time, and the column names are the times
+#' @param thin_every an integer.  If 0, ignore.  Otherwise, thin the matrix
+#' every this many columns
+#' @param thin_integer a logical. If TRUE, thin the matrix to integer values of 
+#' times.  If FALSE, ignore
+#' @param thin_by_sum logical.  IF TRUE, thin by adding together columns (e.g.
+#' if thin_every = 2, add togeher columns 1-2, columns 3-4 etc.)  This is useful
+#' for thinning quantities such as incidence.  If FALSE, ignore.
+#' @return a thinned matrix with the same number of rows as time_series_matrix,
+#' and fewer columns
+thin_time_series <- function(time_series_matrix, 
+                             thin_every = 0, 
+                             thin_integer = FALSE,
+                             thin_by_sum = FALSE) {
+  if(thin_every == 0 && thin_integer == FALSE) {
+    stop("thinning interval not specified")
+  }
+  
+  if(thin_every > 0 && thin_integer) {
+    stop("thinning interval specified in two different ways")
+  }
+  
+  stopifnot(is_integer_like(thin_every) && thin_every >= 0)
+  
   t_vec <- as.numeric(colnames(time_series_matrix))
-  integer_day_ind <- vlapply(t_vec, is_integer_like)
-  time_series_matrix <- time_series_matrix[,integer_day_ind]
+  
+  if(!missing(thin_every)) {
+    idx <- seq(1, ncol(time_series_matrix), by = thin_every)
+  } else {
+    idx <- vlapply(t_vec, is_integer_like)
+    idx <- which(idx)
+  }
+  
+  if(thin_by_sum) {
+    idx_end <- c(idx[-1] - 1, ncol(time_series_matrix))
+    sum_submatrix <- function(idx, idx_end) {
+      submatrix <- time_series_matrix[,seq(idx, idx_end)]
+      if(idx != idx_end) {
+        submatrix <- apply(submatrix, 1, sum)
+      }
+      submatrix
+    }
+    time_series_matrix <- Map(sum_submatrix, idx, idx_end)
+    time_series_matrix <- t(do.call(rbind, time_series_matrix))
+    # add a t = 0 column
+    time_series_matrix <- cbind(matrix(0, ncol = 1, nrow = nrow(time_series_matrix)), 
+                                time_series_matrix)
+    colnames(time_series_matrix) <- t_vec[c(1, idx_end)]
+  } else {
+    time_series_matrix <- time_series_matrix[,idx]
+  }
+
   time_series_matrix
 }
 
+#' vapply for logicals
+#' 
+#' @param X X in vapply
+#' @param FUN FUN in vapply
+#' @return vapply(X, FUN, logical(1), ...)
 vlapply <- function(X, FUN, ...) {
   vapply(X, FUN, logical(1), ...)
 }
+
+#' vapply for integers
+#' 
+#' @param X X in vapply
+#' @param FUN FUN in vapply
+#' @return vapply(X, FUN, integer(1), ...)
 viapply <- function(X, FUN, ...) {
   vapply(X, FUN, integer(1), ...)
 }
+
+#' vapply for numerics
+#' 
+#' @param X X in vapply
+#' @param FUN FUN in vapply
+#' @return vapply(X, FUN, numeric(1), ...)
 vnapply <- function(X, FUN, ...) {
   vapply(X, FUN, numeric(1), ...)
 }
+
+#' vapply for characters
+#' 
+#' @param X X in vapply
+#' @param FUN FUN in vapply
+#' @return vapply(X, FUN, character(1), ...)
 vcapply <- function(X, FUN, ...) {
   vapply(X, FUN, character(1), ...)
 }
 
+#' check if a number is integer-type or close enough to an integer
+#' 
+#' @param x numeric: the number
+#' @param tol numeric: tolerance
+#' @return TRUE if x is integer-type or within tol of an integer, FALSE otherwise
 is_integer_like <- function(x, tol = sqrt(.Machine$double.eps)) {
   is.integer(x) || (is.numeric(x) && abs(x - round(x)) < tol)
 }
 
+#' add two things
+#' 
+#' @param x something that can be added to y
+#' @param y something that can be added to x
+#' @return x + y
 add <- function(x, y) x + y
-# element-by-element sum over matrices in a list
+
+#' sum over a list
+#' 
+#' example use case: element-by-element sum over matrices in a list
+#' @param xs list of objects that can be summed together
+#' @return the sum over the list
 sum_list <- function(xs) {
   Reduce(function(x, y) add(x, y), xs)
 }

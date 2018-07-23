@@ -5,7 +5,7 @@
 \title{allocate vaccines according to current seasonal allocation}
 \usage{
 vaccinate_by_current_seasonal_alloc(sum_age_risk_func, travel_matrix,
-  vax_allocation_params, S, E, I, R, vax_pool)
+  vax_allocation_params, S, E, I, R, SV, EV, IV, RV, incidence, vax_pool)
 }
 \arguments{
 \item{sum_age_risk_func}{a function which sums a vector across age and risk groups (created automatically in the code)}
@@ -14,7 +14,8 @@ vaccinate_by_current_seasonal_alloc(sum_age_risk_func, travel_matrix,
 
 \item{vax_allocation_params}{list of parameters for vaccine allocation}
 
-\item{S}{numeric vector of length n. number of unvaccinated susceptibles.}
+\item{S}{numeric vector of length n. number of unvaccinated susceptibles.
+n is number of locations * number of age groups * number of risk groups}
 
 \item{E}{numeric vector of length n. number of unvaccinated exposed}
 
@@ -22,9 +23,17 @@ vaccinate_by_current_seasonal_alloc(sum_age_risk_func, travel_matrix,
 
 \item{R}{numeric vector of length n. number of unvaccinated recovered}
 
-\item{vax_pool}{numeric vector of length 1. number of vaccines available}
+\item{SV}{numeric vector of length n. number of vaccinated susceptibles.}
 
-\item{n}{is number of locations * number of age groups * number of risk groups}
+\item{EV}{numeric vector of length n. number of vaccinated exposed}
+
+\item{IV}{numeric vector of length n. number of vaccinated infectious}
+
+\item{RV}{numeric vector of length n. number of vaccinated recovered}
+
+\item{incidence}{numeric vector of length n. incidence}
+
+\item{vax_pool}{numeric vector of length 1. number of vaccines available}
 }
 \value{
 n_vax_allocated numeric vector of length n_countries.  number of vaccines allocated to each country

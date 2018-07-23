@@ -27,7 +27,7 @@ vaccinate_by_incidence <- function(sum_age_risk_func,
                                    SV, EV, IV, RV, incidence, vax_pool) {
   # find incidence in each country
   # incidence proportional to E
-  incidence_by_country <- sum_age_risk_func(E)
+  incidence_by_country <- sum_age_risk_func(incidence)
   if(any(incidence_by_country > 0)) {
     n_vax_allocated <- incidence_by_country / sum(incidence_by_country) * vax_pool
   } else {

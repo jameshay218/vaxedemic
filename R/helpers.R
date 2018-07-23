@@ -466,3 +466,9 @@ vcapply <- function(X, FUN, ...) {
 is_integer_like <- function(x, tol = sqrt(.Machine$double.eps)) {
   is.integer(x) || (is.numeric(x) && abs(x - round(x)) < tol)
 }
+
+add <- function(x, y) x + y
+# element-by-element sum over matrices in a list
+sum_list <- function(xs) {
+  Reduce(function(x, y) add(x, y), xs)
+}

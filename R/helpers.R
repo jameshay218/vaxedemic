@@ -190,7 +190,7 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
   distribute_vax_among_age_risk <- 
     distribute_vax_among_age_risk_closure(vax_allocation_params$priorities, labels)
   
-  function(S, E, I, R, vax_pool) {
+  function(S, E, I, R, SV, EV, IV, RV, incidence, vax_pool) {
     
     # vax_pool can be not an integer -- round down
     vax_pool <- floor(vax_pool)
@@ -198,7 +198,9 @@ vaccine_allocation_closure <- function(user_specified_vax_alloc_func,
     # allocate vaccines to countries
     n_vax_allocated <- user_specified_vax_alloc_func(sum_age_risk_func, travel_matrix,
                                                      vax_allocation_params,
-                                                     S, E, I, R, vax_pool)
+                                                     S, E, I, R, 
+                                                     SV, EV, IV, RV, 
+                                                     incidence, vax_pool)
     n_vax_allocated <- round_preserve_sum(n_vax_allocated)
     
     # ensure that number of vaccines allocated to each country is fewer than or
@@ -439,4 +441,28 @@ shorten_runs <- function(args_list, n_runs_test) {
   args_list$n_runs <- n_runs_test
   args_list$output_prefix <- paste0("test_", args_list$output_prefix)
   args_list
+}
+
+thin_time_series <- function(time_series_matrix) {
+  t_vec <- as.numeric(colnames(time_series_matrix))
+  integer_day_ind <- vlapply(t_vec, is_integer_like)
+  time_series_matrix <- time_series_matrix[,integer_day_ind]
+  time_series_matrix
+}
+
+vlapply <- function(X, FUN, ...) {
+  vapply(X, FUN, logical(1), ...)
+}
+viapply <- function(X, FUN, ...) {
+  vapply(X, FUN, integer(1), ...)
+}
+vnapply <- function(X, FUN, ...) {
+  vapply(X, FUN, numeric(1), ...)
+}
+vcapply <- function(X, FUN, ...) {
+  vapply(X, FUN, character(1), ...)
+}
+
+is_integer_like <- function(x, tol = sqrt(.Machine$double.eps)) {
+  is.integer(x) || (is.numeric(x) && abs(x - round(x)) < tol)
 }

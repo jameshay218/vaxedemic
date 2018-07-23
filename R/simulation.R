@@ -286,6 +286,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     EV <- EV0
     IV <- IV0
     RV <- RV0
+    incidence <- 0 * S0
 
     n_groups <- length(I0)
     
@@ -363,7 +364,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
                 # first pass at allocating vaccines.
                 # may allocate more vaccines to a location / age / risk group/ infection status
                 # combination than there are individuals in that combination
-                vax_alloc <- vax_allocation_func(S, E, I, R, vax_pool)
+                vax_alloc <- vax_allocation_func(S, E, I, R, 
+                                                 SV, EV, IV, RV, incidence,
+                                                 vax_pool)
                 # the actual number of vaccines allocated is the smaller of the
                 # number of vaccines according to the algorithm and the actual
                 # number of individuals in the combination

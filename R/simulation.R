@@ -286,7 +286,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     EV <- EV0
     IV <- IV0
     RV <- RV0
-    
+
     n_groups <- length(I0)
     
     ## calculate number of time steps
@@ -308,7 +308,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     
     ## initialise matrices to store simulation outputs
     Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-    SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- Smat
+    SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- incidence_mat <- Smat
     
     Smat[,1] <- S0
     Emat[,1] <- E0
@@ -444,6 +444,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         I <- I + newInfectious
         EV <- EV - newInfectiousVax
         IV <- IV + newInfectiousVax
+        incidence <- newInfectious + newInfectiousVax
         
         #################
         ## RECOVERIES AND DEATHS
@@ -474,6 +475,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         EVmat[,i] <- EV
         IVmat[,i] <- IV
         RVmat[,i] <- RV
+        incidence_mat[,i] <- incidence
         vax_pool_vec[i] <- vax_pool
         
         ## stop simulation if there are no more exposed/infectious individuals
@@ -504,7 +506,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     ## put times as column names for readability of output
     colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
     colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
-    colnames(vax_alloc_mat) <- times
+    colnames(vax_alloc_mat) <- colnames(incidence_mat) <- times
     
     return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
                 SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, vax_pool = vax_pool_vec,

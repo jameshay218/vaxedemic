@@ -82,10 +82,17 @@ calc_vaccinated_time_series <- function(res, X, labels){
 #' the peak time for each country
 #' @export
 calc_peak_times <- function(res, labels){
-  I <- data.table::data.table(res$I)
-  I <- combine_incidence(I, labels)
-  tmp <- unique(I[,c("Location","variable","sumI","sumN")])
-  peakTimes <- plyr::ddply(tmp,~Location, function(x) x$variable[which.max(x$sumI)])[,2]
+  sum_age_risk <- sum_age_risk_closure(labels)
+  country_incidence <- apply(res$incidence, 2, sum_age_risk)
+  daily_incidence <- thin_time_series(country_incidence, 
+                                                   thin_integer = TRUE,
+                                                   thin_by_sum = TRUE)
+  weekly_incidence <- thin_time_series(daily_incidence, 
+                                      thin_every = 7,
+                                      thin_by_sum = TRUE)
+  peakTimes_idx <- apply(weekly_incidence, 1, which.max)
+  time_vec <- as.numeric(colnames(weekly_incidence))
+  peakTimes <- time_vec[peakTimes_idx]
   return(list(peakTimes = peakTimes))
 }
 

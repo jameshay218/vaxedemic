@@ -195,27 +195,31 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
     calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
     # run simulation
-    result <- foreach(i = 1:n_runs) %dopar% {
+    parallel <- TRUE
+    if(parallel) {
+      result <- foreach(i = 1:n_runs) %dopar% {
         res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
                                SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                                vax_allocation_func)
         res <- c(list(res = res), calculate_summaries_args)
         res <- do.call(calculate_summaries_func, res)
         res
+      }
+    } else {
+      # series version for debugging
+      result <- list(n_runs)
+      for(i in 1:n_runs) {
+        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                               vax_allocation_func)
+        # put arguments of other_info into global environment, so that they can be passed
+        # to calculate_summaries_func.  Warns if we're overwriting anything.
+        list2here(other_info)
+        calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
+        res <- do.call(calculate_summaries_func, calculate_summaries_args)
+        result[[i]] <- res
+      }
     }
-    # series version for debugging
-    # result <- list(n_runs)
-    # for(i in 1:n_runs) {
-    #       res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
-    #                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-    #                              vax_allocation_func)
-    #       # put arguments of other_info into global environment, so that they can be passed
-    #       # to calculate_summaries_func.  Warns if we're overwriting anything.
-    #       list2here(other_info)
-    #       calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
-    #       res <- do.call(calculate_summaries_func, calculate_summaries_args)
-    #       result[[i]] <- res
-    # }
     result
 }
 

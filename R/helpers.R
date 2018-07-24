@@ -561,3 +561,35 @@ add <- function(x, y) x + y
 sum_list <- function(xs) {
   Reduce(function(x, y) add(x, y), xs)
 }
+
+#' dump variables from a list to the parent frame
+#' 
+#' @param x list containing variables
+#' @param var_names character vector containing names of variables to dump into 
+#' parent frame
+#' @param overwrite optional parameter controlling the behaviour if any variables
+#' with the same name(s) alraedy exist in the parent frame. If set to "warn",
+#' throws a warning; if set to "error", throws an error
+#' @return NULL
+#' @export
+list2here <- function(x, var_names, overwrite) {
+  if(!missing(var_names)) {
+    x <- get_vars_from_list_with_check(x, var_names)
+  }
+  
+  
+  if(!missing(overwrite)) {
+    parent_frame_vars <- ls(parent.frame)
+    overwriting_vars <- intersect(names(x), parent_frame_vars)
+    if(length(overwriting_vars) > 0) {
+      if(overwrite == "warn") {
+        lapply(overwriting_vars, function(x) warning(cat("overwriting", x)))
+      } else if(overwrite == "error") {
+        stop(cat("Attempting to overwrite", x[1]))
+      }
+    }
+  }
+  
+  list2env(x, envir = parent.frame())
+  invisible(NULL)
+}

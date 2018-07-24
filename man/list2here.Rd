@@ -2,8 +2,11 @@
 % Please edit documentation in R/helpers.R
 \name{list2here}
 \alias{list2here}
+\alias{list2here}
 \title{dump variables from a list to the parent frame}
 \usage{
+list2here(x, var_names, overwrite)
+
 list2here(x, var_names, overwrite)
 }
 \arguments{
@@ -15,7 +18,18 @@ parent frame}
 \item{overwrite}{optional parameter controlling the behaviour if any variables
 with the same name(s) alraedy exist in the parent frame. If set to "warn",
 throws a warning; if set to "error", throws an error}
+
+\item{x}{list containing variables}
+
+\item{var_names}{character vector containing names of variables to dump into 
+parent frame}
+
+\item{overwrite}{optional parameter controlling the behaviour if any variables
+with the same name(s) alraedy exist in the parent frame. If set to "warn",
+throws a warning; if set to "error", throws an error}
 }
 \description{
+dump variables from a list to the parent frame
+
 dump variables from a list to the parent frame
 }

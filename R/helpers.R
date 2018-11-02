@@ -440,6 +440,8 @@ get_vaxedemic_func_options <- function(package_dir = getwd()) {
 shorten_runs <- function(args_list, n_runs_test) {
   args_list$n_runs <- n_runs_test
   args_list$output_prefix <- paste0("test_", args_list$output_prefix)
+  short_base_dir <- dirname(args_list$output_prefix)
+  if(!file.exists(short_base_dir)) dir.create(short_base_dir)
   args_list
 }
 

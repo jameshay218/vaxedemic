@@ -1,6 +1,6 @@
-cluster <- FALSE # run on cluster or locally
+cluster <- TRUE # run on cluster or locally
 # user identifier -- only needed if running on cluster
-user <- "JH"
+user <- "ayan"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
@@ -42,15 +42,15 @@ short_test <- short_test && (n_runs > n_runs_test)
 
 # parameters to do with time steps in simulation
 n_years <- 3 # Run time of simulation in years
-time_params <- list(tmax = 365*n_years, # Maximum time of simulation (in days) -- 
+time_params <- list(tmax = 360, # Maximum time of simulation (in days) -- 
                     # needs to be multiple of seasonality_params[["days_per_block"]]
-                    tdiv = 12) # Number of time steps per day
+                    tdiv = 6) # Number of time steps per day
 
 # seasonality parameters
 n_blocks <- n_years*12 # Number of seasonality blocks per year
 seasonality_params <- list(tdelay = 180, # (in days) Shifts the seasonality function - changing this effectively changes the seed time.
                            # tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
-                           days_per_block = time_params$tmax/n_blocks, # average seasonality over blocks of this many days
+                           days_per_block = 30, # average seasonality over blocks of this many days
                            amp = 0.3) # amplitude of seasonality
 
 ## Life history parameters, including R0
@@ -82,7 +82,7 @@ vax_allocation_params <- list(priorities = NULL, period = 24 * 7, coverage = NUL
 user_specified_cum_vax_pool_func <- "produce_vax_linear_with_delay"
 # name of vaccine allocation function in vaxedemic package.  must specify as character string for do.call to work
 # see current options in get_vaxedemic_func_options()
-user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
+user_specified_vax_alloc_func <- "vaccinate_by_incidence"
 
 # parameters to do with seeding the pandemic
 if(simulation_flags[["real_data"]]) {
@@ -100,13 +100,17 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # see current options in get_vaxedemic_func_options()
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
-calculate_summaries_func <- "calc_peak_times_and_attack_rates"
+# calculate_summaries_func <- "calc_peak_times_and_attack_rates"
+# calculate_summaries_func <- "calc_region_time_series"
+# calculate_summaries_func <- "calc_incidence_time_series"
+calculate_summaries_func <- "calc_incidence_vaccinated_peak_times_attack_rates"
 # calculate_summaries_func <- "return_all_res"
 
 
 # character string specifying function to do postprocessing
 # see current options in get_vaxedemic_func_options()
-postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
+# postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
+postprocessing_func <- "postprocessing_incidence_vaccinated_peak_times_attack_rates"
 # postprocessing_func <- "postprocessing_simple_save"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check

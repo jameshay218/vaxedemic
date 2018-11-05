@@ -326,7 +326,8 @@ plot_country_vaccinated <- function(output, country_name,
 #' @param output list of n matrices, where n is the number of runs.
 #' Each row in each matrix corresponds to a country and each column to a time.
 #' the rownames of the matrices are the country names.
-#' @param country_name name of country for which to plot time series
+#' @param country_name name of country for which to plot time series, or "all"
+#' to sum across all countries
 #' @param y_label string. y-axis label
 #' @param thin_every an integer.  If 0, ignore.  Otherwise, thin each matrix
 #' every this many columns
@@ -343,7 +344,11 @@ plot_country_time_series <- function(output, country_name, y_label,
                                      thin_integer = FALSE,
                                      thin_by_sum = FALSE) {
   stopifnot(is_integer_like(thin_every) && thin_every >= 0)
-  country_time_series <- lapply(output, function(x) x[country_name,])
+  if(country_name == "all") {
+    country_time_series <- lapply(output, colSums)
+  } else {
+    country_time_series <- lapply(output, function(x) x[country_name,])
+  }
   country_time_series <- do.call(rbind, country_time_series)
   rownames(country_time_series) <- seq_len(nrow(country_time_series))
   

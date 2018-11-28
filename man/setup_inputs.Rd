@@ -4,8 +4,8 @@
 \alias{setup_inputs}
 \title{process inputs to run simulation}
 \usage{
-setup_inputs(simulation_flags, life_history_params, travel_params, seed_params,
-  user_specified_cum_vax_pool_func, vax_production_params,
+setup_inputs(simulation_flags, life_history_params, travel_params,
+  seed_params, user_specified_cum_vax_pool_func, vax_production_params,
   user_specified_vax_alloc_func, vax_allocation_params)
 }
 \arguments{

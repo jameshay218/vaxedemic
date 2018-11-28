@@ -7,8 +7,9 @@
 calibrating_amp_and_travel(runName, amp, epsilon, n_runs, time_params,
   seasonality_params, life_history_params, travel_params, simulation_flags,
   vax_params, vax_production_params, vax_allocation_params,
-  user_specified_cum_vax_pool_func, user_specified_vax_alloc_func, seed_params,
-  calculate_summaries_func, postprocessing_func, other_info, output_prefix)
+  user_specified_cum_vax_pool_func, user_specified_vax_alloc_func,
+  seed_params, calculate_summaries_func, postprocessing_func, other_info,
+  output_prefix)
 }
 \arguments{
 \item{runName}{the base of the filename to save outputs to. Will be appended to "outputs/calibration_". DO NOT SPECIFY A FILE EXTENSION - THIS IS HANDLED IN THE FUNCTION}

@@ -4,8 +4,8 @@
 \alias{main_simulation}
 \title{main simulation loop}
 \usage{
-main_simulation(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, SV0, EV0, IV0,
-  RV0, params, cum_vax_pool_func, vax_allocation_func)
+main_simulation(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, SV0, EV0,
+  IV0, RV0, params, cum_vax_pool_func, vax_allocation_func)
 }
 \arguments{
 \item{tmax}{number of days for which to run simulation}

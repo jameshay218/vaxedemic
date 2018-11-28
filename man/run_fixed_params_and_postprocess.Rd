@@ -7,8 +7,9 @@
 run_fixed_params_and_postprocess(n_runs, time_params, seasonality_params,
   life_history_params, travel_params, simulation_flags, vax_params,
   vax_production_params, vax_allocation_params,
-  user_specified_cum_vax_pool_func, user_specified_vax_alloc_func, seed_params,
-  calculate_summaries_func, postprocessing_func, other_info, output_prefix)
+  user_specified_cum_vax_pool_func, user_specified_vax_alloc_func,
+  seed_params, calculate_summaries_func, postprocessing_func, other_info,
+  output_prefix)
 }
 \arguments{
 \item{n_runs}{number of simulations to run for this set of parameters}

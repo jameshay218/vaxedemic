@@ -49,11 +49,15 @@ setup_inputs <- function(simulation_flags, life_history_params, travel_params,
                     labels$Age == seed_params[["Ages"]] &
                     labels$RiskGroup == seed_params[["RiskGroups"]]))[1]] <- 
     seed_params[["Sizes"]]
-
   if ("coverage" %in% names(vax_allocation_params)) {
     if (simulation_flags[["real_data"]]) {
-      coverage_filename <- "data/coverage_data_intersect.csv"
-      coverage <- read_coverage_data(coverage_filename, labels)
+        if(!("coverage_filename" %in% names(vax_allocation_params))){
+            coverage_filename <- "data/coverage_data_intersect.csv"
+        } else {
+            coverage_filename <- vax_allocation_params$coverage_filename
+        }
+        message(cat("Using coverage file: ", coverage_filename,sep="\t"))
+        coverage <- read_coverage_data(coverage_filename, labels)
     } else {
       # every country has same seasonal coverage
       # the below line is incorrect: ada to fix

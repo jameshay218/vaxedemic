@@ -5,8 +5,8 @@
 \title{postprocess simulations to plot the peak time and attack rates,
 and save outputs for the incidence, vaccinated, peak time and attack rates}
 \usage{
-postprocessing_incidence_vaccinated_peak_times_attack_rates(res_list, runName,
-  other_info, output_prefix)
+postprocessing_incidence_vaccinated_peak_times_attack_rates(res_list,
+  runName, other_info, output_prefix)
 }
 \arguments{
 \item{res_list}{summary statistics for each run and processed inputs produced by run_fixed_params}

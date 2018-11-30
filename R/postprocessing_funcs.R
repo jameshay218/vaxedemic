@@ -49,7 +49,7 @@ postprocessing_save_country_incidence <- function(res_list, runName, other_info,
   
   res_list$res <- lapply(res_list$res, function(x) thin_incidence(x$incidence))
   # save country time series as rds
-  saveRDS(res_list$res, paste0(output_prefix, "_incidence.rds"))
+  saveRDS(res_list$res, paste0(output_prefix, "_",runName,"_incidence.rds"))
   return(NULL)
 }
 
@@ -71,7 +71,7 @@ postprocessing_save_country_vaccinated <- function(res_list, runName, other_info
   
   res_list$res <- lapply(res_list$res, function(x) thin_vaccinated(x$vaccinated))
   # save country time series as rds
-  saveRDS(res_list$res, paste0(output_prefix, "_vaccinated.rds"))
+  saveRDS(res_list$res, paste0(output_prefix, "_",runName,"_vaccinated.rds"))
   return(NULL)
 }
 

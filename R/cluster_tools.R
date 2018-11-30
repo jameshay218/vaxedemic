@@ -2,13 +2,14 @@
 #'
 #' This function sets up an object linking to the DIDE cluster in a very crude way. Each user will need to implement their own version of this that returns a valid didehpc object to submit jobs to.
 #' @param user a user identifier so that each user can specify their cluster options.
+#' @param expire pass to the `provisionr::package_sources` function, deciding how long must elapse before the contexts folder is forced to update
 #' @return a didehpc::queue_didehpc object
 #' @export
-setup_cluster <- function(user){
+setup_cluster <- function(user,expire=1e-10){
     user_options <- get_user_options(user)
     setwd(user_options$wd)
     do.call(options, user_options$cluster_options)
-    src <- provisionr::package_sources(local = user_options$package_dir, expire = 1e-10)
+    src <- provisionr::package_sources(local = user_options$package_dir, expire = expire)
     sources <- NULL
     
     ## Setup contexts

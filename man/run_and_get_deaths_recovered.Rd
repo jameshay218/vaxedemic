@@ -5,9 +5,10 @@
 \title{run the simulation and get a vector of the number of deaths and recovereds
 in each country/age/risk group}
 \usage{
-run_and_get_deaths_recovered(simulation_flags, life_history_params, vax_params,
-  sim_params, case_fatality_ratio_vec, X, labels, C3, K, latitudes,
-  cum_vax_pool_func, vax_allocation_func, tmax, tdiv, vax_alloc_period)
+run_and_get_deaths_recovered(simulation_flags, life_history_params,
+  vax_params, sim_params, case_fatality_ratio_vec, X, labels, C3, K,
+  latitudes, cum_vax_pool_func, vax_allocation_func, tmax, tdiv,
+  vax_alloc_period)
 }
 \arguments{
 \item{simulation_flags}{named vector (or list) with the logical elements "normaliseTravel"

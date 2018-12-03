@@ -4,11 +4,11 @@
 \alias{run_fixed_params}
 \title{submit job with fixed parameters}
 \usage{
-run_fixed_params(n_runs, time_params, seasonality_params, life_history_params,
-  travel_params, simulation_flags, vax_params, vax_production_params,
-  vax_allocation_params, user_specified_cum_vax_pool_func,
-  user_specified_vax_alloc_func, seed_params, calculate_summaries_func,
-  other_info)
+run_fixed_params(n_runs, time_params, seasonality_params,
+  life_history_params, travel_params, simulation_flags, vax_params,
+  vax_production_params, vax_allocation_params,
+  user_specified_cum_vax_pool_func, user_specified_vax_alloc_func,
+  seed_params, calculate_summaries_func, other_info)
 }
 \arguments{
 \item{n_runs}{number of simulations to run for this set of parameters}

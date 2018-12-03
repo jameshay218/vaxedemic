@@ -193,3 +193,44 @@ run_fixed_params <- function(n_runs, time_params, seasonality_params,
   message("Simulations complete")
   return(list(res = res, processed_inputs = processed_inputs))
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' @export
+random_vacc_allocations <- function(runName, coverage_filename, 
+                                    n_runs, time_params, seasonality_params,
+                                    life_history_params, travel_params, simulation_flags,
+                                    vax_params,vax_production_params, vax_allocation_params, 
+                                    user_specified_cum_vax_pool_func,
+                                    user_specified_vax_alloc_func,
+                                    seed_params, calculate_summaries_func, 
+                                    postprocessing_func, other_info,
+                                    output_prefix){
+
+    vax_allocation_params$coverage_filename <- coverage_filename
+    
+                                        # run simulations
+                                        # the following two lines get the arguments of run_fixed_params from the environment
+                                        # and runs run_fixed_params with those arguments
+    args_list <- list_vars_from_environment(formalArgs("run_fixed_params"))
+    res_list <- do.call("run_fixed_params", args_list)
+    
+                                        # postprocessing
+                                        # the following two lines get the arguments of postprocessing_func from the environment
+                                        # and runs postprocessing_func with those arguments
+    args_list <- list_vars_from_environment(formalArgs(postprocessing_func))
+    do.call(postprocessing_func, args_list)
+
+    return(TRUE)    
+}
+

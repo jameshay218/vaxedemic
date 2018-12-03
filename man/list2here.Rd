@@ -2,7 +2,6 @@
 % Please edit documentation in R/helpers.R
 \name{list2here}
 \alias{list2here}
-\alias{list2here}
 \title{dump variables from a list to the parent frame}
 \usage{
 list2here(x, var_names, overwrite)

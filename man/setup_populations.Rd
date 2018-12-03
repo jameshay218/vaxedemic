@@ -5,7 +5,8 @@
 \title{function to setup synthetic population sizes for each location, age, risk group, 
 and labels associated with these}
 \usage{
-setup_populations(popn_size, n_countries, age_propns, risk_propns, risk_factors)
+setup_populations(popn_size, n_countries, age_propns, risk_propns,
+  risk_factors)
 }
 \arguments{
 \item{popn_size}{numeric vector of length 1: population size of a country.

@@ -228,14 +228,15 @@ plot_country_attack_rates <- function(dat) {
 #'@import ggplot2
 density_country_attack_rates <- function(dat) {
   ggplot(dat, aes(x=value,y=factor(Location))) + 
-    stat_density(aes(fill=..scaled..),geom="tile",position="identity")+ 
-    scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
-    scale_fill_gradient(low="white",high="black") +
-    labs(fill="Scaled density") +
-    ylab("Location") + 
-    theme_bw() +
-    theme(panel.grid=element_blank(),
-          legend.position="bottom",
+      stat_density(aes(fill=..scaled..),geom="tile",position="identity")+
+      scale_x_continuous(expand=c(0,0))+
+      coord_cartesian(xlim=c(0,1))+
+      scale_fill_gradient(low="white",high="black") +
+      labs(fill="Scaled density") +
+      ylab("Location") + 
+      theme_bw() +
+      theme(panel.grid=element_blank(),
+            legend.position="bottom",
           legend.title.align = 0.5)+
     facet_grid(region~.,scales="free_y", space="free",switch="both")
   

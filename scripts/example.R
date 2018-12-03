@@ -1,6 +1,6 @@
-cluster <- TRUE # run on cluster or locally
+cluster <- FALSE # run on cluster or locally
 # user identifier -- only needed if running on cluster
-user <- "ayan"
+user <- "JH"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
@@ -13,9 +13,9 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs"
+outputDir <- "outputs_random_vaccinations"
 if(!file.exists(outputDir)) dir.create(outputDir)
-output_prefix <- "my_prefix"
+output_prefix <- "random_vaccinations"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
 # set up the arguments to be passed to the function to be run, which
@@ -29,14 +29,14 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 # seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 3
+n_runs <- 5
 
 # if TRUE, run a short test before the full number of runs
-short_test <- FALSE
+short_test <- TRUE
 # if cluster && (!test_local), run test on cluster, otherwise run locally
 test_local <- TRUE
 # number of runs per test
-n_runs_test <- 2
+n_runs_test <- 1
 # if n_runs <= n_runs_test, don't run teh test regardless of teh value of short_test set above
 short_test <- short_test && (n_runs > n_runs_test)
 
@@ -72,17 +72,18 @@ simulation_flags <- list(ageMixing=TRUE,
 # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
 # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
-vax_production_params <- list(detection_delay = 0, production_delay = 365/2, 
+vax_production_params <- list(detection_delay = 0, production_delay = 7, 
                               production_rate = 550e6/(365/12*3), max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
-vax_allocation_params <- list(priorities = NULL, period = 24 * 7, coverage = NULL)
+vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL,coverage_filename="data/random_coverage_tables/random_coverage_data_11.csv")
 
 # name of vaccine production function in vaxedemic package.  must specify as character string for do.call to work
 # see current options in get_vaxedemic_func_options()
 user_specified_cum_vax_pool_func <- "produce_vax_linear_with_delay"
 # name of vaccine allocation function in vaxedemic package.  must specify as character string for do.call to work
 # see current options in get_vaxedemic_func_options()
-user_specified_vax_alloc_func <- "vaccinate_by_incidence"
+#user_specified_vax_alloc_func <- "vaccinate_by_incidence"
+user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
 
 # parameters to do with seeding the pandemic
 if(simulation_flags[["real_data"]]) {

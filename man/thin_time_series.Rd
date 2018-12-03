@@ -4,8 +4,8 @@
 \alias{thin_time_series}
 \title{thin a time series matrix}
 \usage{
-thin_time_series(time_series_matrix, thin_every = 0, thin_integer = FALSE,
-  thin_by_sum = FALSE)
+thin_time_series(time_series_matrix, thin_every = 0,
+  thin_integer = FALSE, thin_by_sum = FALSE)
 }
 \arguments{
 \item{time_series_matrix}{matrix where each column corresponds to a given

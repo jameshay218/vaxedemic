@@ -12,7 +12,8 @@ plot_country_time_series(output, country_name, y_label, thin_every = 0,
 Each row in each matrix corresponds to a country and each column to a time.
 the rownames of the matrices are the country names.}
 
-\item{country_name}{name of country for which to plot time series}
+\item{country_name}{name of country for which to plot time series, or "all"
+to sum across all countries}
 
 \item{y_label}{string. y-axis label}
 

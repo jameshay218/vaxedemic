@@ -4,8 +4,8 @@
 \alias{vaccinate_by_incidence}
 \title{allocate vaccines according to absolute incidence}
 \usage{
-vaccinate_by_incidence(sum_age_risk_func, travel_matrix, vax_allocation_params,
-  S, E, I, R, SV, EV, IV, RV, incidence, vax_pool)
+vaccinate_by_incidence(sum_age_risk_func, travel_matrix,
+  vax_allocation_params, S, E, I, R, SV, EV, IV, RV, incidence, vax_pool)
 }
 \arguments{
 \item{sum_age_risk_func}{a function which sums a vector across age and risk groups (created automatically in the code)}

@@ -4,10 +4,12 @@
 \alias{setup_cluster}
 \title{Cluster setup}
 \usage{
-setup_cluster(user)
+setup_cluster(user, expire = 1e-10)
 }
 \arguments{
 \item{user}{a user identifier so that each user can specify their cluster options.}
+
+\item{expire}{pass to the `provisionr::package_sources` function, deciding how long must elapse before the contexts folder is forced to update}
 }
 \value{
 a didehpc::queue_didehpc object

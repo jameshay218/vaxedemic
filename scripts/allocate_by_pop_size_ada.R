@@ -1,3 +1,5 @@
+library(magrittr)
+
 # allocate vaccines to top n countries, in proportion to those countries' population
 # sizes.
 
@@ -13,5 +15,26 @@ allocate_top_n_countries <- function(n_countries_allocated) {
   invisible(new_coverage)
 }
 
-n_countries_allocated <- c(seq_len(5), seq(10, 120, by = 10), 127)
-invisible(lapply(n_countries_allocated, allocate_top_n_countries))
+if(FALSE) {
+  n_countries_allocated <- c(seq_len(5), seq(10, 120, by = 10), 127)
+  invisible(lapply(n_countries_allocated, allocate_top_n_countries))
+}
+
+# allocate vaccines per capita in a country as a functino of the population size
+# in that country. alpha is the power coefficient, where 0 means equal
+# allocation per capita, and 1 means applcation per capita as a linear function
+# of population size in the country
+allocate_fn_pop_size <- function(alpha) {
+  new_coverage <- current_coverage <- 
+    read.csv("data/coverage_data_intersect.csv",stringsAsFactors = FALSE)
+  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE) %>%
+    .[order(pop_size$countryID),]
+  new_coverage$dose_per_1000 <- 0
+  pop_size_normalised_to_max <- pop_size$N / max(pop_size$N)
+  new_coverage$dose_per_1000 <- pop_size_normalised_to_max^alpha
+  write.table(new_coverage, paste0("data/coverage_tables_fn_pop_size/coverage_data_",num2str(alpha),".csv"),sep=",",row.names=FALSE)
+  invisible(new_coverage)
+}
+
+alpha <- seq(0, 1, by = .1)
+invisible(lapply(alpha, allocate_fn_pop_size))

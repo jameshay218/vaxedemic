@@ -595,3 +595,12 @@ list2here <- function(x, var_names, overwrite) {
   list2env(x, envir = parent.frame())
   invisible(NULL)
 }
+
+#' turn number(s) into string for filename, replacing decimal points with "point"
+#' 
+#' @param x numeric vector
+#' @return character vector of same length as x
+#' @export
+num2str <- function(x) {
+  gsub("\\.", "point", as.character(x))
+}

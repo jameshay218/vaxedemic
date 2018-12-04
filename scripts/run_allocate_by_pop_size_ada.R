@@ -1,10 +1,10 @@
 cluster <- TRUE # run on cluster or locally
 # user identifier -- only needed if running on cluster
-user <- "JH"
+user <- "ayan"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
-run_fixed <- TRUE
+run_fixed <- FALSE
 
 # load vaxedemic package
 # local directory with the vaxedemic package
@@ -13,9 +13,9 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs_random_vaccinations"
+outputDir <- "outputs_vax_by_pop_size"
 if(!file.exists(outputDir)) dir.create(outputDir)
-output_prefix <- "random_allocations"
+output_prefix <- "by_pop_size"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
 # set up the arguments to be passed to the function to be run, which
@@ -187,9 +187,14 @@ if(run_fixed) {
   ## identifier for each combination. The column names for this 
   ## data frame must correspond to the first 
   ## arguments of run_func
-  runs <- paste0("data/random_coverage_tables/",list.files("data/random_coverage_tables/"))
-  #runs <- runs[1:3]
-  runs <- data.frame("runName"=paste0("coverage_table_",1:length(runs)),"coverage_filename"=runs,stringsAsFactors = FALSE)
+  data_dir <- "data/coverage_tables_by_popn/"
+  filenames <- list.files(data_dir)
+  filenames_no_ext <- vcapply(filenames,
+                       function(x) substr(x, 1, nchar(x) - 4))
+
+  runs <- data.frame("runName"=filenames_no_ext,
+                     "coverage_filename"=paste0(data_dir, filenames),
+                     stringsAsFactors = FALSE)
   runs$runName <- as.character(runs$runName)
   
   # run in cluster or locally

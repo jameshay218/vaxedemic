@@ -132,7 +132,7 @@ setup_demography_real_data <- function(simulation_flags,
 
     ## construct travel matrix
     travelMatrix <- setup_travel_real_data(travel_filename, demography_matrix$pop_size, travel_params)
-    
+
     ## construct latitude vector
     latitudes <- read_latitude_data(latitude_filename)
     

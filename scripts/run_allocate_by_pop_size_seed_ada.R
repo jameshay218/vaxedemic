@@ -1,10 +1,10 @@
 cluster <- TRUE # run on cluster or locally
 # user identifier -- only needed if running on cluster
-user <- "ayan"
+user <- "JH"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
-run_fixed <- TRUE
+run_fixed <- FALSE
 
 # load vaxedemic package
 # local directory with the vaxedemic package
@@ -13,9 +13,9 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs_random_vaccinations"
+outputDir <- "outputs_vax_by_pop_size_seed"
 if(!file.exists(outputDir)) dir.create(outputDir)
-output_prefix <- "random_vaccinations"
+output_prefix <- "fn_pop_size"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
 # set up the arguments to be passed to the function to be run, which
@@ -29,25 +29,23 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 # seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 5
+n_runs <- 500
 
 # if TRUE, run a short test before the full number of runs
-short_test <- TRUE
+short_test <- FALSE
 # if cluster && (!test_local), run test on cluster, otherwise run locally
-test_local <- TRUE
+test_local <- FALSE
 # number of runs per test
 n_runs_test <- 1
 # if n_runs <= n_runs_test, don't run teh test regardless of teh value of short_test set above
 short_test <- short_test && (n_runs > n_runs_test)
 
 # parameters to do with time steps in simulation
-n_years <- 3 # Run time of simulation in years
 time_params <- list(tmax = 360, # Maximum time of simulation (in days) -- 
                     # needs to be multiple of seasonality_params[["days_per_block"]]
                     tdiv = 6) # Number of time steps per day
 
 # seasonality parameters
-n_blocks <- n_years*12 # Number of seasonality blocks per year
 seasonality_params <- list(tdelay = 180, # (in days) Shifts the seasonality function - changing this effectively changes the seed time.
                            # tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
                            days_per_block = 30, # average seasonality over blocks of this many days
@@ -73,9 +71,9 @@ simulation_flags <- list(ageMixing=TRUE,
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
 # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
 vax_production_params <- list(detection_delay = 0, production_delay = 7, 
-                              production_rate = 550e6/(365/12*3), max_vax = Inf)
+                              production_rate = 550e06/(365/12*3), max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
-vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL,coverage_filename="data/random_coverage_tables/random_coverage_data_11.csv")
+vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
 
 # name of vaccine production function in vaxedemic package.  must specify as character string for do.call to work
 # see current options in get_vaxedemic_func_options()
@@ -101,17 +99,17 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # see current options in get_vaxedemic_func_options()
 # when writing these functions, the argument names must be things that can found in the environment
 # after running the main simulation
-# calculate_summaries_func <- "calc_peak_times_and_attack_rates"
+calculate_summaries_func <- "calc_peak_times_and_attack_rates"
 # calculate_summaries_func <- "calc_region_time_series"
 # calculate_summaries_func <- "calc_incidence_time_series"
-calculate_summaries_func <- "calc_incidence_vaccinated_peak_times_attack_rates"
+# calculate_summaries_func <- "calc_incidence_vaccinated_peak_times_attack_rates"
 # calculate_summaries_func <- "return_all_res"
 
 
 # character string specifying function to do postprocessing
 # see current options in get_vaxedemic_func_options()
-# postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
-postprocessing_func <- "postprocessing_incidence_vaccinated_peak_times_attack_rates"
+postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
+# postprocessing_func <- "postprocessing_incidence_vaccinated_peak_times_attack_rates"
 # postprocessing_func <- "postprocessing_simple_save"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check
@@ -132,7 +130,7 @@ other_info <- list(regionDat = regionDat,
 if(cluster) {
   # Setup an interface to the cluster
   # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
-  obj <- setup_cluster(user)
+  obj1 <- setup_cluster(user,expire=1e10)
 } else if(.Platform$OS.type == "unix") {
   library(doMC)
   registerDoMC(cores=4)
@@ -182,21 +180,30 @@ if(run_fixed) {
   # the function to be run to vary parameters. write your own in run_funcs.R
   # must specify as character string for do.call to work
   # see current options in get_vaxedemic_func_options()
-  run_func <- "calibrating_amp_and_travel"
-  
-  # set up the variable parameters.
-  # in this case, we change the travel connectivity and seasonality amplitude.
-  epsilons <- c(0.00001, 0.00005)
-  amps <- c(0.1,1)
-  
+  run_func <- "change_fixed_vacc_allocations_and_seed"
+
   ## Generate all combinations of these two parameters
   ## Generate a data frame for these parameters and a run name
   ## identifier for each combination. The column names for this 
   ## data frame must correspond to the first 
   ## arguments of run_func
-  runs <- expand.grid(amp=amps, epsilon=epsilons)
-  runs <- cbind("runName"=paste0("test",1:nrow(runs)),runs)
-  runs$runName <- as.character(runs$runName)
+  data_dir <- "data/coverage_tables_by_popn/"
+  filenames <- list.files(data_dir)
+  filenames_no_ext <- vcapply(filenames,
+                       function(x) substr(x, 1, nchar(x) - 4))
+  
+  # smallest pop size, medium pop size, 
+  # 3rd largest connnectivity, smallest connectivity
+  seedCountries <- c("Sao_Tome_and_Principe", "Belgium",
+                      "Singapore", "Uganda")
+  runs <- expand.grid(seedCountries = seedCountries,
+                      coverage_filename = paste0(data_dir, filenames),
+                      stringsAsFactors = FALSE)
+  runs2 <- expand.grid(seedCountries = seedCountries,
+                        runName = filenames_no_ext,
+                       stringsAsFactors = FALSE)
+  runs$runName <- paste(runs$seedCountries, runs2$runName, sep = "_")
+  runs <- runs[, c("runName", "seedCountries", "coverage_filename")]
   
   # run in cluster or locally
   if(cluster) {
@@ -229,7 +236,6 @@ if(run_fixed) {
         args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
         do.call(run_func, args_list_temp)
     }
-    
     lapply(args_list, function(x) do.call(run_func, x))
   }
 }

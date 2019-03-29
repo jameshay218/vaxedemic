@@ -1,4 +1,4 @@
-cluster <- TRUE # run on cluster or locally
+cluster <- FALSE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
@@ -29,7 +29,7 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 # seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 500
+n_runs <- 2
 
 # if TRUE, run a short test before the full number of runs
 short_test <- FALSE

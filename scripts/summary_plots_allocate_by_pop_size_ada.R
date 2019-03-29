@@ -90,7 +90,7 @@ postprocess <- function(alpha) {
 }
 
 alpha <- seq(0, 1, by = .1)
-if(TRUE) {
+if(FALSE) {
   attack_rate <- lapply(alpha, postprocess) %>%
     do.call(rbind, .)
   
@@ -111,4 +111,92 @@ if(TRUE) {
     theme_bw() +
     ylab("Attack rate") +
     theme(text = element_text(size=20))
+}
+
+postprocess <- function(n_countries, country) {
+  filename <- paste0("outputs_vax_by_pop_size_seed/fn_pop_size_country_attack_rates_",
+                     country, 
+                     "_coverage_data_",
+                     n_countries,
+                     "_all_runs.csv")
+
+  attack_rate <- read.csv(filename)
+  attack_rate$Location
+  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE)
+  colnames(pop_size)[1] <- "Location"
+  
+  attack_rate <- merge(attack_rate, pop_size[,c("Location", "N")])
+
+  run_cols <-  1 + seq_len(ncol(attack_rate) - 9)
+  attack_rate[, run_cols] <- attack_rate[, run_cols] * attack_rate$N
+  attack_rate <- attack_rate[, run_cols] %>%
+    colSums %>%
+    quantile(probs = c(0.025, 0.5, 0.975))
+  c(alpha = alpha, attack_rate)
+}
+
+plot_attack_rate <- function(country) {
+  n_countries <- c(seq_len(5), seq(10, 120, by = 10), 127)
+  attack_rate <- lapply(n_countries, postprocess, country = country) %>%
+    do.call(rbind, .) %>%
+    as.data.frame
+  
+  g <- ggplot(attack_rate, aes(x = n_countries)) +
+    geom_point(aes(y = `50%`)) +
+    geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`)) +
+    theme_bw() +
+    ylab("Attack rate") +
+    theme(text = element_text(size=20))
+  ggsave(paste0("outputs_vax_by_pop_size_seed/", country, ".png"), g)
+  g
+}
+
+postprocess <- function(alpha, country) {
+  filename <- paste0("outputs_vax_fn_pop_size_seed/fn_pop_size_country_attack_rates_",
+                     country, 
+                     "_coverage_data_",
+                     num2str(alpha),
+                     "_all_runs.csv")
+  
+  attack_rate <- read.csv(filename)
+  attack_rate$Location
+  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE)
+  colnames(pop_size)[1] <- "Location"
+  
+  attack_rate <- merge(attack_rate, pop_size[,c("Location", "N")])
+  
+  run_cols <-  1 + seq_len(ncol(attack_rate) - 9)
+  attack_rate[, run_cols] <- attack_rate[, run_cols] * attack_rate$N
+  attack_rate <- attack_rate[, run_cols] %>%
+    colSums %>%
+    quantile(probs = c(0.025, 0.5, 0.975))
+  c(n_countries = n_countries, attack_rate)
+}
+
+if(FALSE) {
+  seedCountries <- c("Sao_Tome_and_Principe", "Belgium",
+                     "Singapore", "Uganda")
+  lapply(seedCountries, plot_attack_rate)
+}
+
+plot_attack_rate <- function(country) {
+  alpha <- seq(0, 1, by = .1)
+  attack_rate <- lapply(alpha, postprocess, country = country) %>%
+    do.call(rbind, .) %>%
+    as.data.frame
+
+  g <- ggplot(attack_rate, aes(x = alpha)) +
+    geom_point(aes(y = `50%`)) +
+    geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`)) +
+    theme_bw() +
+    ylab("Attack rate") +
+    theme(text = element_text(size=20))
+  ggsave(paste0("outputs_vax_fn_pop_size_seed/", country, ".png"), g)
+  g
+}
+
+if(FALSE) {
+  seedCountries <- c("Sao_Tome_and_Principe", "Belgium",
+                     "Singapore", "Uganda")
+  lapply(seedCountries, plot_attack_rate)
 }

@@ -1,4 +1,4 @@
-cluster <- FALSE # run on cluster or locally
+cluster <- TRUE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
@@ -29,7 +29,7 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 # seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 2
+n_runs <- 500
 
 # if TRUE, run a short test before the full number of runs
 short_test <- FALSE
@@ -130,7 +130,7 @@ other_info <- list(regionDat = regionDat,
 if(cluster) {
   # Setup an interface to the cluster
   # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
-  obj1 <- setup_cluster(user,expire=1e10)
+  obj <- setup_cluster(user,expire=1e10)
 } else if(.Platform$OS.type == "unix") {
   library(doMC)
   registerDoMC(cores=4)

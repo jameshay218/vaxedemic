@@ -9,7 +9,11 @@ setup_cluster <- function(user,expire=1e-10){
     user_options <- get_user_options(user)
     setwd(user_options$wd)
     do.call(options, user_options$cluster_options)
-    src <- provisionr::package_sources(local = user_options$package_dir, expire = expire)
+    if("github" %in% names(user_options) && user_options$github) {
+      src <- provisionr::package_sources(github = "jameshay218/vaxedemic", expire = expire)
+    } else {
+      src <- provisionr::package_sources(local = user_options$package_dir, expire = expire)
+    }
     sources <- NULL
     
     ## Setup contexts
@@ -62,17 +66,20 @@ get_user_options <- function(user) {
     list(wd = "~/net/home/vaxedemic/",
          package_dir = "~/Documents/vaxedemic/",
          cluster_options = list(didehpc.credentials = "~/.smbcredentials",
-                                        didehpc.cluster = "fi--didemrchnb"))
+                                        didehpc.cluster = "fi--didemrchnb"),
+         github = FALSE)
   } else if(user == "ayan") {
     list(wd = "~/net/home/vaxedemic2/",
          package_dir = "~/Documents/vaxedemic/",
          cluster_options = list(didehpc.username = "ayan",
-                                didehpc.cluster = "fi--didemrchnb"))
+                                didehpc.cluster = "fi--didemrchnb"),
+         github = TRUE)
   } else if(user == "cwalters") {
     list(wd = "Q:/vaxedemic_cluster_res",
          package_dir = "Q:/vaxedemic",
          cluster_options = list(didehpc.username = "cwalters",
-                                didehpc.cluster = "fi--didemrchnb"))
+                                didehpc.cluster = "fi--didemrchnb"),
+         github = FALSE)
   } else {
     stop("unknown user")
   }

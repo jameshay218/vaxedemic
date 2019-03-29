@@ -1,10 +1,10 @@
-cluster <- FALSE # run on cluster or locally
+cluster <- TRUE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
-run_fixed <- FALSE
+run_fixed <- TRUE
 
 # load vaxedemic package
 # local directory with the vaxedemic package
@@ -13,9 +13,9 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs_vax_fn_pop_size"
+outputDir <- "outputs_no_vax_no_seasonality"
 if(!file.exists(outputDir)) dir.create(outputDir)
-output_prefix <- "fn_pop_size"
+output_prefix <- "no_vax"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
 # set up the arguments to be passed to the function to be run, which
@@ -32,9 +32,9 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 n_runs <- 500
 
 # if TRUE, run a short test before the full number of runs
-short_test <- TRUE
+short_test <- FALSE
 # if cluster && (!test_local), run test on cluster, otherwise run locally
-test_local <- TRUE
+test_local <- FALSE
 # number of runs per test
 n_runs_test <- 1
 # if n_runs <= n_runs_test, don't run teh test regardless of teh value of short_test set above
@@ -64,14 +64,14 @@ simulation_flags <- list(ageMixing=TRUE,
                          spatialCoupling=TRUE,
                          real_data = TRUE,
                          country_specific_contact = TRUE,
-                         seasonal = TRUE,
+                         seasonal = FALSE,
                          rng_seed = NULL)
 
 # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
-vax_params <- list(efficacy = .7, propn_vax0 = 0)
+vax_params <- list(efficacy = 0, propn_vax0 = 0)
 # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
 vax_production_params <- list(detection_delay = 0, production_delay = 7, 
-                              production_rate = 550e06/(365/12*3), max_vax = Inf)
+                              production_rate = 0, max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
 vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
 
@@ -180,24 +180,15 @@ if(run_fixed) {
   # the function to be run to vary parameters. write your own in run_funcs.R
   # must specify as character string for do.call to work
   # see current options in get_vaxedemic_func_options()
-  run_func <- "random_vacc_allocations"
-
-  ## Generate all combinations of these two parameters
-  ## Generate a data frame for these parameters and a run name
-  ## identifier for each combination. The column names for this 
-  ## data frame must correspond to the first 
-  ## arguments of run_func
-  data_dir <- "data/coverage_tables_fn_pop_size/"
-  alpha <- seq(1.5, 5, by = .5)
-  filenames <- paste0("coverage_data_", num2str(alpha), ".csv")
-  # filenames <- list.files(data_dir)
-  filenames_no_ext <- vcapply(filenames,
-                       function(x) substr(x, 1, nchar(x) - 4))
-
-  runs <- data.frame("runName"=filenames_no_ext,
-                     "coverage_filename"=paste0(data_dir, filenames),
+  run_func <- "change_seed"
+  
+  # smallest pop size, medium pop size, 
+  # 3rd largest connnectivity, smallest connectivity
+  seedCountries <- c("China", "Sao_Tome_and_Principe", "Belgium",
+                      "Singapore", "Uganda")
+  runs <- data.frame(runName = seedCountries,
+                     seedCountries = seedCountries,
                      stringsAsFactors = FALSE)
-  runs$runName <- as.character(runs$runName)
   
   # run in cluster or locally
   if(cluster) {
@@ -230,7 +221,6 @@ if(run_fixed) {
         args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
         do.call(run_func, args_list_temp)
     }
-    
     lapply(args_list, function(x) do.call(run_func, x))
   }
 }

@@ -6,8 +6,8 @@ library(magrittr)
 allocate_top_n_countries <- function(n_countries_allocated) {
   new_coverage <- current_coverage <- 
     read.csv("data/coverage_data_intersect.csv",stringsAsFactors = FALSE)
-  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE) %>%
-    .[order(pop_size$N, decreasing = TRUE),]
+  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE)
+  pop_size <- pop_size[order(pop_size$N, decreasing = TRUE),]
   countries_allocated <- pop_size[seq_len(n_countries_allocated), "countryID"]
   new_coverage$dose_per_1000 <- 0
   new_coverage[new_coverage$country %in% countries_allocated, "dose_per_1000"] <- 1000
@@ -27,8 +27,8 @@ if(FALSE) {
 allocate_fn_pop_size <- function(alpha) {
   new_coverage <- current_coverage <- 
     read.csv("data/coverage_data_intersect.csv",stringsAsFactors = FALSE)
-  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE) %>%
-    .[order(pop_size$countryID),]
+  pop_size <- read.csv("data/demographic_data_intersect.csv", stringsAsFactors = FALSE)
+  pop_size <- pop_size[order(pop_size$countryID),]
   new_coverage$dose_per_1000 <- 0
   pop_size_normalised_to_max <- pop_size$N / max(pop_size$N)
   new_coverage$dose_per_1000 <- pop_size_normalised_to_max^alpha
@@ -36,5 +36,6 @@ allocate_fn_pop_size <- function(alpha) {
   invisible(new_coverage)
 }
 
-alpha <- seq(0, 1, by = .1)
+# alpha <- seq(0, 1, by = .1)
+alpha <- seq(1.5, 5, by = .5)
 invisible(lapply(alpha, allocate_fn_pop_size))

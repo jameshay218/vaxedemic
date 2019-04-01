@@ -40,7 +40,7 @@ compile_GAR <- function(run_name) {
                  run_name = run_name)
     }
     
-    alpha <- seq(0, 1, by = .1)
+    alpha <- c(seq(0, 1, by = .1), seq(1.5, 5, by = .5))
     GAR <- lapply(alpha, postprocess) %>%
       do.call(rbind, .)
   } else if (run_name == "random") {
@@ -96,11 +96,19 @@ compile_GAR <- function(run_name) {
     GAR <- data.frame(all = GAR / world_pop_size,
                       table_no = "incidence",
                       run_name = "special")
+  } else if(run_name == "no_vax_no_seasonality") {
+    GAR <- readRDS("outputs_no_vax_no_seasonality/no_vax_fixed_incidence.rds") %>%
+      vnapply(., sum)
+    GAR <- data.frame(all = GAR / world_pop_size,
+                      table_no = "no_vaccination_no_seasonality",
+                      run_name = "no_vaccination")
   }
   saveRDS(GAR, paste0("outputs_", run_name, "/GAR.rds"))
   GAR
 }
 
+# run_name <- c("top_n_countries", "fn_pop_size", "random", "incidence",
+              # "no_vax_no_seasonality")
 run_name <- c("top_n_countries", "fn_pop_size", "random", "incidence")
 
 GAR <- lapply(run_name, load_GAR) %>%
@@ -124,3 +132,13 @@ g_landscape <- ggplot(GAR, aes(x=table_no,y = all)) +
   theme_bw() +
   theme(axis.text.x=element_text(size=8, angle = 90, hjust = 1))
 ggsave("all_GAR_landscape.pdf", g_landscape, width = 35, height = 20, units = "cm")
+
+# g <- ggplot(GAR[GAR$run_name == "no_vaccination",], aes(x=table_no,y = all)) +
+# geom_boxplot(outlier.size=0.1,lwd=0.3) +
+# coord_cartesian(ylim = c(.4, .6)) +
+# ylab("Global attack rate") +
+# xlab("Run ID") +
+# theme_bw() +
+# theme(axis.text.x=element_text(size=8))
+# ggsave("GAR_no_vax.pdf", g, width = 10, height = 10, units = "cm")
+

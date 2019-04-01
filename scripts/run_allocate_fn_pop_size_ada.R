@@ -1,4 +1,4 @@
-cluster <- FALSE # run on cluster or locally
+cluster <- TRUE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
@@ -13,8 +13,8 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs_vax_fn_pop_size"
-if(!file.exists(outputDir)) dir.create(outputDir)
+outputDir <- "outputs_pd180_vax_fn_pop_size"
+
 output_prefix <- "fn_pop_size"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
@@ -32,9 +32,9 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 n_runs <- 500
 
 # if TRUE, run a short test before the full number of runs
-short_test <- TRUE
+short_test <- FALSE
 # if cluster && (!test_local), run test on cluster, otherwise run locally
-test_local <- TRUE
+test_local <- FALSE
 # number of runs per test
 n_runs_test <- 1
 # if n_runs <= n_runs_test, don't run teh test regardless of teh value of short_test set above
@@ -70,7 +70,7 @@ simulation_flags <- list(ageMixing=TRUE,
 # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
 # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
-vax_production_params <- list(detection_delay = 0, production_delay = 7, 
+vax_production_params <- list(detection_delay = 0, production_delay = 180, 
                               production_rate = 550e06/(365/12*3), max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
 vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
@@ -130,11 +130,13 @@ other_info <- list(regionDat = regionDat,
 if(cluster) {
   # Setup an interface to the cluster
   # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
-  obj1 <- setup_cluster(user,expire=1e10)
+  obj <- setup_cluster(user,expire=1e10)
 } else if(.Platform$OS.type == "unix") {
   library(doMC)
   registerDoMC(cores=4)
 }
+
+if(!file.exists(outputDir)) dir.create(outputDir)
 
 if(run_fixed) {
   ################################################################################
@@ -188,7 +190,7 @@ if(run_fixed) {
   ## data frame must correspond to the first 
   ## arguments of run_func
   data_dir <- "data/coverage_tables_fn_pop_size/"
-  alpha <- seq(1.5, 5, by = .5)
+  alpha <- c(.5, 1, 2, 3)
   filenames <- paste0("coverage_data_", num2str(alpha), ".csv")
   # filenames <- list.files(data_dir)
   filenames_no_ext <- vcapply(filenames,

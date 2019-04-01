@@ -72,7 +72,7 @@ get_user_options <- function(user) {
     list(wd = "~/net/home/vaxedemic2/",
          package_dir = "~/Documents/vaxedemic/",
          cluster_options = list(didehpc.username = "ayan",
-                                didehpc.cluster = "fi--didemrchnb"),
+                                didehpc.cluster = "fi--dideclusthn"),
          github = TRUE)
   } else if(user == "cwalters") {
     list(wd = "Q:/vaxedemic_cluster_res",

@@ -13,8 +13,8 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs_vax_by_pop_size"
-if(!file.exists(outputDir)) dir.create(outputDir)
+outputDir <- "outputs_pd180_vax_by_pop_size"
+
 output_prefix <- "by_pop_size"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
@@ -70,7 +70,7 @@ simulation_flags <- list(ageMixing=TRUE,
 # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
 # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
-vax_production_params <- list(detection_delay = 0, production_delay = 7, 
+vax_production_params <- list(detection_delay = 0, production_delay = 180, 
                               production_rate = 550e06/(365/12*3), max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
 vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
@@ -130,11 +130,13 @@ other_info <- list(regionDat = regionDat,
 if(cluster) {
   # Setup an interface to the cluster
   # sometimes fails with "Error in buildr_http_client_response(r) : Not Found (HTTP 404)" -- just re-run
-  obj1 <- setup_cluster(user,expire=1e10)
+  obj <- setup_cluster(user,expire=1e-10)
 } else if(.Platform$OS.type == "unix") {
   library(doMC)
   registerDoMC(cores=4)
 }
+
+if(!file.exists(outputDir)) dir.create(outputDir)
 
 if(run_fixed) {
   ################################################################################
@@ -188,7 +190,9 @@ if(run_fixed) {
   ## data frame must correspond to the first 
   ## arguments of run_func
   data_dir <- "data/coverage_tables_by_popn/"
-  filenames <- list.files(data_dir)
+  # filenames <- list.files(data_dir)
+  n_countries <- c(1, 2, 5, 10, 127)
+  filenames <- paste0("coverage_data_", n_countries, ".csv")
   filenames_no_ext <- vcapply(filenames,
                        function(x) substr(x, 1, nchar(x) - 4))
 
@@ -206,6 +210,7 @@ if(run_fixed) {
     if(short_test) {
       if(test_local) {
         # run test for first parameter set only
+
         args_list_temp <- make_arg_list(runs, run_func, obj = NULL)
         args_list_temp <- args_list_temp[[1]]
         args_list_temp <- shorten_runs(args_list_temp, n_runs_test)
@@ -220,6 +225,7 @@ if(run_fixed) {
     jobs <- do.call(queuer::enqueue_bulk, args_list)
   } else {
     # run locally
+
     args_list <- make_arg_list(runs, run_func, obj = NULL)
     saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
     
@@ -232,3 +238,6 @@ if(run_fixed) {
     lapply(args_list, function(x) do.call(run_func, x))
   }
 }
+
+# energetic_thrush
+# compact_sparrow

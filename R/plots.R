@@ -365,7 +365,7 @@ plot_country_time_series <- function(output, country_name, y_label,
   quantile_df <- as.data.frame(quantile_df)
   quantile_df$time <- as.numeric(rownames(quantile_df))
   colnames(quantile_df) <- c("lower", "upper", "time")
-  
+
   max_plot_runs <- 10
   
   if(nrow(country_time_series) > max_plot_runs) {

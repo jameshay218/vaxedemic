@@ -4,7 +4,7 @@ user <- "ayan"
 
 # if TRUE, run for one fixed set of parameters;
 # if FALSE, run for many combinations of parameters
-run_fixed <- FALSE
+run_fixed <- TRUE
 
 # load vaxedemic package
 # local directory with the vaxedemic package
@@ -13,9 +13,9 @@ devtools::load_all(package_dir)
 setwd(package_dir)
 
 # Where to save simulation results
-outputDir <- "outputs_vax_by_pop_size"
+outputDir <- "outputs_pd180_vax_by_incidence2"
 
-output_prefix <- "by_pop_size"
+output_prefix <- "curr_alloc"
 output_prefix <- paste(outputDir, output_prefix, sep = "/")
 
 # set up the arguments to be passed to the function to be run, which
@@ -70,7 +70,7 @@ simulation_flags <- list(ageMixing=TRUE,
 # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
 vax_params <- list(efficacy = .7, propn_vax0 = 0)
 # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
-vax_production_params <- list(detection_delay = 0, production_delay = 7, 
+vax_production_params <- list(detection_delay = 0, production_delay = 180, 
                               production_rate = 550e06/(365/12*3), max_vax = Inf)
 # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
 vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
@@ -80,8 +80,8 @@ vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL
 user_specified_cum_vax_pool_func <- "produce_vax_linear_with_delay"
 # name of vaccine allocation function in vaxedemic package.  must specify as character string for do.call to work
 # see current options in get_vaxedemic_func_options()
-#user_specified_vax_alloc_func <- "vaccinate_by_incidence"
-user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
+user_specified_vax_alloc_func <- "vaccinate_by_incidence"
+# user_specified_vax_alloc_func <- "vaccinate_by_current_seasonal_alloc"
 
 # parameters to do with seeding the pandemic
 if(simulation_flags[["real_data"]]) {
@@ -191,8 +191,7 @@ if(run_fixed) {
   ## arguments of run_func
   data_dir <- "data/coverage_tables_by_popn/"
   # filenames <- list.files(data_dir)
-  # n_countries <- c(1, 2, 5, 10, 127)
-  n_countries <- 1
+  n_countries <- c(1, 2, 5, 10, 127)
   filenames <- paste0("coverage_data_", n_countries, ".csv")
   filenames_no_ext <- vcapply(filenames,
                        function(x) substr(x, 1, nchar(x) - 4))

@@ -177,12 +177,15 @@ calc_approx_final_size_distribution <- function(R_0, pop_size) {
 }
 
 calc_final_size_propn_deterministic <- function(R_0, S_0 = 1) {
+  if(R_0 <= 1) {
+    return(0)
+  }
   final_size_equation <- function(z) {
     1 - z - S_0*exp(-R_0 * z)
   }
   
   epsilon <- 1e-10
-  uniroot(final_size_equation, c(epsilon, 1 - epsilon))$root
+  uniroot(final_size_equation, c(epsilon, 1 - epsilon))$root - (1 - S_0)
 }
 
 two_tailed_p_value <- function(q, mu, sigma) {

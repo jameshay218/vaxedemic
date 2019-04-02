@@ -473,14 +473,14 @@ thin_time_series <- function(time_series_matrix,
   stopifnot(is_integer_like(thin_every) && thin_every >= 0)
   
   t_vec <- as.numeric(colnames(time_series_matrix))
-  
-  if(!missing(thin_every)) {
-    idx <- seq(1, ncol(time_series_matrix), by = thin_every)
-  } else {
+
+  if(thin_integer) {
     idx <- vlapply(t_vec, is_integer_like)
     idx <- which(idx)
+  } else {
+    idx <- seq(1, ncol(time_series_matrix), by = thin_every)
   }
-  
+
   if(thin_by_sum) {
     idx_end <- c(idx[-1] - 1, ncol(time_series_matrix))
     sum_submatrix <- function(idx, idx_end) {

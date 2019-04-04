@@ -77,7 +77,8 @@ compile_GAR <- function(run_name, production_delay = 0) {
     pop_size <- c(pop_size, sum(as.numeric(pop_size)))
     
     dir_name <- paste0(output_prefix, run_name, "/")
-    completed_runs <- list.files(path = dir_name, pattern="_incidence.rds")
+    completed_runs <- c("maximum_vacc_fixed_incidence.rds",
+                        paste0("random_vaccinations_coverage_table_", seq_len(103), "_incidence.rds"))
     
     postprocess_incidence <- function(filename, table_no) {
       print(table_no)
@@ -93,12 +94,11 @@ compile_GAR <- function(run_name, production_delay = 0) {
     
     file_labels <- data.frame(filename=completed_runs)
     
-    labels <- seq(0,length(completed_runs)-1,by=1)
+    labels <- seq(-1,length(completed_runs)-2,by=1)
     labels[1] <- "maxed_vaccination"
     labels[which(completed_runs == "random_vaccinations_coverage_table_103_incidence.rds")] <- "proportional_to_popn"
     labels[which(completed_runs == "random_vaccinations_coverage_table_102_incidence.rds")] <- "current_allocation"
     labels[which(completed_runs == "random_vaccinations_coverage_table_1_incidence.rds")] <- "no_vaccination"
-    
     
     attack_rate <- Map(postprocess_incidence, completed_runs, labels) %>%
       do.call(rbind, .) %>%
@@ -109,6 +109,7 @@ compile_GAR <- function(run_name, production_delay = 0) {
     rownames(GAR) <- NULL
     GAR$table_no <- as.factor(GAR$table_no)
     median_ar <- plyr::ddply(GAR, ~table_no, function(x) median(x[,"all"]))
+
     GAR$table_no <- factor(GAR$table_no, levels=median_ar$table_no[order(median_ar$V1)])
     
     # remove case with ridiculously high vaccination and proportional_to_popn (as repeated)
@@ -121,14 +122,27 @@ compile_GAR <- function(run_name, production_delay = 0) {
   } else if(run_name == "incidence"){
     dir_name <- paste0(output_prefix, run_name, "/")
     if(production_delay == 7) {
-      GAR <- readRDS(paste0(dir_name, "pd7_vacbyinc_incidence.rds")) %>%
-        vnapply(., sum)
-      GAR <- data.frame(all = GAR / world_pop_size,
-                        table_no = "incidence",
-                        run_name = "special")
+      filename <- paste0(dir_name, "pd7_vacbyinc_incidence.rds")
     } else {
-      stop("no output file yet")
+      filename <- paste0(dir_name, "incidence_fixed_incidence.rds")
     }
+    GAR <- readRDS(filename) %>%
+      vnapply(., sum)
+    GAR <- data.frame(all = GAR / world_pop_size,
+                      table_no = "incidence",
+                      run_name = "special")
+  } else if(run_name == "curr_alloc"){
+    dir_name <- paste0(output_prefix, run_name, "/")
+    if(production_delay == 7) {
+      filename <- paste0(dir_name, "pd7_vacbycurr_alloc_incidence.rds")
+    } else {
+      filename <- paste0(dir_name, "curr_alloc_fixed_incidence.rds")
+    }
+    GAR <- readRDS(filename) %>%
+      vnapply(., sum)
+    GAR <- data.frame(all = GAR / world_pop_size,
+                      table_no = "curr_alloc",
+                      run_name = "special")
   } else if(run_name == "no_vax_no_seasonality") {
     dir_name <- "outputs_no_vax_no_seasonality/"
     GAR <- readRDS(paste0(dir_name, "no_vax_fixed_incidence.rds")) %>%
@@ -161,14 +175,27 @@ plot_GAR <- function(production_delay) {
     run_name <- c("top_n_countries", "fn_pop_size", "random", "incidence",
                   "no_vax_no_seasonality")
   } else {
-    run_name <- c("top_n_countries", "fn_pop_size", "no_vax")
+    run_name <- c("top_n_countries", "fn_pop_size", "incidence", "curr_alloc", "no_vax")
   }
   
   plot_dir <- paste0("outputs_pd_", production_delay, "/")
   dir.create(plot_dir, showWarnings = FALSE)
   GAR <- lapply(run_name, load_GAR, production_delay = production_delay) %>%
     do.call(rbind, .)
-  
+
+  if(production_delay == 7) {
+    GAR$run_name <- factor(GAR$run_name, levels = c("top_n_countries",
+                                                    "fn_pop_size",
+                                                    "random",
+                                                    "special",
+                                                    "no_vaccination"))
+  } else {
+    GAR$run_name <- factor(GAR$run_name, levels = c("top_n_countries",
+                                                    "fn_pop_size",
+                                                    "special",
+                                                    "no_vaccination"))
+  }
+
   g <- ggplot(GAR, aes(x=table_no,y = all)) +
     geom_boxplot(outlier.size=0.1,lwd=0.3) +
     coord_flip(ylim=c(0.3,0.6))+
@@ -200,5 +227,3 @@ plot_GAR <- function(production_delay) {
   # theme(axis.text.x=element_text(size=8))
   # ggsave("GAR_no_vax.pdf", g, width = 10, height = 10, units = "cm")
 }
-
-

@@ -196,3 +196,15 @@ run_strategy <- function(strategy, production_delay, stockpile_size) {
     }
   }
 }
+
+run_all_strategies <- function() {
+  strategy <- c("incidence", 
+                "curr_alloc",
+                "top_n_countries",
+                "fn_pop_size")
+  production_delay <- c(7, 90, 180)
+  pars <- expand.grid(strategy = strategy, production_delay = production_delay)
+  pars <- rbind(pars, data.frame(strategy = "no_vaccination",
+                                 production_delay = 0))
+  Map(run_strategy, pars$strategy, pars$production_delay, stockpile_size = 0)
+}

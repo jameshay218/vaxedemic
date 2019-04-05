@@ -604,14 +604,3 @@ list2here <- function(x, var_names, overwrite) {
 num2str <- function(x) {
   gsub("\\.", "point", as.character(x))
 }
-
-#' apply with named arguments
-#' 
-#' @param X see apply
-#' @param MARGIN see apply
-#' @param FUN see apply
-#' @return see apply
-#' @export
-apply_named_args <- function(X, MARGIN, FUN) {
-  apply(X, MARGIN, function(X) do.call(FUN, as.list(X)))
-}

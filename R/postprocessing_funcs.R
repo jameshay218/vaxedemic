@@ -16,6 +16,25 @@ postprocessing_incidence_vaccinated_peak_times_attack_rates <- function(res_list
   return(NULL)
 }
 
+#' postprocess simulations to plot the peak time and attack rates,
+#' and save outputs for the incidence, vaccinated, peak time and attack rates
+#' 
+#' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
+#' @param runName character string to make filename out of
+#' @param other_info list which provides any other information needed, such as to calculate the summaries
+# or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
+#' @return NULL
+#' @export
+postprocessing_incidence_vaccinated_peak_times_attack_rates_deaths <- function(res_list, runName, other_info, output_prefix) {
+  postprocessing_save_country_incidence(res_list, runName, other_info, output_prefix)
+  postprocessing_save_country_vaccinated(res_list, runName, other_info, output_prefix)
+  postprocessing_peak_times(res_list, runName, other_info, output_prefix)
+  postprocessing_country_attack(res_list, runName, other_info, output_prefix)
+  postprocessing_deaths(res_list, runName, other_info, output_prefix)
+  return(NULL)
+}
+
 #' postprocess simulations to plot the peak time and attack rates, and save outputs
 #' 
 #' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
@@ -205,5 +224,27 @@ postprocessing_simple_save <- function(res_list, runName) {
     filename <- paste0(output_prefix, "_",runName, "_output.RData")
     save(res_list, file=filename)
                                         #  saveRDS(res, filename)
+  return(NULL)
+}
+
+#' postprocess simulations to save the cumulative number of dead individuals for each country
+#' 
+#' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
+#' @param runName character string to make filename out of
+#' @param other_info list which provides any other information needed, such as to calculate the summaries
+# or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
+#' @return NULL
+#' @export
+postprocessing_deaths <- function(res_list, runName, other_info, output_prefix){
+  
+  # thin country times series to one observation per day before saving
+  thin_dead <- function(dead) {
+    thin_time_series(dead, thin_integer = TRUE, thin_by_sum = FALSE)
+  }
+  
+  res_list$res <- lapply(res_list$res, function(x) thin_dead(x$dead))
+  # save country time series as rds
+  saveRDS(res_list$res, paste0(output_prefix, "_",runName,"_deaths.rds"))
   return(NULL)
 }

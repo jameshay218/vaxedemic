@@ -195,8 +195,8 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
     calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
     # run simulation
-    parallel <- TRUE
-    if(parallel) {
+    run_parallel <- TRUE
+    if(run_parallel) {
       result <- foreach(i = 1:n_runs) %dopar% {
         res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
                                SV, EV, IV, RV, modelParameters, cum_vax_pool_func,

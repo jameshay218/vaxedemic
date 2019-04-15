@@ -73,7 +73,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size) {
                            rng_seed = NULL)
   
   # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
-  vax_params <- list(efficacy = .7, propn_vax0 = stockpile_size)
+  vax_params <- list(efficacy = .7)
   
   if(strategy == "no_vaccination") {
     vax_params$efficacy <- 0
@@ -81,7 +81,8 @@ run_strategy <- function(strategy, production_delay, stockpile_size) {
   
   # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
   vax_production_params <- list(detection_delay = 0, production_delay = production_delay, 
-                                production_rate = 550e06/(365/12*3), max_vax = Inf)
+                                production_rate = 550e06/(365/12*3), max_vax = Inf,
+                                stockpile_size = stockpile_size)
   # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
   vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
   

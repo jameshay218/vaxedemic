@@ -9,10 +9,13 @@
 produce_vax_linear_with_delay <- function(vax_production_params, t) {
   t_since_production <- t - (vax_production_params[["detection_delay"]] + 
                                vax_production_params[["production_delay"]])
+  if(!("stockpile_size" %in% names(vax_production_params))) {
+      vax_production_params[["stockpile_size"]] <- 0
+  }
   if(t_since_production < 0) {
-    0
+    vax_production_params[["stockpile_size"]]
   } else {
     min(vax_production_params[["max_vax"]],
-        t_since_production * vax_production_params[["production_rate"]])
+        t_since_production * vax_production_params[["production_rate"]] + vax_production_params[["stockpile_size"]])
   }
 }

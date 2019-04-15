@@ -4,9 +4,7 @@
 #' and "seasonal"
 #' @param life_history_params named vector (or list) with the numeric elements
 #' "R0", "TR" (time to recovery) and "LP" (latent period)
-#' @param vax_params named vector (or list) with the numeric elements "efficacy"
-#' and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
-#' across location, age and risk groups)
+#' @param vax_params named vector (or list) with the numeric element "efficacy"
 #' @param seasonality_params list of seasonality parameters.
 #' contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.
 #' tdelay = 0 is seed at t = 0 in sinusoidal curve, roughly start of autumn in Northern hemisphere
@@ -36,7 +34,6 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     TR <- life_history_params[["TR"]] # time to recovery
     LP <- life_history_params[["LP"]] # latent period
     efficacy <- vax_params[["efficacy"]]
-    propn_vax0 <- vax_params[["propn_vax0"]] # initial proportion of vaccinated individuals
     gamma <- 1/TR # recovery rate
     sigma <- 1/LP # rate of exposed -> infectious
     tdelay <- seasonality_params[["tdelay"]] #Delay from peak summer in northern hemisphere######## ##DH
@@ -166,12 +163,10 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     ## set initial conditions
 
     # intial exposed are distributed among vaccinated and unvaccinated proportionally
-    EV <- round(seed_vec * propn_vax0)
-    E <- seed_vec - EV
-    SV <- round((X - seed_vec) * propn_vax0) ##DH
-    S <- X - seed_vec - SV
+    E <- seed_vec
+    S <- X - seed_vec
 
-    I <- R <- IV <- RV <- matrix(0, maxIndex)
+    SV <- EV <- I <- R <- IV <- RV <- matrix(0, maxIndex)
 
         ## Pre-compute seaonal contribution to FOI
     if(seasonal){

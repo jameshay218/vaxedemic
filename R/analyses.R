@@ -138,8 +138,11 @@ neaten_raw_output_by_country <- function(res, labels, regionDat, latitudeDat, me
 }
 
 calc_median_global_deaths <- function(filename) {
+  median(calc_global_deaths(filename))
+}
+
+calc_global_deaths <- function(filename) {
   deaths <- readRDS(filename)
-  deaths_each_run <- vnapply(deaths, function(x) sum(x[, ncol(x)]))
-  median(deaths_each_run)
+  vnapply(deaths, function(x) sum(x[, ncol(x)]))
 }
 

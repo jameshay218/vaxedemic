@@ -15,9 +15,7 @@ and "seasonal"}
 \item{life_history_params}{named vector (or list) with the numeric elements
 "R0", "TR" (time to recovery) and "LP" (latent period)}
 
-\item{vax_params}{named vector (or list) with the numeric elements "efficacy"
-and "propn_vax0" (initial proportion of vaccinated individuals; assumed constant
-across location, age and risk groups)}
+\item{vax_params}{named vector (or list) with the numeric element "efficacy"}
 
 \item{seasonality_params}{list of seasonality parameters.
 contains the elements tdelay (0 <= tdelay <= 364): shifts the seasonality function - changing this effectively changes the seed time.

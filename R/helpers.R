@@ -681,3 +681,16 @@ scientific_10x <- function(values, digits = 1) {
   # return this as an expression
   parse(text=x)
 } 
+
+#' a version of apply. if MARGIN = 1, the values in each column of X are passed to FUN
+#' as named arguments according to the column name. if MARGIN = 2, the values in
+#' each row of X are passed to FUN
+#' as named arguments according to the row name
+#' @param X see arguments for apply.  If MARGIN = 1, colnames(X) must match the named
+#' arguments of FUN.
+#' @param MARGIN see arguments for apply
+#' @param FUN see arguments for apply.  Must have named arguments
+#' @return see apply
+apply_named_args <- function(X, MARGIN, FUN) {
+  apply(X, MARGIN, function(X) do.call(FUN, as.list(X)))
+}

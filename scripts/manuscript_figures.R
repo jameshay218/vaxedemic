@@ -16,22 +16,81 @@ read_median_global_deaths <- function(strategy, production_delay, free_param) {
   }
 }
 
-make_Fig2 <- function(save_output = FALSE) {
+read_global_deaths <- function(strategy, production_delay, free_param) {
+  dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, "/")
+  if(strategy %in% c("incidence", "curr_alloc", "no_vaccination")) {
+    filename <- paste0(dir_name, strategy, "_fixed_global_deaths.rds")
+  } else {
+    filename <- paste0(dir_name, strategy, "_coverage_data_", 
+                       num2str(free_param), "_global_deaths.rds")
+  }
+  if(file.exists(filename)) {
+    readRDS(filename)
+  } else {
+    source_filename <- sub("_global", "", filename, fixed = TRUE)
+    global_deaths <- calc_global_deaths(source_filename)
+    saveRDS(global_deaths, filename)
+    global_deaths
+  }
+}
+
+bootstrap_deaths_averted <- function(strategies, production_delays, free_params) {
+
+  label_with_strategy <- function(global_deaths, strategy_label) {
+    data.frame(deaths = global_deaths, 
+                                strategy = strategy_label)
+  }
+  
+  global_deaths <- Map(read_global_deaths, strategies, production_delays, free_params) %>%
+    Map(label_with_strategy, ., c(1,2)) %>%
+    do.call(rbind, .)
+  
+  difference_medians <- function(data, indices) {
+    d <- data[indices,1]
+    d1 <- d[data$strategy == 1]
+    d2 <- d[data$strategy == 2]
+    median(d1) - median(d2)
+  }
+  
+  boot::boot(global_deaths, difference_medians, 500, strata = global_deaths$strategy)
+}
+
+make_Fig2 <- function(save_output = FALSE, bootstrap = FALSE) {
     strategy <- c("incidence",
                   "curr_alloc")
     production_delay <- c(7, 90, 180)
     pars <- expand.grid(strategy = strategy, production_delay = production_delay)
-    pars <- rbind(pars, data.frame(strategy = "no_vaccination",
-                                   production_delay = 0))
-    pars$median_global_deaths <- Map_vapply(read_median_global_deaths, numeric(1), pars$strategy, pars$production_delay)
-    pars$deaths_averted <- pars[pars$strategy == "no_vaccination", "median_global_deaths"] - pars$median_global_deaths
     
-    pars <- pars[pars$strategy != "no_vaccination",]
-    levels(pars$strategy) <- c("Incidence", "Current allocation", "No vaccination")
-    pars$strategy <- factor(pars$strategy, 
-                            levels = c("Current allocation", "Incidence", "No vaccination"))
+    if(bootstrap) {
+      bootstrap_deaths_averted_wrapper <- function(strategy, production_delay) {
+        production_delay <- as.numeric(production_delay)
+        strategies <- c("no_vaccination", strategy)
+        production_delays <- c(0, production_delay)
+        free_params <- c(0, 0)
+        bootstrap_sol <- bootstrap_deaths_averted(strategies, production_delays, free_params)
+        quantile(bootstrap_sol$t, probs = c(.025, .5, .975))
+      }
+      deaths_averted <- apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper)
+      rownames(deaths_averted) <- c("lower", "deaths_averted", "upper")
+      pars <- cbind(pars, as.data.frame(t(deaths_averted)))
+      levels(pars$strategy) <- c("Incidence", "Current allocation")
+      pars$strategy <- factor(pars$strategy, 
+                              levels = c("Current allocation", "Incidence"))
+    } else {
+      pars <- rbind(pars, data.frame(strategy = "no_vaccination",
+                                     production_delay = 0))
+      pars$median_global_deaths <- Map_vapply(read_median_global_deaths, numeric(1), pars$strategy, pars$production_delay)
+      pars$deaths_averted <- pars[pars$strategy == "no_vaccination", "median_global_deaths"] - pars$median_global_deaths
+      
+      pars <- pars[pars$strategy != "no_vaccination",]
+      levels(pars$strategy) <- c("Incidence", "Current allocation", "No vaccination")
+      pars$strategy <- factor(pars$strategy, 
+                              levels = c("Current allocation", "Incidence", "No vaccination"))
+
+    }
     pars$production_delay <- factor(pars$production_delay)
     y_breaks <- seq(0, max(pars$deaths_averted) * 1.1, by = 2e5)
+
     plot1 <- ggplot(pars, aes(x = production_delay, y = deaths_averted, fill = strategy)) +
       geom_bar(stat = "identity") +
       facet_wrap(~strategy, nrow = 1) +
@@ -55,6 +114,11 @@ make_Fig2 <- function(save_output = FALSE) {
       theme(legend.position = c(.8,.8),
             text = element_text(size = 12))
     
+    if(bootstrap) {
+      plot1 <- plot1 + geom_errorbar(aes(ymin = lower, ymax = upper))
+      plot2 <- plot2 + geom_errorbar(aes(ymin = lower, ymax = upper), position = "dodge")
+    }
+    
     if(save_output) {
       save_dir <- "~/overleaf/vaxedemic_manuscript/figs/"
       ggsave(paste0(save_dir, "deaths_averted_simple_allocation.pdf"), 
@@ -69,7 +133,7 @@ make_Fig2 <- function(save_output = FALSE) {
     list(table = pars, plot1 = plot1, plot2 = plot2)
 }
 
-make_Fig3 <- function(save_output) {
+make_Fig3 <- function(save_output, bootstrap = FALSE) {
   n_countries <- c(1, 2, 5, 10, 127)
   alpha <- c(.5, 1, 2, 3)
 
@@ -80,18 +144,36 @@ make_Fig3 <- function(save_output) {
   pars <- rbind(pars, expand.grid(strategy = "fn_pop_size", 
                       production_delay = production_delay,
                       free_param = alpha))
-  pars <- rbind(pars, data.frame(strategy = "no_vaccination",
-                                 production_delay = 0,
-                                 free_param = NA))
-  pars$median_global_deaths <- Map_vapply(read_median_global_deaths, 
-                                          numeric(1), 
-                                          pars$strategy, 
-                                          pars$production_delay,
-                                          pars$free_param)
-  pars$deaths_averted <- pars[pars$strategy == "no_vaccination", "median_global_deaths"] - pars$median_global_deaths
   
-  pars <- pars[pars$strategy != "no_vaccination",]
-  levels(pars$strategy) <- c("Top n countries", "Function of population size", "No vaccination")
+  if(bootstrap) {
+    bootstrap_deaths_averted_wrapper <- function(strategy, production_delay, free_param) {
+      production_delay <- as.numeric(production_delay)
+      free_param <- as.numeric(free_param)
+      strategies <- c("no_vaccination", strategy)
+      production_delays <- c(0, production_delay)
+      free_params <- c(0, free_param)
+      bootstrap_sol <- bootstrap_deaths_averted(strategies, production_delays, free_params)
+      quantile(bootstrap_sol$t, probs = c(.025, .5, .975))
+    }
+    deaths_averted <- apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper)
+    rownames(deaths_averted) <- c("lower", "deaths_averted", "upper")
+    pars <- cbind(pars, as.data.frame(t(deaths_averted)))
+    levels(pars$strategy) <- c("Top n countries", "Function of population size")
+  } else {
+    pars <- rbind(pars, data.frame(strategy = "no_vaccination",
+                                   production_delay = 0,
+                                   free_param = NA))
+    pars$median_global_deaths <- Map_vapply(read_median_global_deaths, 
+                                            numeric(1), 
+                                            pars$strategy, 
+                                            pars$production_delay,
+                                            pars$free_param)
+    pars$deaths_averted <- pars[pars$strategy == "no_vaccination", "median_global_deaths"] - pars$median_global_deaths
+    
+    pars <- pars[pars$strategy != "no_vaccination",]
+    levels(pars$strategy) <- c("Top n countries", "Function of population size", "No vaccination")
+  }
+
   pars$production_delay <- factor(pars$production_delay)
   pars$free_param <- factor(pars$free_param)
   y_breaks <- seq(0, max(pars$deaths_averted) * 1.1, by = 2e5)
@@ -118,6 +200,11 @@ make_Fig3 <- function(save_output) {
     theme(text = element_text(size = 12)) +
     scale_fill_manual(name = "Production delay (days)",
                       values = rev(RColorBrewer::brewer.pal(3,"Blues")))
+  
+  if(bootstrap) {
+    plot1 <- plot1 + geom_errorbar(aes(ymin = lower, ymax = upper))
+    plot2 <- plot2 + geom_errorbar(aes(ymin = lower, ymax = upper), position = "dodge")
+  }
   
   if(save_output) {
     save_dir <- "~/overleaf/vaxedemic_manuscript/figs/"

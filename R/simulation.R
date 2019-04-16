@@ -26,196 +26,196 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
                            n_runs=1,
                            calculate_summaries_func="return_all_res", other_info){
   
-      #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
-    normaliseTravel <- simulation_flags[["normaliseTravel"]]
-    seasonal <- simulation_flags[["seasonal"]]
-    
-    R0 <- life_history_params[["R0"]]
-    TR <- life_history_params[["TR"]] # time to recovery
-    LP <- life_history_params[["LP"]] # latent period
-    efficacy <- vax_params[["efficacy"]]
-    gamma <- 1/TR # recovery rate
-    sigma <- 1/LP # rate of exposed -> infectious
-    tdelay <- seasonality_params[["tdelay"]] #Delay from peak summer in northern hemisphere######## ##DH
-    amp <- seasonality_params[["amp"]] #Amplitude of seasonality########
-    tmax <- time_params[["tmax"]]
-    tdiv <- time_params[["tdiv"]]
-
-    n_countries <- processed_inputs[["n_countries"]]
-    n_ages <- processed_inputs[["n_ages"]]
-    n_riskgroups <- processed_inputs[["n_riskgroups"]]
-    if(seasonal) {
-        n_divisions_in_block <- seasonality_params[["days_per_block"]] * tdiv
-        n_blocks <- tmax / seasonality_params[["days_per_block"]]
-        if(round(n_blocks) != n_blocks) {
-            stop("time_params$tmax must be a multiple of seasonality_params$days_per_block")
-        }
-        if(round(n_divisions_in_block) != n_divisions_in_block){
-            stop("time_params$tdiv must be a multiple of seasonality_params$days_per_block")
-        }
+  #travelMatrix <- diag(n_countries) ##DH debug - decouples countries, keeping seed
+  normaliseTravel <- simulation_flags[["normaliseTravel"]]
+  seasonal <- simulation_flags[["seasonal"]]
+  
+  R0 <- life_history_params[["R0"]]
+  TR <- life_history_params[["TR"]] # time to recovery
+  LP <- life_history_params[["LP"]] # latent period
+  efficacy <- vax_params[["efficacy"]]
+  gamma <- 1/TR # recovery rate
+  sigma <- 1/LP # rate of exposed -> infectious
+  tdelay <- seasonality_params[["tdelay"]] #Delay from peak summer in northern hemisphere######## ##DH
+  amp <- seasonality_params[["amp"]] #Amplitude of seasonality########
+  tmax <- time_params[["tmax"]]
+  tdiv <- time_params[["tdiv"]]
+  
+  n_countries <- processed_inputs[["n_countries"]]
+  n_ages <- processed_inputs[["n_ages"]]
+  n_riskgroups <- processed_inputs[["n_riskgroups"]]
+  if(seasonal) {
+    n_divisions_in_block <- seasonality_params[["days_per_block"]] * tdiv
+    n_blocks <- tmax / seasonality_params[["days_per_block"]]
+    if(round(n_blocks) != n_blocks) {
+      stop("time_params$tmax must be a multiple of seasonality_params$days_per_block")
     }
-    travelMatrix <- processed_inputs[["travelMatrix"]]
-    contactMatrix <- processed_inputs[["contactMatrix"]]
-    X <- processed_inputs[["popns"]]
-    labels <- processed_inputs[["labels"]]
-    cum_vax_pool_func <- processed_inputs[["cum_vax_pool_func"]]
-    vax_allocation_func <- processed_inputs[["vax_allocation_func"]]
-    seed_vec <- processed_inputs[["seed_vec"]]
-
-    maxIndex <- n_countries*n_ages*n_riskgroups
-    groupsPerLoc <- n_ages*n_riskgroups
-    
-    #### calculation of force of infection matrix (LD) starts here
-    
-    ##Seasonality:
-    Beta1 <- function(lats,n_countries){
-      trop <- 23.5 #Tropics (in degrees)
-      Y=matrix(1,n_countries,1) #Flat outside of tropics - could modify (DH/SR)
-      
-      in_tropics <- abs(lats) < trop # find countries in tropics
-      Y[in_tropics] <- lats[in_tropics]/trop # linear with abs(latitude) in tropics
-      Y[lats < (-trop)] <- -1 # opposite sign in southern hemisphere
-      return(Y)
+    if(round(n_divisions_in_block) != n_divisions_in_block){
+      stop("time_params$tdiv must be a multiple of seasonality_params$days_per_block")
     }
+  }
+  travelMatrix <- processed_inputs[["travelMatrix"]]
+  contactMatrix <- processed_inputs[["contactMatrix"]]
+  X <- processed_inputs[["popns"]]
+  labels <- processed_inputs[["labels"]]
+  cum_vax_pool_func <- processed_inputs[["cum_vax_pool_func"]]
+  vax_allocation_func <- processed_inputs[["vax_allocation_func"]]
+  seed_vec <- processed_inputs[["seed_vec"]]
+  
+  maxIndex <- n_countries*n_ages*n_riskgroups
+  groupsPerLoc <- n_ages*n_riskgroups
+  
+  #### calculation of force of infection matrix (LD) starts here
+  
+  ##Seasonality:
+  Beta1 <- function(lats,n_countries){
+    trop <- 23.5 #Tropics (in degrees)
+    Y=matrix(1,n_countries,1) #Flat outside of tropics - could modify (DH/SR)
     
-    ## calculate Phi, the amplifying factor due to seasonality at each simulation time,
-    ## for each location, age, risk group
-    if(seasonal){
-      beta1 <- Beta1(processed_inputs[["latitudes"]],n_countries)
-      B <- kronecker(matrix(1,groupsPerLoc,n_blocks),beta1)
-      timevec <- seq(1/tdiv,tmax,by=1/tdiv)
-      wave <- sin((timevec-tdelay)*2*pi/365)
-      wave <- t(colMeans(matrix(wave, nrow=n_divisions_in_block)))
-      Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
+    in_tropics <- abs(lats) < trop # find countries in tropics
+    Y[in_tropics] <- lats[in_tropics]/trop # linear with abs(latitude) in tropics
+    Y[lats < (-trop)] <- -1 # opposite sign in southern hemisphere
+    return(Y)
+  }
+  
+  ## calculate Phi, the amplifying factor due to seasonality at each simulation time,
+  ## for each location, age, risk group
+  if(seasonal){
+    beta1 <- Beta1(processed_inputs[["latitudes"]],n_countries)
+    B <- kronecker(matrix(1,groupsPerLoc,n_blocks),beta1)
+    timevec <- seq(1/tdiv,tmax,by=1/tdiv)
+    wave <- sin((timevec-tdelay)*2*pi/365)
+    wave <- t(colMeans(matrix(wave, nrow=n_divisions_in_block)))
+    Phi <- 1+amp*B*kronecker(matrix(1,maxIndex,1),wave)#One column of B per time step
+  } else {
+    Phi <- 1
+  }
+  ## row normalise travel matrix
+  if(normaliseTravel){
+    Krow <- rowSums(travelMatrix)
+    Knorm <- kronecker(matrix(1,1,n_countries),matrix(Krow,n_countries,1))
+    travelMatrix <- travelMatrix/Knorm
+  }
+  Kdelta <- kronecker(diag(groupsPerLoc),travelMatrix)
+  K1 <- kronecker(matrix(1,groupsPerLoc,groupsPerLoc),t(travelMatrix))
+  
+  ## combine contact and travel matrices
+  if(is.list(contactMatrix)) { # if age-risk mixing is country-specific
+    # row concatenation of age/risk matrices by country
+    Cvec <- do.call(rbind, contactMatrix)
+    # next three lines: getting the row order right
+    idx_vec <- matrix(seq_len(nrow(Cvec)), n_ages * n_riskgroups, n_countries)
+    idx_vec <- matrix(t(idx_vec), nrow(Cvec), 1)
+    Cvec <- Cvec[idx_vec,]
+    
+    CT <- t(Cvec)
+    Cnew <- matrix(CT,groupsPerLoc,groupsPerLoc*n_countries)
+    Chome <- kronecker(t(Cnew),matrix(1,1,n_countries))#Mix as though were home
+    KC <- kronecker(matrix(1,n_ages * n_riskgroups,n_ages * n_riskgroups),travelMatrix)*Chome
+  } else {
+    KC <- kronecker(contactMatrix,t(travelMatrix))
+  }
+  
+  ## Denominator of force of infection term
+  M <- K1%*%X
+  M1 <- 1/M
+  M1[M==0] <- 0
+  
+  M1 <- kronecker(matrix(1,maxIndex,1),t(M1))
+  
+  Xover=1/X
+  Xover[X==0] <- 0
+  
+  #Country-specific betas: ##DH added
+  
+  n_classes <- n_ages * n_riskgroups
+  c_names <- levels(labels[,2])
+  c_pops <- labels[order(labels$Location),]
+  c_pops <- c_pops[,1]
+  c_pops <- matrix(c_pops, n_classes, n_countries, byrow=FALSE)
+  betaV <- matrix(0, n_countries, 1)
+  for (i in 1:n_countries){
+    NiClasses <- c_pops[,i]#Pop in each class
+    Ni <- sum(NiClasses)#Country population
+    if(is.list(contactMatrix)) {
+      Ci <- contactMatrix[[i]]#Country age-mix - =C for all?
     } else {
-      Phi <- 1
+      Ci <- contactMatrix
     }
-    ## row normalise travel matrix
-    if(normaliseTravel){
-        Krow <- rowSums(travelMatrix)
-        Knorm <- kronecker(matrix(1,1,n_countries),matrix(Krow,n_countries,1))
-        travelMatrix <- travelMatrix/Knorm
+    Li <- 1/(Ni*gamma)*rep(NiClasses,1,n_classes)*Ci##DH travelMatrix[i,i]/...
+    ev <- eigen(Li)
+    ev <- ev$values
+    Rstar <- max(abs(ev))
+    betaV[i] <- R0/Rstar
+  }
+  betaV <- kronecker(matrix(1,n_classes,1), betaV)
+  
+  beta <- betaV
+  
+  ## Convert to smaller time step rates
+  beta <- beta/tdiv
+  gamma <- gamma/tdiv
+  
+  LD <- (Kdelta*M1)%*%KC ##DH: no beta
+  
+  #### calculation of force of infection matrix (LD) ends here
+  
+  ## set initial conditions
+  
+  # intial exposed are distributed among vaccinated and unvaccinated proportionally
+  E <- seed_vec
+  S <- X - seed_vec
+  
+  SV <- EV <- I <- R <- IV <- RV <- matrix(0, maxIndex)
+  
+  ## Pre-compute seaonal contribution to FOI
+  if(seasonal){
+    LD <- foreach(i=1:ncol(Phi)) %do% {
+      M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i]))
+      as.matrix(Matrix(Kdelta*M1Phi)%*%KC)
     }
-    Kdelta <- kronecker(diag(groupsPerLoc),travelMatrix)
-    K1 <- kronecker(matrix(1,groupsPerLoc,groupsPerLoc),t(travelMatrix))
-    
-    ## combine contact and travel matrices
-    if(is.list(contactMatrix)) { # if age-risk mixing is country-specific
-      # row concatenation of age/risk matrices by country
-      Cvec <- do.call(rbind, contactMatrix)
-      # next three lines: getting the row order right
-      idx_vec <- matrix(seq_len(nrow(Cvec)), n_ages * n_riskgroups, n_countries)
-      idx_vec <- matrix(t(idx_vec), nrow(Cvec), 1)
-      Cvec <- Cvec[idx_vec,]
-      
-      CT <- t(Cvec)
-      Cnew <- matrix(CT,groupsPerLoc,groupsPerLoc*n_countries)
-      Chome <- kronecker(t(Cnew),matrix(1,1,n_countries))#Mix as though were home
-      KC <- kronecker(matrix(1,n_ages * n_riskgroups,n_ages * n_riskgroups),travelMatrix)*Chome
-    } else {
-      KC <- kronecker(contactMatrix,t(travelMatrix))
+  }
+  
+  ## gather model parameters
+  modelParameters <- list("gamma"=gamma, "sigma" = sigma, "efficacy" = efficacy,
+                          "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
+                          "Phi" = Phi, "seasonal" = seasonal, 
+                          "case_fatality_ratio" = processed_inputs[["case_fatality_ratio_vec"]])
+  
+  # put arguments of other_info into global environment, so that they can be passed
+  # to calculate_summaries_func.  Warns if we're overwriting anything.
+  
+  list2here(other_info)
+  calculate_summaries_arg_names <- formalArgs(calculate_summaries_func)
+  calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
+  calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
+  # run simulation
+  run_parallel <- TRUE
+  if(run_parallel) {
+    result <- foreach(i = 1:n_runs) %dopar% {
+      res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+                             SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                             vax_allocation_func)
+      res <- c(list(res = res), calculate_summaries_args)
+      res <- do.call(calculate_summaries_func, res)
+      res
     }
-    
-    ## Denominator of force of infection term
-    M <- K1%*%X
-    M1 <- 1/M
-    M1[M==0] <- 0
-
-    M1 <- kronecker(matrix(1,maxIndex,1),t(M1))
-    
-    Xover=1/X
-    Xover[X==0] <- 0
-    
-    #Country-specific betas: ##DH added
-
-    n_classes <- n_ages * n_riskgroups
-    c_names <- levels(labels[,2])
-    c_pops <- labels[order(labels$Location),]
-    c_pops <- c_pops[,1]
-    c_pops <- matrix(c_pops, n_classes, n_countries, byrow=FALSE)
-    betaV <- matrix(0, n_countries, 1)
-    for (i in 1:n_countries){
-      NiClasses <- c_pops[,i]#Pop in each class
-      Ni <- sum(NiClasses)#Country population
-      if(is.list(contactMatrix)) {
-        Ci <- contactMatrix[[i]]#Country age-mix - =C for all?
-      } else {
-        Ci <- contactMatrix
-      }
-      Li <- 1/(Ni*gamma)*rep(NiClasses,1,n_classes)*Ci##DH travelMatrix[i,i]/...
-      ev <- eigen(Li)
-      ev <- ev$values
-      Rstar <- max(abs(ev))
-      betaV[i] <- R0/Rstar
+  } else {
+    # series version for debugging
+    result <- list(n_runs)
+    for(i in 1:n_runs) {
+      res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+                             SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
+                             vax_allocation_func)
+      # put arguments of other_info into global environment, so that they can be passed
+      # to calculate_summaries_func.  Warns if we're overwriting anything.
+      list2here(other_info)
+      calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
+      res <- do.call(calculate_summaries_func, calculate_summaries_args)
+      result[[i]] <- res
     }
-    betaV <- kronecker(matrix(1,n_classes,1), betaV)
-
-    beta <- betaV
-
-    ## Convert to smaller time step rates
-    beta <- beta/tdiv
-    gamma <- gamma/tdiv
-    
-    LD <- (Kdelta*M1)%*%KC ##DH: no beta
-
-    #### calculation of force of infection matrix (LD) ends here
-    
-    ## set initial conditions
-
-    # intial exposed are distributed among vaccinated and unvaccinated proportionally
-    E <- seed_vec
-    S <- X - seed_vec
-
-    SV <- EV <- I <- R <- IV <- RV <- matrix(0, maxIndex)
-
-        ## Pre-compute seaonal contribution to FOI
-    if(seasonal){
-        LD <- foreach(i=1:ncol(Phi)) %do% {
-            M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i]))
-            as.matrix(Matrix(Kdelta*M1Phi)%*%KC)
-        }
-    }
-    
-    ## gather model parameters
-    modelParameters <- list("gamma"=gamma, "sigma" = sigma, "efficacy" = efficacy,
-                            "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
-                            "Phi" = Phi, "seasonal" = seasonal, 
-                            "case_fatality_ratio" = processed_inputs[["case_fatality_ratio_vec"]])
-    
-    # put arguments of other_info into global environment, so that they can be passed
-    # to calculate_summaries_func.  Warns if we're overwriting anything.
-
-    list2here(other_info)
-    calculate_summaries_arg_names <- formalArgs(calculate_summaries_func)
-    calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
-    calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
-    # run simulation
-    run_parallel <- TRUE
-    if(run_parallel) {
-      result <- foreach(i = 1:n_runs) %dopar% {
-        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
-                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-                               vax_allocation_func)
-        res <- c(list(res = res), calculate_summaries_args)
-        res <- do.call(calculate_summaries_func, res)
-        res
-      }
-    } else {
-      # series version for debugging
-      result <- list(n_runs)
-      for(i in 1:n_runs) {
-        res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
-                               SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
-                               vax_allocation_func)
-        # put arguments of other_info into global environment, so that they can be passed
-        # to calculate_summaries_func.  Warns if we're overwriting anything.
-        list2here(other_info)
-        calculate_summaries_args <- list_vars_from_environment(formalArgs(calculate_summaries_func))
-        res <- do.call(calculate_summaries_func, calculate_summaries_args)
-        result[[i]] <- res
-      }
-    }
-    result
+  }
+  result
 }
 
 
@@ -264,254 +264,259 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
                             cum_vax_pool_func, vax_allocation_func){
-    ## extract model parameters  
-    gamma <- params[["gamma"]]
-    sigma <- params[["sigma"]]
-    case_fatality_ratio <- params[["case_fatality_ratio"]]
-    efficacy <- params[["efficacy"]]
-    beta <- params[["beta"]]
-    M1 <- params[["M1"]]
-    Kdelta <- params[["Kdelta"]]
-    KC <- Matrix(params[["KC"]])
-    Phi <- params[["Phi"]]
-    seasonal <- params[["seasonal"]]
-
-    ## initialisevectors for current state of simulation
-    S <- S0
-    E <- E0
-    I <- I0
-    R <- R0
-    SV <- SV0
-    EV <- EV0
-    IV <- IV0
-    RV <- RV0
-    incidence <- 0 * S0
-
-    n_groups <- length(I0)
+  ## extract model parameters  
+  gamma <- params[["gamma"]]
+  sigma <- params[["sigma"]]
+  case_fatality_ratio <- params[["case_fatality_ratio"]]
+  efficacy <- params[["efficacy"]]
+  beta <- params[["beta"]]
+  M1 <- params[["M1"]]
+  Kdelta <- params[["Kdelta"]]
+  KC <- Matrix(params[["KC"]])
+  Phi <- params[["Phi"]]
+  seasonal <- params[["seasonal"]]
+  
+  ## initialisevectors for current state of simulation
+  S <- S0
+  E <- E0
+  I <- I0
+  R <- R0
+  SV <- SV0
+  EV <- EV0
+  IV <- IV0
+  RV <- RV0
+  incidence <- 0 * S0
+  
+  n_groups <- length(I0)
+  
+  ## calculate number of time steps
+  tend <- tmax*tdiv
+  ## make vector of simulation times
+  times <- seq(0,tmax,by=1/tdiv)
+  
+  ## If we have seasonality, find the resolution
+  ## of the seasonality vector. We re-calculate seasonal impact on FOI
+  ## every n_blocks iterations
+  switch_freq <- tend+1
+  index <- 1
+  LD1 <- LD
+  if(is.list(LD)){
+    n_blocks <- length(LD)
+    switch_freq <- tend/n_blocks
+    LD1 <- LD[[index]]
+  }
+  
+  ## initialise matrices to store simulation outputs
+  Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
+  SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- incidence_mat <- Smat
+  
+  Smat[,1] <- S0
+  Emat[,1] <- E0
+  Imat[,1] <- I0
+  Rmat[,1] <- R0
+  SVmat[,1] <- SV0
+  EVmat[,1] <- EV0
+  IVmat[,1] <- IV0
+  RVmat[,1] <- RV0
+  
+  
+  ## initialise vector to store number of vaccines over time
+  vax_pool_vec <- double(length(times))
+  
+  ## calculate the number of vaccines ever produced at each timestep
+  cum_vax_pool <- vapply(times, cum_vax_pool_func, double(1))
+  
+  if(any(diff(cum_vax_pool) < 0)) {
+    stop("cumulative number of vaccines not a monotonically non-decreasing function")
+  }
+  
+  for(i in 2:(tend+1)){      
+    ## check that current state is sensible
+    stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
+              all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
     
-    ## calculate number of time steps
-    tend <- tmax*tdiv
-    ## make vector of simulation times
-    times <- seq(0,tmax,by=1/tdiv)
-
-    ## If we have seasonality, find the resolution
-    ## of the seasonality vector. We re-calculate seasonal impact on FOI
-    ## every n_blocks iterations
-    switch_freq <- tend+1
-    index <- 1
-    LD1 <- LD
-    if(is.list(LD)){
-      n_blocks <- length(LD)
-        switch_freq <- tend/n_blocks
-        LD1 <- LD[[index]]
+    if(i %% switch_freq == 0 && i < tend){
+      index <- index + 1
+      LD1 <- LD[[index]]
     }
     
-    ## initialise matrices to store simulation outputs
-    Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-    SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- incidence_mat <- Smat
-    
-    Smat[,1] <- S0
-    Emat[,1] <- E0
-    Imat[,1] <- I0
-    Rmat[,1] <- R0
-    SVmat[,1] <- SV0
-    EVmat[,1] <- EV0
-    IVmat[,1] <- IV0
-    RVmat[,1] <- RV0
-    
+    #################
+    ## VAX PRODUCTION
+    #################
     ## current number of vaccines
-    vax_pool <- 0
-    ## initialise vector to store number of vaccines over time
-    vax_pool_vec <- double(length(times))
-    
-    ## calculate the number of vaccines ever produced at each timestep
-    cum_vax_pool <- vapply(times, cum_vax_pool_func, double(1))
-    
-    if(any(diff(cum_vax_pool) < 0)) {
-        stop("cumulative number of vaccines not a monotonically non-decreasing function")
-    }
-
-    for(i in 2:(tend+1)){      
-        ## check that current state is sensible
-        stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
-                  all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
-
-         if(i %% switch_freq == 0 && i < tend){
-             index <- index + 1
-             LD1 <- LD[[index]]
-        }
-        
-        #################
-        ## VAX PRODUCTION
-        #################            
-        vax_pool <- vax_pool + cum_vax_pool[i] - cum_vax_pool[i - 1]
-        
-        #################
-        ## VAX ALLOCATION
-        #################       
-        if(i %% vax_alloc_period == 0) {
-            
-            # initialisation
-            vax_alloc <- 1
-            actual_alloc <- 0
-            sum_vax_alloc <- S * 0
-            alloc_this_round <- Inf
-            
-            # notes on while loop to follow
-            while(alloc_this_round > 0 && vax_pool >= 1) {
-                
-                # first pass at allocating vaccines.
-                # may allocate more vaccines to a location / age / risk group/ infection status
-                # combination than there are individuals in that combination
-                vax_alloc <- vax_allocation_func(S, E, I, R, 
-                                                 SV, EV, IV, RV, incidence,
-                                                 vax_pool)
-                # the actual number of vaccines allocated is the smaller of the
-                # number of vaccines according to the algorithm and the actual
-                # number of individuals in the combination
-                # if the acutal number of vaccines allocated is less than that
-                # allocated by the algorithm, we will try to allocate the 
-                # remaining vaccines in the next iteration of the while loop
-                actual_alloc <- Map(pmin, vax_alloc, list(S, E, I, R))
-                sum_vax_alloc <- sum_vax_alloc + actual_alloc$S + actual_alloc$E +
-                  actual_alloc$I + actual_alloc$R
-                
-                ## update current vax pool
-                alloc_this_round <- sum(unlist(actual_alloc))
-                # if (alloc_this_round == 0 && vax_pool >= 1) {
-                #   break
-                # }
-                
-                vax_pool <- vax_pool - alloc_this_round
-                ## update the vaccination status of individuals
-                S <- S - actual_alloc$S
-                E <- E - actual_alloc$E
-                I <- I - actual_alloc$I
-                R <- R - actual_alloc$R
-                
-                SV <- SV + actual_alloc$S
-                EV <- EV + actual_alloc$E
-                IV <- IV + actual_alloc$I
-                RV <- RV + actual_alloc$R
-            }
-            
-            vax_alloc_mat[,i] <- sum_vax_alloc
-            
-        }
-        
-        # numeric errors can be introduced, so make sure numbers of individuals
-        # are still integers before the transmission process
-        
-        S <- round(S)
-        E <- round(E)
-        I <- round(I)
-        R <- round(R)
-        SV <- round(SV)
-        EV <- round(EV)
-        IV <- round(IV)
-        RV <- round(RV)
-        
-        #################
-        ## INFECTIONS
-        #################
-        ## Generate force of infection on each group/location
-        lambda <- beta*LD1%*%(I + IV)
-
-        ## Generate probability of infection from this
-        P_infection <- 1 - exp(-lambda)
-        P_infection_vax <- 1 - exp(-lambda*(1 - efficacy))
-        
-        ## Simulate new infections for each location
-        newInfections <- rbinom(n_groups, S, P_infection)
-        newInfectionsVax <- rbinom(n_groups, SV, P_infection_vax)
-        
-        ## Update populations
-        S <- S - newInfections
-        E <- E + newInfections
-        SV <- SV - newInfectionsVax
-        EV <- EV + newInfectionsVax
-        
-        #################
-        ## EXPOSED BECOMING INFECTIOUS
-        #################
-        ## Generate probability of exposed becoming infectious
-        P_infectious <- 1 - exp(-sigma)
-        
-        ## Simulate new recoveries
-        newInfectious <- rbinom(n_groups, E, P_infectious)
-        newInfectiousVax <- rbinom(n_groups, EV, P_infectious)
-        
-        ## Update populations
-        E <- E - newInfectious
-        I <- I + newInfectious
-        EV <- EV - newInfectiousVax
-        IV <- IV + newInfectiousVax
-        incidence <- newInfectious + newInfectiousVax
-        
-        #################
-        ## RECOVERIES AND DEATHS
-        #################
-        ## Generate probability of removal
-        P_removal <- 1 - exp(-gamma)
-        
-        ## Simulate new recoveries
-        newRemovals <- rbinom(n_groups, I, P_removal)
-        newRemovalsVax <- rbinom(n_groups, IV, P_removal)
-
-        newRecovered <- rbinom(n_groups, newRemovals, 1 - case_fatality_ratio)
-        newRecoveredVax <- rbinom(n_groups, newRemovalsVax, 1 - case_fatality_ratio)
-        ## Update populations
-        I <- I - newRemovals
-        R <- R + newRecovered
-        IV <- IV - newRemovalsVax
-        RV <- RV + newRecoveredVax
-        
-        #################
-        ## SAVE RESULTS
-        #################
-        Smat[,i] <- S
-        Emat[,i] <- E
-        Imat[,i] <- I
-        Rmat[,i] <- R
-        SVmat[,i] <- SV
-        EVmat[,i] <- EV
-        IVmat[,i] <- IV
-        RVmat[,i] <- RV
-        incidence_mat[,i] <- incidence
-        vax_pool_vec[i] <- vax_pool
-        
-        ## stop simulation if there are no more exposed/infectious individuals
-
-        if(i < (tend + 1) && sum(E + I + EV + IV) == 0) {
-            remaining_idx <- seq((i+1), ncol(Smat))
-                                        # make a function to fill in the remaining parts of the state matrix
-                                        # once we stop the simulation
-            
-            fill_remaining_closure <- function(n_groups, remaining_idx) {
-                f <- function(vec) {
-                    matrix(vec, n_groups, length(remaining_idx))
-              }
-              f
-            }
-            
-            fill_remaining <- fill_remaining_closure(n_groups, remaining_idx)
-            
-            Smat[,remaining_idx] <- fill_remaining(S)
-            Rmat[,remaining_idx] <- fill_remaining(R)
-            SVmat[,remaining_idx] <- fill_remaining(SV)
-            RVmat[,remaining_idx] <- fill_remaining(RV)
-            vax_pool_vec[remaining_idx] <- vax_pool
-            break
-        }
+    if(i == 2) {
+      vax_pool <- cum_vax_pool[i] # if allocating vaccines for the first time
+    } else {
+      vax_pool <- vax_pool + cum_vax_pool[i] - cum_vax_pool[i - 1]
     }
     
-    ## put times as column names for readability of output
-    colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
-    colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
-    colnames(vax_alloc_mat) <- colnames(incidence_mat) <- times
+    #################
+    ## VAX ALLOCATION
+    #################       
+    if(i %% vax_alloc_period == 2) { # allocate at start of simulation, and
+      # every vax_alloc_period timesteps thereafter
+      
+      # initialisation
+      vax_alloc <- 1
+      actual_alloc <- 0
+      sum_vax_alloc <- S * 0
+      alloc_this_round <- Inf
+      
+      # notes on while loop to follow
+      while(alloc_this_round > 0 && vax_pool >= 1) {
+        
+        # first pass at allocating vaccines.
+        # may allocate more vaccines to a location / age / risk group/ infection status
+        # combination than there are individuals in that combination
+        vax_alloc <- vax_allocation_func(S, E, I, R, 
+                                         SV, EV, IV, RV, incidence,
+                                         vax_pool)
+        # the actual number of vaccines allocated is the smaller of the
+        # number of vaccines according to the algorithm and the actual
+        # number of individuals in the combination
+        # if the acutal number of vaccines allocated is less than that
+        # allocated by the algorithm, we will try to allocate the 
+        # remaining vaccines in the next iteration of the while loop
+        actual_alloc <- Map(pmin, vax_alloc, list(S, E, I, R))
+        sum_vax_alloc <- sum_vax_alloc + actual_alloc$S + actual_alloc$E +
+          actual_alloc$I + actual_alloc$R
+        
+        ## update current vax pool
+        alloc_this_round <- sum(unlist(actual_alloc))
+        # if (alloc_this_round == 0 && vax_pool >= 1) {
+        #   break
+        # }
+        
+        vax_pool <- vax_pool - alloc_this_round
+        ## update the vaccination status of individuals
+        S <- S - actual_alloc$S
+        E <- E - actual_alloc$E
+        I <- I - actual_alloc$I
+        R <- R - actual_alloc$R
+        
+        SV <- SV + actual_alloc$S
+        EV <- EV + actual_alloc$E
+        IV <- IV + actual_alloc$I
+        RV <- RV + actual_alloc$R
+      }
+      
+      vax_alloc_mat[,i] <- sum_vax_alloc
+      
+    }
     
-    return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-                SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, 
-                incidence = incidence_mat, vax_pool = vax_pool_vec,
-                vax_alloc = vax_alloc_mat))
+    # numeric errors can be introduced, so make sure numbers of individuals
+    # are still integers before the transmission process
+    
+    S <- round(S)
+    E <- round(E)
+    I <- round(I)
+    R <- round(R)
+    SV <- round(SV)
+    EV <- round(EV)
+    IV <- round(IV)
+    RV <- round(RV)
+    
+    #################
+    ## INFECTIONS
+    #################
+    ## Generate force of infection on each group/location
+    lambda <- beta*LD1%*%(I + IV)
+    
+    ## Generate probability of infection from this
+    P_infection <- 1 - exp(-lambda)
+    P_infection_vax <- 1 - exp(-lambda*(1 - efficacy))
+    
+    ## Simulate new infections for each location
+    newInfections <- rbinom(n_groups, S, P_infection)
+    newInfectionsVax <- rbinom(n_groups, SV, P_infection_vax)
+    
+    ## Update populations
+    S <- S - newInfections
+    E <- E + newInfections
+    SV <- SV - newInfectionsVax
+    EV <- EV + newInfectionsVax
+    
+    #################
+    ## EXPOSED BECOMING INFECTIOUS
+    #################
+    ## Generate probability of exposed becoming infectious
+    P_infectious <- 1 - exp(-sigma)
+    
+    ## Simulate new recoveries
+    newInfectious <- rbinom(n_groups, E, P_infectious)
+    newInfectiousVax <- rbinom(n_groups, EV, P_infectious)
+    
+    ## Update populations
+    E <- E - newInfectious
+    I <- I + newInfectious
+    EV <- EV - newInfectiousVax
+    IV <- IV + newInfectiousVax
+    incidence <- newInfectious + newInfectiousVax
+    
+    #################
+    ## RECOVERIES AND DEATHS
+    #################
+    ## Generate probability of removal
+    P_removal <- 1 - exp(-gamma)
+    
+    ## Simulate new recoveries
+    newRemovals <- rbinom(n_groups, I, P_removal)
+    newRemovalsVax <- rbinom(n_groups, IV, P_removal)
+    
+    newRecovered <- rbinom(n_groups, newRemovals, 1 - case_fatality_ratio)
+    newRecoveredVax <- rbinom(n_groups, newRemovalsVax, 1 - case_fatality_ratio)
+    ## Update populations
+    I <- I - newRemovals
+    R <- R + newRecovered
+    IV <- IV - newRemovalsVax
+    RV <- RV + newRecoveredVax
+    
+    #################
+    ## SAVE RESULTS
+    #################
+    Smat[,i] <- S
+    Emat[,i] <- E
+    Imat[,i] <- I
+    Rmat[,i] <- R
+    SVmat[,i] <- SV
+    EVmat[,i] <- EV
+    IVmat[,i] <- IV
+    RVmat[,i] <- RV
+    incidence_mat[,i] <- incidence
+    vax_pool_vec[i] <- vax_pool
+    
+    ## stop simulation if there are no more exposed/infectious individuals
+    
+    if(i < (tend + 1) && sum(E + I + EV + IV) == 0) {
+      remaining_idx <- seq((i+1), ncol(Smat))
+      # make a function to fill in the remaining parts of the state matrix
+      # once we stop the simulation
+      
+      fill_remaining_closure <- function(n_groups, remaining_idx) {
+        f <- function(vec) {
+          matrix(vec, n_groups, length(remaining_idx))
+        }
+        f
+      }
+      
+      fill_remaining <- fill_remaining_closure(n_groups, remaining_idx)
+      
+      Smat[,remaining_idx] <- fill_remaining(S)
+      Rmat[,remaining_idx] <- fill_remaining(R)
+      SVmat[,remaining_idx] <- fill_remaining(SV)
+      RVmat[,remaining_idx] <- fill_remaining(RV)
+      vax_pool_vec[remaining_idx] <- vax_pool
+      break
+    }
+  }
+  
+  ## put times as column names for readability of output
+  colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
+  colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
+  colnames(vax_alloc_mat) <- colnames(incidence_mat) <- times
+  
+  return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
+              SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, 
+              incidence = incidence_mat, vax_pool = vax_pool_vec,
+              vax_alloc = vax_alloc_mat))
 }

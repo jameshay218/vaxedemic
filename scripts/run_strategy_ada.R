@@ -1,8 +1,4 @@
-run_strategy <- function(strategy, production_delay, stockpile_size) {
-  
-  if(stockpile_size != 0) {
-    stop("stockpile not yet implemented")
-  }
+run_strategy <- function(strategy, production_delay, stockpile_size = 0) {
   
   stopifnot(strategy %in% c("no_vaccination", 
                             "incidence", 
@@ -27,7 +23,9 @@ run_strategy <- function(strategy, production_delay, stockpile_size) {
   # Where to save simulation results
   outputDir <- paste0("outputs/pd",
                       production_delay, 
-                      strategy)
+                      strategy, 
+                      "_stockpile",
+                      num2str(stockpile_size))
   
   output_prefix <- strategy
   output_prefix <- paste(outputDir, output_prefix, sep = "/")

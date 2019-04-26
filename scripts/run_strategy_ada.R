@@ -1,4 +1,4 @@
-run_strategy <- function(strategy, production_delay, stockpile_size = 0) {
+run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCountries = "China") {
   
   stopifnot(strategy %in% c("no_vaccination", 
                             "incidence", 
@@ -25,7 +25,9 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0) {
                       production_delay, 
                       strategy, 
                       "_stockpile",
-                      num2str(stockpile_size))
+                      num2str(stockpile_size),
+                      "_",
+                      seedCountries)
   
   output_prefix <- strategy
   output_prefix <- paste(outputDir, output_prefix, sep = "/")
@@ -97,7 +99,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0) {
 
   
   # parameters to do with seeding the pandemic
-  seedCountries <- "China"
+  seedCountries <- seedCountries
 
   seed_params <- list(Countries = seedCountries, # where to seed
                       Sizes = c(20), # how many to seed in each country
@@ -138,12 +140,13 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0) {
       # submit to cluster
       args_list <- make_arg_list(runs = NULL, run_func, obj)
       saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
-      
+      write(Sys.time(), paste0(output_prefix,"_timestamp.txt"))
       job <- obj$enqueue(do.call(run_func, args_list))
     } else {
       # run a single job
       args_list <- make_arg_list(runs = NULL, run_func, obj = NULL)
       saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
+      write(Sys.time(), paste0(output_prefix,"_timestamp.txt"))
       
       do.call(run_func, args_list)
     }
@@ -183,27 +186,47 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0) {
       # submit to cluster
       args_list <- make_arg_list(runs, run_func, obj)
       saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
-      
+      write(Sys.time(), paste0(output_prefix,"_timestamp.txt"))
       jobs <- do.call(queuer::enqueue_bulk, args_list)
     } else {
       # run locally
       
       args_list <- make_arg_list(runs, run_func, obj = NULL)
       saveRDS(args_list, paste0(output_prefix,"_args_list.rds"))
-      
+      write(Sys.time(), paste0(output_prefix,"_timestamp.txt"))
       lapply(args_list, function(x) do.call(run_func, x))
     }
   }
 }
 
 run_all_strategies <- function() {
+
   strategy <- c("incidence", 
                 "curr_alloc",
                 "top_n_countries",
                 "fn_pop_size")
+  
   production_delay <- c(7, 90, 180)
+  
+  stockpile_size <- 550e6
+  
+  # seedCountries <- c("China", "Sao_Tome_and_Principe", "Belgium",
+  #                    "Singapore", "Uganda")
+  seedCountries <- c("Sao_Tome_and_Principe", "Belgium",
+                     "Singapore", "Uganda")
+  # largest pop size, smallest pop size, medium pop size, 
+  # 3rd largest connnectivity, smallest connectivity
+  
   pars <- expand.grid(strategy = strategy, production_delay = production_delay)
-  pars <- rbind(pars, data.frame(strategy = "no_vaccination",
-                                 production_delay = 0))
-  Map(run_strategy, pars$strategy, pars$production_delay, stockpile_size = 0)
+
+  pars$stockpile_size <- 0
+  pars$seed_country <- "China"
+  pars_stockpile <- data.frame(strategy = strategy, production_delay = 0, stockpile_size = stockpile_size)
+  pars_stockpile <- expand.grid(strategy = c(strategy, "no_vaccination"), 
+                                production_delay = 0, 
+                                stockpile_size = stockpile_size,
+                                seedCountries = seedCountries)
+  pars <- pars_stockpile
+  pars <- rbind(pars, pars_stockpile)
+  Map(run_strategy, pars$strategy, pars$production_delay, pars$stockpile_size, pars$seed_country)
 }

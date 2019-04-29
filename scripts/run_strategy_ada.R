@@ -217,16 +217,18 @@ run_all_strategies <- function() {
   # largest pop size, smallest pop size, medium pop size, 
   # 3rd largest connnectivity, smallest connectivity
   
-  pars <- expand.grid(strategy = strategy, production_delay = production_delay)
+  pars <- expand.grid(strategy = strategy, production_delay = production_delay,
+                      stringsAsFactors = FALSE)
 
   pars$stockpile_size <- 0
-  pars$seed_country <- "China"
+  pars$seedCountries <- "China"
   pars_stockpile <- data.frame(strategy = strategy, production_delay = 0, stockpile_size = stockpile_size)
   pars_stockpile <- expand.grid(strategy = c(strategy, "no_vaccination"), 
                                 production_delay = 0, 
                                 stockpile_size = stockpile_size,
-                                seedCountries = seedCountries)
+                                seedCountries = seedCountries,
+                                stringsAsFactors = FALSE)
   pars <- pars_stockpile
-  pars <- rbind(pars, pars_stockpile)
-  Map(run_strategy, pars$strategy, pars$production_delay, pars$stockpile_size, pars$seed_country)
+  # pars <- rbind(pars, pars_stockpile)
+  Map(run_strategy, pars$strategy, pars$production_delay, pars$stockpile_size, pars$seedCountries)
 }

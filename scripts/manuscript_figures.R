@@ -26,7 +26,6 @@ read_median_global_deaths <- function(strategy, production_delay, stockpile_size
                        num2str(free_param), "_median_deaths.rds")
   }
   if(file.exists(filename)) {
-    print(filename)
     readRDS(filename)
   } else {
     source_filename <- sub("_median", "", filename, fixed = TRUE)
@@ -56,7 +55,8 @@ read_global_deaths <- function(strategy, production_delay, stockpile_size, free_
 }
 
 bootstrap_deaths_averted <- function(strategies, production_delays, stockpile_sizes, free_params, seedCountries) {
-
+  # set seed for reproducible bootstrapping
+  set.seed(1)
   label_with_strategy <- function(global_deaths, strategy_label) {
     data.frame(deaths = global_deaths, 
                                 strategy = strategy_label)
@@ -77,7 +77,8 @@ bootstrap_deaths_averted <- function(strategies, production_delays, stockpile_si
 }
 
 bootstrap_median_deaths <- function(strategy, production_delay, stockpile_size, free_param, seedCountries) {
-  
+  # set seed for reproducible bootstrapping
+  set.seed(1)  
   global_deaths <- read_global_deaths(strategy, production_delay, stockpile_size, free_param, seedCountries)
   
   my_median <- function(data, indices) {
@@ -181,7 +182,7 @@ print_table <- function(pars, filename, strategy) {
 #' pars is a data frame containing the median deaths and deaths averted under each
 #' vaccination strategy and production delay.  if bootsrap = TRUE, also contains 95% CI.
 #' plot1 and plot2 are ggplot objects: two different visualisations of the deaths averted
-make_Fig2 <- function(save_output = FALSE, bootstrap = FALSE) {
+make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
   # define vaccination strategies to plot
     strategy <- c("incidence",
                   "curr_alloc")
@@ -291,7 +292,7 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = FALSE) {
 #' pars is a data frame containing the median deaths and deaths averted under each
 #' vaccination strategy and production delay.  if bootsrap = TRUE, also contains 95% CI.
 #' plot1 and plot2 are ggplot objects: two different visualisations of the deaths averted
-make_Fig3 <- function(save_output = FALSE, bootstrap = FALSE) {
+make_Fig3 <- function(save_output = FALSE, bootstrap = TRUE) {
   # values of n for strategy 1
   n_countries <- c(1, 2, 5, 10, 127)
   # values of alpha for strategy 2
@@ -406,7 +407,7 @@ make_Fig3 <- function(save_output = FALSE, bootstrap = FALSE) {
 #' pars is a data frame containing the median deaths and deaths averted under each
 #' vaccination strategy and seed country.  if bootsrap = TRUE, also contains 95% CI.
 #' plot1 is a ggplot object: visualisation of the deaths averted
-make_FigS1 <- function(save_output = FALSE, bootstrap = FALSE) {
+make_FigS1 <- function(save_output = FALSE, bootstrap = TRUE) {
   # define vaccination strategies to plot
   strategy <- c("incidence",
                 "curr_alloc")
@@ -502,7 +503,7 @@ make_FigS1 <- function(save_output = FALSE, bootstrap = FALSE) {
 #' pars is a data frame containing the median deaths and deaths averted under each
 #' vaccination strategy and seed country.  if bootsrap = TRUE, also contains 95% CI.
 #' plot1 is a ggplot object: visualisation of the deaths averted
-make_FigS2 <- function(save_output = FALSE, bootstrap = FALSE) {
+make_FigS2 <- function(save_output = FALSE, bootstrap = TRUE) {
   # values of n for strategy 1
   n_countries <- c(1, 2, 5, 10, 127)
   # values of alpha for strategy 2

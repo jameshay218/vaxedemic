@@ -1,3 +1,24 @@
+# How to make figures in manuscript
+# 1. Download files from https://drive.google.com/open?id=150nv86_WLibdEAZDurlOe1X-TWV0sc8S
+# (this is Data/vaxedemic_manuscript_data.zip in the vaxedemic google drive folder)
+# 2. make a directory in your vaxedemic code main folder (so one down from the folder containing this script) called "outputs"
+# 3. unzip the files there, maintaining data structure.  there should now be two directories outputs/deaths_only/ 
+# and outputs/pd0no_vaccination/ containing
+# e.g. outputs/deaths_only/pd0no_vaccination/no_vaccination_fixed_global_deaths.rds
+# 4. set your working directory to the vaxedemic code main folder and run devtools::load_all()
+# 5. change save_dir on line 20 of this script to a folder on your drive
+# 6. source this script
+# 7. run 
+# make_Fig1(TRUE, TRUE)
+# make_Fig2(TRUE, TRUE)
+# make_Fig3(TRUE, TRUE)
+# make_FigS1(TRUE, TRUE)
+# make_FigS2(TRUE, TRUE)
+# the raw data for Fig 1 is in https://drive.google.com/open?id=1540gR4un0Dz-m3P3TB9JhdnFIR3iAqJi
+# in case you want to revisualise
+# (this is Data/no_vax_manuscript_data.zip in the vaxedemic google drive folder)
+# contact Ada with any questions
+
 # directory in which to save plots and tables
 save_dir <- "~/overleaf/vaxedemic_manuscript/figs/"
 
@@ -166,6 +187,43 @@ print_table <- function(pars, filename, strategy) {
   print(xtable::xtable(pars, align = alignment),
         sanitize.text.function = identity,
         file = filename, include.rownames=FALSE, append = bootstrap)
+}
+
+#' make Fig. 1 in the manuscript: Simulation results without vaccination: attack rates and peak times by country.
+#' @param save_output logical: whether to save the output as a pdf as well as outputting the ggplot object
+#' @output a list of two ggplot objects: attack_rates and peak_times
+make_Fig1 <- function(save_output) {
+  
+  read_and_sort_data <- function(filename) {
+    dat <- read.csv(filename)
+    # sort countries by latitude
+    dat$Location <- as.character(dat$Location)
+    dat$Location <- factor(dat$Location, 
+                                         levels = as.character(dat$Location[order(dat$latitude)]))
+    dat
+  }
+  
+  # read in median and 95% CI for attack rates for each country
+  attack_rates_data <- read_and_sort_data("outputs/pd0no_vaccination/no_vaccination_country_attack_rates_fixed_median_ci.csv")
+  # plot attack rates
+  attack_rates <- plot_country_attack_rates(attack_rates_data)
+  
+  # read in median and 95% CI for peak times for each country
+  peak_times_data <- read_and_sort_data("outputs/pd0no_vaccination/no_vaccination_peakTimes_fixed_median_ci.csv")
+  # plot peak times
+  peak_times <- plot_peak_times(peak_times_data)
+  
+  # save output
+  if(save_output) {
+    png(paste0(save_dir, "no_vaccination_country_attack_rates_fixed_plot.png"),width=800,height=1200)
+    plot(attack_rates)
+    dev.off()
+    png(paste0(save_dir, "no_vaccination_peakTimes_fixed_plot.png"),width=800,height=1200)
+    plot(peak_times)
+    dev.off()
+  }
+  
+  list(attack_rates = attack_rates, peak_times = peak_times)
 }
 
 #' make Fig. 2 in the manuscript: comparing deaths averted for allocation by incidence vs current allocation,

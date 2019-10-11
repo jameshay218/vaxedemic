@@ -12,8 +12,14 @@ time_end <- function(results){
 #  coutry, risk group, age group?
 deaths <- function(results, popns){
   tend <- time_end(results)
-  popns - results$S[,tend] - results$SV[,tend] - results$E[,tend] - results$EV[,tend] -
-    results$I[,tend] - results$IV[,tend] - results$R[,tend] - results$RV[,tend]
+  popns - results$S[,tend] - results$SV1[,tend] - 
+    results$SV2[,tend] - results$SP[,tend] -
+    results$E[,tend] - results$EV1[,tend] -
+    results$EV2[,tend] - results$EP[,tend] -
+    results$I[,tend] - results$IV1[,tend] - 
+    results$IV2[,tend] - results$IP[,tend] - 
+    results$R[,tend] - results$RV1[,tend] -
+    results$RV2[,tend] - results$RP[,tend]
 }
 
 #' @export

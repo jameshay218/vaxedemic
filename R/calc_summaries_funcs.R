@@ -90,7 +90,8 @@ calc_incidence_time_series <- function(res, X, labels){
 #' Each row contains the incidence over time for that country.
 #' @export
 calc_vaccinated_time_series <- function(res, X, labels){
-  V_class <- c("SV", "EV", "IV", "RV")
+  V_class <- c("SV1", "EV1", "IV1", "RV1", "SV2", "EV2", "IV2", "RV2",
+               "SP", "EP", "IP", "RP")
   vaccinated <- calc_country_time_series(res, X, labels, V_class)
   return(list(vaccinated = vaccinated))
 }
@@ -131,7 +132,8 @@ calc_country_attack <- function(res, X, labels){
   pop_total <- sum(X)
   tend <- time_end(res)
   sum_age_risk <- sum_age_risk_closure(labels)
-  final_size_by_group <- res$R[ ,tend] + res$RV[ ,tend] + deaths(res, X)
+  final_size_by_group <- res$R[ ,tend] + res$RV1[ ,tend] +
+                        res$RV2[ ,tend] + res$RP[ ,tend] + deaths(res, X)
   country_attack_rate <- sum_age_risk(final_size_by_group) / sum_age_risk(X)
   return(list(country_attack_rate = country_attack_rate))
 }
@@ -171,7 +173,8 @@ calc_country_time_series <- function(res, X, labels, compartments){
 #' Each row contains the incidence over time for that country.
 #' @export
 calc_cumulative_deaths_time_series <- function(res, X, labels){
-  alive_classes <- c("S", "E", "I", "R", "SV", "EV", "IV", "RV")
+  alive_classes <- c("S", "E", "I", "R", "SV1", "EV1", "IV1", "RV1",
+                     "SV2", "EV2", "IV2", "RV2", "SP", "EP", "IP", "RP")
   alive <- calc_country_time_series(res, X, labels, alive_classes)
   sum_age_risk <- sum_age_risk_closure(labels)
   pop_country <- sum_age_risk(X)

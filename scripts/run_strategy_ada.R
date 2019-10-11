@@ -6,7 +6,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
                             "top_n_countries",
                             "fn_pop_size"))
   
-  cluster <- TRUE # run on cluster or locally
+  cluster <- FALSE # run on cluster or locally
   # user identifier -- only needed if running on cluster
   user <- "ayan"
   
@@ -21,7 +21,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   setwd(package_dir)
   
   # Where to save simulation results
-  outputDir <- paste0("outputs/pd",
+  outputDir <- paste0("temp_outputs/pd",
                       production_delay, 
                       strategy, 
                       "_stockpile",
@@ -43,7 +43,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   # seed_params, calculate_summaries_func, postprocessing_func, other_info
   
   ## How many runs for each set of simulations?
-  n_runs <- 500
+  n_runs <- 2
   
   # parameters to do with time steps in simulation
   time_params <- list(tmax = 360, # Maximum time of simulation (in days) -- 
@@ -75,14 +75,13 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
   vax_params <- list(efficacy = .7)
   
-  if(strategy == "no_vaccination") {
-    vax_params$efficacy <- 0
-  }
-  
   # parameters to do with vaccine production. correspond to arguments of user_specified_cum_vax_pool_func
   vax_production_params <- list(detection_delay = 0, production_delay = production_delay, 
                                 production_rate = 550e06/(365/12*3), max_vax = Inf,
                                 stockpile_size = stockpile_size)
+  if(strategy == "no_vaccination") {
+    vax_production_params$production_delay <- Inf
+  }
   # parameters to do with vaccine allocation. correspond to arguments of user_specified_vax_alloc_func
   vax_allocation_params <- list(priorities = NULL, period = 6 * 7, coverage = NULL)
   

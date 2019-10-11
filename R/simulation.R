@@ -190,7 +190,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
   calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
   # run simulation
-  run_parallel <- TRUE
+  run_parallel <- FALSE
   if(run_parallel) {
     result <- foreach(i = 1:n_runs) %dopar% {
       res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
@@ -249,18 +249,11 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
 #' gives the number of vaccines to allocate to each location, age, risk group
 #' @return list containing the elements:
 #' beta: infectivity parameter
-#' S: matrix containing the number of unvaccinated susceptibles in each
+#' incidence: matrix containing the incidence in each
 #' location, age, risk group at each timestep.
 #' nrow(S) = n_groups = n_countres * n_ages * n_riskgroups
 #' ncol(S) = tend = tmax * tdiv
-#' E: same as Smat but for unvaccinated exposed
-#' I: same as Smat but for unvaccinated infectious
-#' R: same as Smat but for unvaccinated removed
-#' SV: same as Smat but for vaccinated susceptible
-#' EV: same as Smat but for vaccinated exposed
-#' IV: same as Smat but for vaccinated infectious
-#' RV: same as Smat but for vaccinated removed
-#' vax_pool: numeric vector containing number of vaccines available at each timestep.
+#' deaths: same as incidence but for deaths
 main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
                             cum_vax_pool_func, vax_allocation_func){
@@ -281,11 +274,11 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   E <- E0
   I <- I0
   R <- R0
-  SV <- SV0
-  EV <- EV0
-  IV <- IV0
-  RV <- RV0
-  incidence <- 0 * S0
+  SP <- SV0
+  EP <- EV0
+  IP <- IV0
+  RP <- RV0
+  incidence <- SV2 <- EV2 <- IV2 <- RV2 <- SV1 <- EV1 <- IV1 <- RV1 <- 0 * S0
   
   n_groups <- length(I0)
   
@@ -307,22 +300,24 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   }
   
   ## initialise matrices to store simulation outputs
-  Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-  SVmat <- EVmat <- IVmat <- RVmat <- vax_alloc_mat <- incidence_mat <- Smat
+  incidence_mat <-  deaths_mat <- matrix(0, n_groups, length(times))
   
+  Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
+  SV1mat <- EV1mat <- IV1mat <- RV1mat <- vax_alloc_mat <- Smat
+  SV2mat <- EV2mat <- IV2mat <- RV2mat <- Smat
+  SPmat <- EPmat <- IPmat <- RPmat <- Smat
   Smat[,1] <- S0
   Emat[,1] <- E0
   Imat[,1] <- I0
   Rmat[,1] <- R0
-  SVmat[,1] <- SV0
-  EVmat[,1] <- EV0
-  IVmat[,1] <- IV0
-  RVmat[,1] <- RV0
+  SV1mat[,1] <- SV0
+  EV1mat[,1] <- EV0
+  IV1mat[,1] <- IV0
+  RV1mat[,1] <- RV0
   
   
   ## initialise vector to store number of vaccines over time
   vax_pool_vec <- double(length(times))
-  
   ## calculate the number of vaccines ever produced at each timestep
   cum_vax_pool <- vapply(times, cum_vax_pool_func, double(1))
   
@@ -333,7 +328,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   for(i in 2:(tend+1)){      
     ## check that current state is sensible
     stopifnot(all(S >= 0),all(E >= 0), all(I >= 0), all(R >= 0), 
-              all(SV >= 0), all(EV >= 0), all(IV >= 0), all(RV >= 0))
+              all(SV1 >= 0), all(EV1 >= 0), all(IV1 >= 0), all(RV1 >= 0),
+              all(SV2 >= 0),all(EV2 >= 0), all(IV2 >= 0), all(RV2 >= 0), 
+              all(SP >= 0), all(EP >= 0), all(IP >= 0), all(RP >= 0))
     
     if(i %% switch_freq == 0 && i < tend){
       index <- index + 1
@@ -355,7 +352,21 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     #################       
     if(i %% vax_alloc_period == 2) { # allocate at start of simulation, and
       # every vax_alloc_period timesteps thereafter
-      
+    
+    # move individuals vaccinated two weeks ago to protected class
+    SP <- SP + SV2
+    EP <- EP + EV2
+    IP <- IP + IV2
+    RP <- RP + RV2
+
+    # move individuals vaccinated last week to intermediate vaccination class
+    SV2 <- SV1
+    EV2 <- EV1
+    IV2 <- IV1
+    RV2 <- RV1
+
+    SV1 <- EV1 <- IV1 <- RV1 <- 0
+
       # initialisation
       vax_alloc <- 1
       actual_alloc <- 0
@@ -369,7 +380,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         # may allocate more vaccines to a location / age / risk group/ infection status
         # combination than there are individuals in that combination
         vax_alloc <- vax_allocation_func(S, E, I, R, 
-                                         SV, EV, IV, RV, incidence,
+                                         SV1, EV1, IV1, RV1, incidence,
                                          vax_pool)
         # the actual number of vaccines allocated is the smaller of the
         # number of vaccines according to the algorithm and the actual
@@ -394,14 +405,13 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         I <- I - actual_alloc$I
         R <- R - actual_alloc$R
         
-        SV <- SV + actual_alloc$S
-        EV <- EV + actual_alloc$E
-        IV <- IV + actual_alloc$I
-        RV <- RV + actual_alloc$R
+        SV1 <- SV1 + actual_alloc$S
+        EV1 <- EV1 + actual_alloc$E
+        IV1 <- IV1 + actual_alloc$I
+        RV1 <- RV1 + actual_alloc$R
       }
       
       vax_alloc_mat[,i] <- sum_vax_alloc
-      
     }
     
     # numeric errors can be introduced, so make sure numbers of individuals
@@ -411,16 +421,16 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     E <- round(E)
     I <- round(I)
     R <- round(R)
-    SV <- round(SV)
-    EV <- round(EV)
-    IV <- round(IV)
-    RV <- round(RV)
+    SV1 <- round(SV1)
+    EV1 <- round(EV1)
+    IV1 <- round(IV1)
+    RV1 <- round(RV1)
     
     #################
     ## INFECTIONS
     #################
     ## Generate force of infection on each group/location
-    lambda <- beta*LD1%*%(I + IV)
+    lambda <- beta*LD1%*%(I + IV1 + IV2 + IP)
     
     ## Generate probability of infection from this
     P_infection <- 1 - exp(-lambda)
@@ -428,13 +438,19 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     
     ## Simulate new infections for each location
     newInfections <- rbinom(n_groups, S, P_infection)
-    newInfectionsVax <- rbinom(n_groups, SV, P_infection_vax)
+    newInfectionsV1 <- rbinom(n_groups, SV1, P_infection)
+    newInfectionsV2 <- rbinom(n_groups, SV2, P_infection)
+    newInfectionsP <- rbinom(n_groups, SP, P_infection_vax)
     
     ## Update populations
     S <- S - newInfections
     E <- E + newInfections
-    SV <- SV - newInfectionsVax
-    EV <- EV + newInfectionsVax
+    SV1 <- SV1 - newInfectionsV1
+    EV1 <- EV1 + newInfectionsV1
+    SV2 <- SV2 - newInfectionsV2
+    EV2 <- EV2 + newInfectionsV2
+    SP <- SP - newInfectionsP
+    EP <- EP + newInfectionsP
     
     #################
     ## EXPOSED BECOMING INFECTIOUS
@@ -442,16 +458,23 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     ## Generate probability of exposed becoming infectious
     P_infectious <- 1 - exp(-sigma)
     
-    ## Simulate new recoveries
+    ## Simulate new becoming infectious
     newInfectious <- rbinom(n_groups, E, P_infectious)
-    newInfectiousVax <- rbinom(n_groups, EV, P_infectious)
+    newInfectiousV1 <- rbinom(n_groups, EV1, P_infectious)
+    newInfectiousV2 <- rbinom(n_groups, EV2, P_infectious)
+    newInfectiousP <- rbinom(n_groups, EP, P_infectious)
     
     ## Update populations
     E <- E - newInfectious
     I <- I + newInfectious
-    EV <- EV - newInfectiousVax
-    IV <- IV + newInfectiousVax
-    incidence <- newInfectious + newInfectiousVax
+    EV1 <- EV1 - newInfectiousV1
+    IV1 <- IV1 + newInfectiousV1
+    EV2 <- EV2 - newInfectiousV2
+    IV2 <- IV2 + newInfectiousV2
+    EP <- EP - newInfectiousP
+    IP <- IP + newInfectiousP
+    incidence <- newInfectious + newInfectiousV1 +
+        newInfectiousV2 + newInfectiousP
     
     #################
     ## RECOVERIES AND DEATHS
@@ -461,33 +484,55 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     
     ## Simulate new recoveries
     newRemovals <- rbinom(n_groups, I, P_removal)
-    newRemovalsVax <- rbinom(n_groups, IV, P_removal)
+    newRemovalsV1 <- rbinom(n_groups, IV1, P_removal)
+    newRemovalsV2 <- rbinom(n_groups, IV2, P_removal)
+    newRemovalsP <- rbinom(n_groups, IP, P_removal)
     
     newRecovered <- rbinom(n_groups, newRemovals, 1 - case_fatality_ratio)
-    newRecoveredVax <- rbinom(n_groups, newRemovalsVax, 1 - case_fatality_ratio)
+    newRecoveredV1 <- rbinom(n_groups, newRemovalsV1, 1 - case_fatality_ratio)
+    newRecoveredV2 <- rbinom(n_groups, newRemovalsV2, 1 - case_fatality_ratio)
+    newRecoveredP <- rbinom(n_groups, newRemovalsP, 1 - case_fatality_ratio)
     ## Update populations
     I <- I - newRemovals
     R <- R + newRecovered
-    IV <- IV - newRemovalsVax
-    RV <- RV + newRecoveredVax
+    IV1 <- IV1 - newRemovalsV1
+    RV1 <- RV1 + newRecoveredV1
+    IV2 <- IV2 - newRemovalsV2
+    RV2 <- RV2 + newRecoveredV2
+    IP <- IP - newRemovalsP
+    RP <- RP + newRecoveredP
     
     #################
     ## SAVE RESULTS
     #################
+    incidence_mat[,i] <- incidence
+    deaths_mat[,i] <- newRemovals + newRemovalsV1 + 
+        newRemovalsV2 + newRemovalsP -
+        newRecovered - newRecoveredV1 - 
+        newRecoveredV2 - newRecoveredP
+
     Smat[,i] <- S
     Emat[,i] <- E
     Imat[,i] <- I
     Rmat[,i] <- R
-    SVmat[,i] <- SV
-    EVmat[,i] <- EV
-    IVmat[,i] <- IV
-    RVmat[,i] <- RV
+    SV1mat[,i] <- SV1
+    EV1mat[,i] <- EV1
+    IV1mat[,i] <- IV1
+    RV1mat[,i] <- RV1
+    SV2mat[,i] <- SV2
+    EV2mat[,i] <- EV2
+    IV2mat[,i] <- IV2
+    RV2mat[,i] <- RV2
+    SPmat[,i] <- SP
+    EPmat[,i] <- EP
+    IPmat[,i] <- IP
+    RPmat[,i] <- RP
     incidence_mat[,i] <- incidence
     vax_pool_vec[i] <- vax_pool
     
     ## stop simulation if there are no more exposed/infectious individuals
     
-    if(i < (tend + 1) && sum(E + I + EV + IV) == 0) {
+    if(i < (tend + 1) && sum(E + I + EV1 + IV1 + EV2 + IV2 + EP + IP) == 0) {
       remaining_idx <- seq((i+1), ncol(Smat))
       # make a function to fill in the remaining parts of the state matrix
       # once we stop the simulation
@@ -503,8 +548,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
       
       Smat[,remaining_idx] <- fill_remaining(S)
       Rmat[,remaining_idx] <- fill_remaining(R)
-      SVmat[,remaining_idx] <- fill_remaining(SV)
-      RVmat[,remaining_idx] <- fill_remaining(RV)
+      SV1mat[,remaining_idx] <- fill_remaining(SV1)
+      RV1mat[,remaining_idx] <- fill_remaining(RV1)
+      SV2mat[,remaining_idx] <- fill_remaining(SV2)
+      RV2mat[,remaining_idx] <- fill_remaining(RV2)
+      SPmat[,remaining_idx] <- fill_remaining(SP)
+      RPmat[,remaining_idx] <- fill_remaining(RP)
       vax_pool_vec[remaining_idx] <- vax_pool
       break
     }
@@ -512,11 +561,16 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   
   ## put times as column names for readability of output
   colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
-  colnames(SVmat) <- colnames(EVmat) <- colnames(IVmat) <- colnames(RVmat) <- times
-  colnames(vax_alloc_mat) <- colnames(incidence_mat) <- times
-  
+  colnames(SV1mat) <- colnames(EV1mat) <- colnames(IV1mat) <- colnames(RV1mat) <- times
+  colnames(SV2mat) <- colnames(EV2mat) <- colnames(IV2mat) <- colnames(RV2mat) <- times
+  colnames(SPmat) <- colnames(EPmat) <- colnames(IPmat) <- colnames(RPmat) <- times
+  colnames(vax_alloc_mat) <- times
+  colnames(incidence_mat) <- colnames(deaths_mat) <- times
+
   return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-              SV = SVmat, EV = EVmat, IV = IVmat, RV = RVmat, 
+              SV1 = SV1mat, EV1 = EV1mat, IV1 = IV1mat, RV1 = RV1mat, 
+              SV2=SV2mat,EV2 = EV2mat, IV2=IV2mat,RV2=RV2mat,
+              SP = SPmat, EP = EPmat, IP = IPmat, RP = RPmat,
               incidence = incidence_mat, vax_pool = vax_pool_vec,
-              vax_alloc = vax_alloc_mat))
+              deaths = deaths_mat))
 }

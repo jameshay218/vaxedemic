@@ -12,6 +12,7 @@
 # make_Fig1(TRUE, TRUE)
 # make_Fig2(TRUE, TRUE)
 # make_Fig3(TRUE, TRUE)
+# make_Fig3(FALSE, FALSE, TRUE, TRUE)
 # make_FigS1(TRUE, TRUE)
 # make_FigS2(TRUE, TRUE)
 # the raw data for Fig 1 is in https://drive.google.com/open?id=1540gR4un0Dz-m3P3TB9JhdnFIR3iAqJi
@@ -291,7 +292,7 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
     }
     pars$production_delay <- factor(pars$production_delay)
     levels(pars$production_delay) <- c("stockpile", production_delay[production_delay > 0])
-    y_breaks <- seq(0, max(pars$deaths_averted) * 1.1, by = 2e5)
+    y_breaks <- seq(0, max(pars$deaths_averted) * 1.1, by = 5e5)
 
     # make plots
     plot1 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = production_delay, y = deaths_averted, fill = strategy)) +
@@ -304,7 +305,8 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
       ylab("Deaths averted (million)") +
       theme_bw() +
       theme(legend.position = "none",
-            text = element_text(size = 12))
+            text = element_text(size = 12)) +
+      scale_fill_manual(values = gg_color_hue(4)[c(1,4)])
 
     plot2 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = production_delay, y = deaths_averted, fill = strategy)) +
       geom_bar(stat = "identity", position = "dodge") +
@@ -350,7 +352,9 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
 #' pars is a data frame containing the median deaths and deaths averted under each
 #' vaccination strategy and production delay.  if bootsrap = TRUE, also contains 95% CI.
 #' plot1 and plot2 are ggplot objects: two different visualisations of the deaths averted
-make_Fig3 <- function(save_output = FALSE, bootstrap = TRUE) {
+make_Fig3 <- function(plot_reference_curr_alloc = FALSE, 
+                      plot_reference_curr_alloc_separate_panel = FALSE,
+                      save_output = FALSE, bootstrap = TRUE) {
   # values of n for strategy 1
   n_countries <- c(1, 2, 5, 10, 127)
   # values of alpha for strategy 2
@@ -369,7 +373,11 @@ make_Fig3 <- function(save_output = FALSE, bootstrap = TRUE) {
   pars$stockpile_size <- 550e6
   pars[pars$production_delay > 0,"stockpile_size"] <- 0
   pars$seedCountries <- "China"
-
+  
+  pars_reference <- pars[seq_len(4),]
+  levels(pars_reference$strategy)[[1]] <- "curr_alloc"
+  pars_reference <- pars_reference[,-3]
+  
   if(bootstrap) {
     # calculate median and 95% CI for the median deaths under each vaccination strategy
     # and production delay
@@ -407,28 +415,97 @@ make_Fig3 <- function(save_output = FALSE, bootstrap = TRUE) {
   pars$production_delay <- factor(pars$production_delay)
   levels(pars$production_delay) <- c("stockpile", production_delay[production_delay > 0])
   pars$free_param <- factor(pars$free_param)
-  y_breaks <- seq(0, max(pars$deaths_averted) * 1.1, by = 2e5)
+  y_breaks <- seq(0, max(pars$deaths_averted) * 1.1, by = 5e5)
   
+  # get reference values
+  if(plot_reference_curr_alloc) {
+    if(bootstrap) {
+      # calculate median and 95% CI for the deaths averted under each vaccination strategy
+      # and production delay
+      deaths_averted_curr_alloc <- apply_named_args(pars_reference, 1, bootstrap_deaths_averted_wrapper)
+      # format stuff
+      rownames(deaths_averted_curr_alloc) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
+      deaths_averted_curr_alloc <- as.data.frame(t(deaths_averted_curr_alloc))
+      deaths_averted_curr_alloc$production_delay <- production_delay
+    } else {
+      stop("Not yet implemented")
+      # pars <- rbind(pars, data.frame(strategy = "no_vaccination",
+      #                                production_delay = 0,
+      #                                stockpile_size = 0,
+      #                                seedCountries = pars$seedCountries[1]))
+      # # read in median deaths under each vaccination strategy
+      # # and production delay, as well as median deaths under no vaccination
+      # pars$median_deaths <- Map_vapply(read_median_global_deaths, numeric(1), 
+      #                                  pars$strategy, 
+      #                                  pars$production_delay,
+      #                                  pars$stockpile_size,
+      #                                  seedCountries = pars$seedCountries)
+      # # calculate deaths averted = median deaths with no vaccination - median deaths with vaccination
+      # pars$deaths_averted <- pars[pars$strategy == "no_vaccination", "median_deaths"] - pars$median_deaths
+      # 
+      # # format stuff
+      # levels(pars$strategy) <- c("Incidence", "Current allocation", "No vaccination")
+      # pars$strategy <- factor(pars$strategy, 
+      #                         levels = c("Current allocation", "Incidence", "No vaccination"))
+      
+    }
+    
+    deaths_averted_curr_alloc$production_delay <- factor(deaths_averted_curr_alloc$production_delay)
+    levels(deaths_averted_curr_alloc$production_delay) <- c("stockpile", production_delay[production_delay > 0])
+    if(plot_reference_curr_alloc_separate_panel) {
+      deaths_averted_curr_alloc <- data.frame(strategy = factor("Current Allocation",
+                                                                levels = c(levels(pars$strategy), "Current Allocation")),
+                                              production_delay = deaths_averted_curr_alloc$production_delay,
+                                              free_param = factor(1, levels = levels(pars$free_param)),
+                                              stockpile_size = 0,
+                                              seedCountries = "China",
+                                              lower_deaths = 0,
+                                              median_deaths = 0,
+                                              upper_deaths = 0,
+                                              lower_deaths_averted = deaths_averted_curr_alloc$lower_deaths_averted,
+                                              deaths_averted = deaths_averted_curr_alloc$deaths_averted,
+                                              upper_deaths_averted = deaths_averted_curr_alloc$upper_deaths_averted)
+      levels(pars$strategy) <- levels(deaths_averted_curr_alloc$strategy)
+
+      pars <- rbind(pars, deaths_averted_curr_alloc)
+
+    }
+  }
+
   # make plots
-  
+
   plot1 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = free_param, y = deaths_averted, fill = strategy)) +
-    geom_bar(stat = "identity") +
+    geom_bar(stat = "identity")
+  if(plot_reference_curr_alloc && !plot_reference_curr_alloc_separate_panel) {
+    plot1 <- plot1 + geom_hline(data = deaths_averted_curr_alloc, 
+                                aes(yintercept = deaths_averted),
+                                colour = gg_color_hue(4)[4],
+                                size = 1)
+  }
+  
+  if(plot_reference_curr_alloc && plot_reference_curr_alloc_separate_panel) {
+    xlab_string <- "n                                       alpha                            "
+  } else {
+    xlab_string <- "n                                             alpha"
+  }
+  plot1 <- plot1 + 
     facet_grid(production_delay~strategy, scales = "free_x") +
     scale_y_continuous(breaks = y_breaks, 
                        labels = formatC(y_breaks / 1e6, digits = 2),
                        expand = expand_scale(mult = c(0, .1))) +
-    xlab("n                                             alpha") +
+    xlab(xlab_string) +
     ylab("Deaths averted (million)") +
     theme_bw() +
     theme(legend.position = "none",
-          text = element_text(size = 12))
+          text = element_text(size = 12)) +
+    scale_fill_manual(values = gg_color_hue(4)[2:3])
   plot2 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = free_param, y = deaths_averted, fill = production_delay, group = production_delay)) +
     geom_bar(stat = "identity", position = "dodge") +
     facet_grid(~strategy, scales = "free_x") +
     scale_y_continuous(breaks = y_breaks, 
                        labels = formatC(y_breaks / 1e6, digits = 2),
                        expand = expand_scale(mult = c(0, .1))) +
-    xlab("n                                            alpha") +
+    xlab(xlab_string) +
     ylab("Deaths averted (million)") +
     theme_bw() +
     theme(text = element_text(size = 12)) +
@@ -441,7 +518,6 @@ make_Fig3 <- function(save_output = FALSE, bootstrap = TRUE) {
   }
   
   # save output as files
-  
   if(save_output) {
     ggsave(paste0(save_dir, "deaths_averted_complex_allocation.pdf"),
            plot1, width = 15, height = 15, units = "cm")
@@ -628,7 +704,7 @@ make_FigS2 <- function(save_output = FALSE, bootstrap = TRUE) {
     theme_bw() +
     theme(legend.position = "none",
           text = element_text(size = 12))
-  
+
   if(bootstrap) {
     plot1 <- plot1 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted))
   }
@@ -642,4 +718,9 @@ make_FigS2 <- function(save_output = FALSE, bootstrap = TRUE) {
   }
   
   list(table = pars, plot1 = plot1)
+}
+
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
 }

@@ -212,7 +212,7 @@ plot_peak_times <- function(dat){
 #'@import ggplot2
 plot_country_attack_rates <- function(dat) {
   ggplot(dat) +
-    geom_errorbarh(aes(y=Location,x=median,xmax=upper95,xmin=lower95, col=Hemisphere)) +
+    geom_errorbarh(aes(y=Location,xmax=upper95,xmin=lower95, col=Hemisphere)) +
     geom_point(aes(y=Location,x=median),size=0.5) +
     scale_x_continuous(limits=c(0,1)) +
     xlab("Attack rate, median and 95% quantiles") +

@@ -1,3 +1,21 @@
+#' postprocess simulations to plot the peak time and attack rates and deaths,
+#' and save outputs for the incidence, peak time and attack rates and deaths
+#' 
+#' @param res_list summary statistics for each run and processed inputs produced by run_fixed_params
+#' @param runName character string to make filename out of
+#' @param other_info list which provides any other information needed, such as to calculate the summaries
+# or post-process results.
+#' @param output_prefix character vector of length 1.  Prefix for output filenames
+#' @return NULL
+#' @export
+postprocessing_incidence_peak_times_attack_rates_deaths <- function(res_list, runName, other_info, output_prefix) {
+  postprocessing_save_country_incidence(res_list, runName, other_info, output_prefix)
+  postprocessing_peak_times(res_list, runName, other_info, output_prefix)
+  postprocessing_country_attack(res_list, runName, other_info, output_prefix)
+  postprocessing_deaths(res_list, runName, other_info, output_prefix)
+  return(NULL)
+}
+
 #' postprocess simulations to plot the peak time and attack rates,
 #' and save outputs for the incidence, vaccinated, peak time and attack rates
 #' 

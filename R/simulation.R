@@ -190,7 +190,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   calculate_summaries_arg_names <- calculate_summaries_arg_names[calculate_summaries_arg_names != "res"]
   calculate_summaries_args <- list_vars_from_environment(calculate_summaries_arg_names)
   # run simulation
-  run_parallel <- FALSE
+  run_parallel <- TRUE
   if(run_parallel) {
     result <- foreach(i = 1:n_runs) %dopar% {
       res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
@@ -302,20 +302,6 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   ## initialise matrices to store simulation outputs
   incidence_mat <-  deaths_mat <- matrix(0, n_groups, length(times))
   
-  Smat <- Emat <- Imat <- Rmat <- matrix(0, n_groups, length(times))
-  SV1mat <- EV1mat <- IV1mat <- RV1mat <- vax_alloc_mat <- Smat
-  SV2mat <- EV2mat <- IV2mat <- RV2mat <- Smat
-  SPmat <- EPmat <- IPmat <- RPmat <- Smat
-  Smat[,1] <- S0
-  Emat[,1] <- E0
-  Imat[,1] <- I0
-  Rmat[,1] <- R0
-  SV1mat[,1] <- SV0
-  EV1mat[,1] <- EV0
-  IV1mat[,1] <- IV0
-  RV1mat[,1] <- RV0
-  
-  
   ## initialise vector to store number of vaccines over time
   vax_pool_vec <- double(length(times))
   ## calculate the number of vaccines ever produced at each timestep
@@ -410,8 +396,6 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         IV1 <- IV1 + actual_alloc$I
         RV1 <- RV1 + actual_alloc$R
       }
-      
-      vax_alloc_mat[,i] <- sum_vax_alloc
     }
     
     # numeric errors can be introduced, so make sure numbers of individuals
@@ -510,67 +494,16 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
         newRemovalsV2 + newRemovalsP -
         newRecovered - newRecoveredV1 - 
         newRecoveredV2 - newRecoveredP
-
-    Smat[,i] <- S
-    Emat[,i] <- E
-    Imat[,i] <- I
-    Rmat[,i] <- R
-    SV1mat[,i] <- SV1
-    EV1mat[,i] <- EV1
-    IV1mat[,i] <- IV1
-    RV1mat[,i] <- RV1
-    SV2mat[,i] <- SV2
-    EV2mat[,i] <- EV2
-    IV2mat[,i] <- IV2
-    RV2mat[,i] <- RV2
-    SPmat[,i] <- SP
-    EPmat[,i] <- EP
-    IPmat[,i] <- IP
-    RPmat[,i] <- RP
-    incidence_mat[,i] <- incidence
-    vax_pool_vec[i] <- vax_pool
     
     ## stop simulation if there are no more exposed/infectious individuals
     
     if(i < (tend + 1) && sum(E + I + EV1 + IV1 + EV2 + IV2 + EP + IP) == 0) {
-      remaining_idx <- seq((i+1), ncol(Smat))
-      # make a function to fill in the remaining parts of the state matrix
-      # once we stop the simulation
-      
-      fill_remaining_closure <- function(n_groups, remaining_idx) {
-        f <- function(vec) {
-          matrix(vec, n_groups, length(remaining_idx))
-        }
-        f
-      }
-      
-      fill_remaining <- fill_remaining_closure(n_groups, remaining_idx)
-      
-      Smat[,remaining_idx] <- fill_remaining(S)
-      Rmat[,remaining_idx] <- fill_remaining(R)
-      SV1mat[,remaining_idx] <- fill_remaining(SV1)
-      RV1mat[,remaining_idx] <- fill_remaining(RV1)
-      SV2mat[,remaining_idx] <- fill_remaining(SV2)
-      RV2mat[,remaining_idx] <- fill_remaining(RV2)
-      SPmat[,remaining_idx] <- fill_remaining(SP)
-      RPmat[,remaining_idx] <- fill_remaining(RP)
-      vax_pool_vec[remaining_idx] <- vax_pool
       break
     }
   }
   
   ## put times as column names for readability of output
-  colnames(Smat) <- colnames(Emat) <- colnames(Imat) <- colnames(Rmat) <- times
-  colnames(SV1mat) <- colnames(EV1mat) <- colnames(IV1mat) <- colnames(RV1mat) <- times
-  colnames(SV2mat) <- colnames(EV2mat) <- colnames(IV2mat) <- colnames(RV2mat) <- times
-  colnames(SPmat) <- colnames(EPmat) <- colnames(IPmat) <- colnames(RPmat) <- times
-  colnames(vax_alloc_mat) <- times
   colnames(incidence_mat) <- colnames(deaths_mat) <- times
-
-  return(list(beta=beta,S=Smat,E = Emat, I=Imat,R=Rmat,
-              SV1 = SV1mat, EV1 = EV1mat, IV1 = IV1mat, RV1 = RV1mat, 
-              SV2=SV2mat,EV2 = EV2mat, IV2=IV2mat,RV2=RV2mat,
-              SP = SPmat, EP = EPmat, IP = IPmat, RP = RPmat,
-              incidence = incidence_mat, vax_pool = vax_pool_vec,
-              deaths = deaths_mat))
+  
+  return(list(incidence = incidence_mat, deaths = deaths_mat))
 }

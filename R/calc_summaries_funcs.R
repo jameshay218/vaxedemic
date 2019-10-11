@@ -7,6 +7,26 @@ return_all_res <- function(res){
   return(res)
 }
 
+#' calculate the incidence, peak times, attack rates and deaths by country
+#'
+#' @param res output of main_simulation
+#' @param X the vector of population sizes in each location/age/risk group
+#' @param labels data frame outputted by setup_inputs containing the location/
+#' age/risk group for each row in res
+#' @return a list with four entries.
+#' incidence: the incidence over time for each country
+#' vaccinated: the number of vaccinated individuals over time for each country
+#' peakTimes: numeric vector of length n_countries: the peak time for each country
+#' country_attack_rate: numeric vector of length n_countries: the attack rate for each country
+#' @export
+calc_incidence_peak_times_attack_rates_deaths <- function(res, X, labels){
+  incidence <- calc_incidence_time_series(res, X, labels)
+  peakTimes <- calc_peak_times(res, labels)
+  country_attack_rate <- calc_country_attack(res, X, labels)
+  deaths <- calc_cumulative_deaths_time_series(res, X, labels)
+  return(c(incidence, peakTimes, country_attack_rate, deaths))
+}
+
 #' calculate the incidence, number of vaccinated individuals, peak times
 #' and attack rates by country
 #'
@@ -129,12 +149,12 @@ calc_peak_times <- function(res, labels){
 #' the attack rate for each country
 #' @export
 calc_country_attack <- function(res, X, labels){
+  incidence <- calc_country_time_series(res, X, labels, "incidence")
+  final_size <- rowSums(incidence)
   pop_total <- sum(X)
   tend <- time_end(res)
   sum_age_risk <- sum_age_risk_closure(labels)
-  final_size_by_group <- res$R[ ,tend] + res$RV1[ ,tend] +
-                        res$RV2[ ,tend] + res$RP[ ,tend] + deaths(res, X)
-  country_attack_rate <- sum_age_risk(final_size_by_group) / sum_age_risk(X)
+  country_attack_rate <- final_size / sum_age_risk(X)
   return(list(country_attack_rate = country_attack_rate))
 }
 
@@ -173,12 +193,7 @@ calc_country_time_series <- function(res, X, labels, compartments){
 #' Each row contains the incidence over time for that country.
 #' @export
 calc_cumulative_deaths_time_series <- function(res, X, labels){
-  alive_classes <- c("S", "E", "I", "R", "SV1", "EV1", "IV1", "RV1",
-                     "SV2", "EV2", "IV2", "RV2", "SP", "EP", "IP", "RP")
-  alive <- calc_country_time_series(res, X, labels, alive_classes)
-  sum_age_risk <- sum_age_risk_closure(labels)
-  pop_country <- sum_age_risk(X)
-  dead <- pop_country - alive
-  end_dead <- sum_age_risk(deaths(res, X))
-  return(list(dead = dead, end_dead = end_dead))
+  deaths <- calc_country_time_series(res, X, labels, "deaths")
+  cumulative_deaths <- t(apply(deaths, 1, cumsum))
+  return(list(dead = cumulative_deaths))
 }

@@ -6,7 +6,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
                             "top_n_countries",
                             "fn_pop_size"))
   
-  cluster <- FALSE # run on cluster or locally
+  cluster <- TRUE # run on cluster or locally
   # user identifier -- only needed if running on cluster
   user <- "ayan"
   
@@ -21,7 +21,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   setwd(package_dir)
   
   # Where to save simulation results
-  outputDir <- paste0("temp_outputs/pd",
+  outputDir <- paste0("temp_outputs2/pd",
                       production_delay, 
                       strategy, 
                       "_stockpile",
@@ -43,10 +43,10 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   # seed_params, calculate_summaries_func, postprocessing_func, other_info
   
   ## How many runs for each set of simulations?
-  n_runs <- 2
+  n_runs <- 500
   
   # parameters to do with time steps in simulation
-  time_params <- list(tmax = 360, # Maximum time of simulation (in days) -- 
+  time_params <- list(tmax = 720, # Maximum time of simulation (in days) -- 
                       # needs to be multiple of seasonality_params[["days_per_block"]]
                       tdiv = 6) # Number of time steps per day
   
@@ -106,10 +106,10 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
                       RiskGroups = 1) # which risk group to seed in each country
   
   # character string specifying function used to calculate summaries of each run.
-  calculate_summaries_func <- "calc_incidence_vaccinated_peak_times_attack_rates_deaths"
+  calculate_summaries_func <- "calc_incidence_peak_times_attack_rates_deaths"
   
   # character string specifying function to do postprocessing
-  postprocessing_func <- "postprocessing_incidence_vaccinated_peak_times_attack_rates_deaths"
+  postprocessing_func <- "postprocessing_incidence_peak_times_attack_rates_deaths"
   
   # other_info provides any other information needed, such as to calculate the summaries
   # or post-process results.

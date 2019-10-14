@@ -129,7 +129,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   }
   
   if(!file.exists(outputDir)) dir.create(outputDir, recursive = TRUE)
-  
+
   if(run_fixed) {
     ################################################################################
     # run for fixed parameters
@@ -200,6 +200,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
 
 run_all_strategies <- function() {
 
+  run_strategy("no_vaccination", 0, 0)
   strategy <- c("incidence", 
                 "curr_alloc",
                 "top_n_countries",

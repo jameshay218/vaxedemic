@@ -21,19 +21,18 @@
 # contact Ada with any questions
 
 # directory in which to save plots and tables
-save_dir <- "~/overleaf/vaxedemic_manuscript/figs/"
+save_dir <- "~/overleaf/vaxedemic_manuscript/figs_delayed_protection/"
 
 make_dirname <- function(strategy, production_delay, stockpile_size, free_param, seedCountries) {
-  if(seedCountries == "China") {
-    dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, 
-                       "_stockpile", num2str(stockpile_size), "/")
-  } else {
-    dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, 
-                       "_stockpile", num2str(stockpile_size), "_", seedCountries, "/")
+  # no vaccination results are independent of production delay and stockpile size, so we only ran them once
+  if(strategy == "no_vaccination") {
+    production_delay <- stockpile_size <- 0 
   }
-  if(!dir.exists(dir_name)) {
-    dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, "/")
-  }
+  dir_name <- paste0("outputs_delayed_protection/pd", production_delay, strategy, 
+                     "_stockpile", num2str(stockpile_size), "_", seedCountries, "/")
+  # if(!dir.exists(dir_name)) {
+  #   dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, "/")
+  # }
   dir_name
 }
 
@@ -102,7 +101,6 @@ bootstrap_median_deaths <- function(strategy, production_delay, stockpile_size, 
   # set seed for reproducible bootstrapping
   set.seed(1)  
   global_deaths <- read_global_deaths(strategy, production_delay, stockpile_size, free_param, seedCountries)
-  
   my_median <- function(data, indices) {
     median(data[indices])
   }
@@ -248,32 +246,38 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
     # define production delays to plot
     production_delay <- c(0, 7, 90, 180)
     # make grid of all combinations of vaccination strategies and production delays
-    pars <- expand.grid(strategy = strategy, production_delay = production_delay)
+    pars <- expand.grid(strategy = strategy, production_delay = production_delay,
+                        stringsAsFactors = FALSE)
+    pars <- rbind(pars, data.frame(strategy = "no_vaccination", production_delay = 0,
+                                   stringsAsFactors = FALSE))
     # define other parameters (used to construct filename from which to read the data)
     pars$stockpile_size <- 550e6
     pars[pars$production_delay > 0,"stockpile_size"] <- 0
     pars$seedCountries <- "China"
-    
+    pars$free_param <- 0
     if(bootstrap) {
       # calculate median and 95% CI for the median deaths under each vaccination strategy
       # and production delay
-      median_deaths <- apply_named_args(pars, 1, bootstrap_median_deaths_wrapper)
+      median_deaths <- apply_named_args(pars, 1, bootstrap_median_deaths_wrapper) %>%
+        do.call(rbind, .)
       # calculate median and 95% CI for the deaths averted under each vaccination strategy
       # and production delay
-      deaths_averted <- apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper)
+      deaths_averted <- apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper) %>%
+        do.call(rbind, .)
       
       # format stuff
-      rownames(median_deaths) <- c("lower_deaths", "median_deaths", "upper_deaths")
-      rownames(deaths_averted) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
-      pars <- cbind(pars, as.data.frame(t(median_deaths)), as.data.frame(t(deaths_averted)))
-      levels(pars$strategy) <- c("Incidence", "Current allocation")
+      colnames(median_deaths) <- c("lower_deaths", "median_deaths", "upper_deaths")
+      colnames(deaths_averted) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
+      pars <- cbind(pars, as.data.frame(median_deaths), as.data.frame(deaths_averted))
       pars$strategy <- factor(pars$strategy, 
-                              levels = c("Current allocation", "Incidence"))
+                              levels = c("no_vaccination", "curr_alloc", "incidence"))
+      levels(pars$strategy) <- c("No vaccination", "Current allocation", "Incidence")
     } else {
       pars <- rbind(pars, data.frame(strategy = "no_vaccination",
                                      production_delay = 0,
                                      stockpile_size = 0,
-                                     seedCountries = pars$seedCountries[1]))
+                                     seedCountries = pars$seedCountries[1],
+                                     stringsAsFactors = FALSE))
       # read in median deaths under each vaccination strategy
       # and production delay, as well as median deaths under no vaccination
       pars$median_deaths <- Map_vapply(read_median_global_deaths, numeric(1), 
@@ -283,7 +287,6 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
                                        seedCountries = pars$seedCountries)
       # calculate deaths averted = median deaths with no vaccination - median deaths with vaccination
       pars$deaths_averted <- pars[pars$strategy == "no_vaccination", "median_deaths"] - pars$median_deaths
-      
       # format stuff
       levels(pars$strategy) <- c("Incidence", "Current allocation", "No vaccination")
       pars$strategy <- factor(pars$strategy, 
@@ -308,32 +311,38 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
             text = element_text(size = 12)) +
       scale_fill_manual(values = gg_color_hue(4)[c(1,4)])
 
-    plot2 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = production_delay, y = deaths_averted, fill = strategy)) +
-      geom_bar(stat = "identity", position = "dodge") +
-      scale_y_continuous(breaks = y_breaks, 
-                         labels = formatC(y_breaks / 1e6, digits = 2),
-                         expand = expand_scale(mult = c(0, .1))) +
-      xlab("Production delay (days)") +
-      ylab("Deaths averted (million)") +
-      theme_bw() +
-      theme(legend.position = c(.8,.8),
-            text = element_text(size = 12))
+    # plot2 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = production_delay, y = deaths_averted, fill = strategy)) +
+    #   geom_bar(stat = "identity", position = "dodge") +
+    #   scale_y_continuous(breaks = y_breaks, 
+    #                      labels = formatC(y_breaks / 1e6, digits = 2),
+    #                      expand = expand_scale(mult = c(0, .1))) +
+    #   xlab("Production delay (days)") +
+    #   ylab("Deaths averted (million)") +
+    #   theme_bw() +
+    #   theme(legend.position = c(.8,.8),
+    #         text = element_text(size = 12))
     
     if(bootstrap) {
       plot1 <- plot1 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted))
-      plot2 <- plot2 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted), position = "dodge")
+      # plot2 <- plot2 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted), position = "dodge")
     }
     
     # save output as files
     if(save_output) {
-      ggsave(paste0(save_dir, "deaths_averted_simple_allocation.pdf"),
-             plot1, width = 20, height = 10, units = "cm")
-      ggsave(paste0(save_dir, "deaths_averted_simple_allocation_alt.pdf"),
-             plot2, width = 10, height = 10, units = "cm")
-      print_table(pars, filename = paste0(save_dir, "deaths_averted_simple_allocation.tex"))
+      width <- 20
+      height <- 10
+      ggsave(paste0(save_dir, "Fig2.pdf"),
+             plot1, width = width, height = height, units = "cm")
+      png(paste0(save_dir, "Fig2.png"),width=width,height=height, units = "cm", res = 300)
+      plot(plot1)
+      dev.off()
+      saveRDS(plot1, file = paste0(save_dir, "Fig2.rds"))
+      # ggsave(paste0(save_dir, "deaths_averted_simple_allocation_alt.pdf"),
+      #        plot2, width = 10, height = 10, units = "cm")
+      print_table(pars, filename = paste0(save_dir, "Fig2.tex"))
     }
     
-    list(table = pars, plot1 = plot1, plot2 = plot2)
+    list(table = pars, plot1 = plot1)
 }
 
 #' make Fig. 3 in the manuscript: comparing deaths averted for allocation strategies by population size,
@@ -365,30 +374,35 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
   # make grid of all combinations of vaccination strategies and production delays
   pars <- expand.grid(strategy = "top_n_countries", 
                       production_delay = production_delay,
-                      free_param = n_countries)
+                      free_param = n_countries,
+                      stringsAsFactors = FALSE)
   pars <- rbind(pars, expand.grid(strategy = "fn_pop_size", 
                                   production_delay = production_delay,
-                                  free_param = alpha))
+                                  free_param = alpha,
+                                  stringsAsFactors = FALSE))
   # define other parameters (used to construct filename from which to read the data)
   pars$stockpile_size <- 550e6
   pars[pars$production_delay > 0,"stockpile_size"] <- 0
   pars$seedCountries <- "China"
   
   pars_reference <- pars[seq_len(4),]
-  levels(pars_reference$strategy)[[1]] <- "curr_alloc"
-  pars_reference <- pars_reference[,-3]
+  pars_reference$strategy <- "curr_alloc"
+  pars_reference$free_param <- 0
   
   if(bootstrap) {
     # calculate median and 95% CI for the median deaths under each vaccination strategy
     # and production delay
-    median_deaths <- apply_named_args(pars, 1, bootstrap_median_deaths_wrapper)
+    median_deaths <- apply_named_args(pars, 1, bootstrap_median_deaths_wrapper) %>%
+      do.call(rbind, .)
     # calculate median and 95% CI for the deaths averted under each vaccination strategy
     # and production delay
-    deaths_averted <- apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper)
+    deaths_averted <- apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper) %>%
+      do.call(rbind, .)
     # format stuff
-    rownames(median_deaths) <- c("lower_deaths", "median_deaths", "upper_deaths")
-    rownames(deaths_averted) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
-    pars <- cbind(pars, as.data.frame(t(median_deaths)), as.data.frame(t(deaths_averted)))
+    colnames(median_deaths) <- c("lower_deaths", "median_deaths", "upper_deaths")
+    colnames(deaths_averted) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
+    pars <- cbind(pars, as.data.frame(median_deaths), as.data.frame(deaths_averted))
+    pars$strategy <- factor(pars$strategy, levels = c("top_n_countries", "fn_pop_size"))
     levels(pars$strategy) <- c("Top n countries", "Function of population size")
   } else {
     pars <- rbind(pars, data.frame(strategy = "no_vaccination",
@@ -422,10 +436,11 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
     if(bootstrap) {
       # calculate median and 95% CI for the deaths averted under each vaccination strategy
       # and production delay
-      deaths_averted_curr_alloc <- apply_named_args(pars_reference, 1, bootstrap_deaths_averted_wrapper)
+      deaths_averted_curr_alloc <- apply_named_args(pars_reference, 1, bootstrap_deaths_averted_wrapper) %>%
+        do.call(rbind, .)
       # format stuff
-      rownames(deaths_averted_curr_alloc) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
-      deaths_averted_curr_alloc <- as.data.frame(t(deaths_averted_curr_alloc))
+      colnames(deaths_averted_curr_alloc) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
+      deaths_averted_curr_alloc <- as.data.frame(deaths_averted_curr_alloc)
       deaths_averted_curr_alloc$production_delay <- production_delay
     } else {
       stop("Not yet implemented")
@@ -499,36 +514,40 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
     theme(legend.position = "none",
           text = element_text(size = 12)) +
     scale_fill_manual(values = gg_color_hue(4)[2:3])
-  plot2 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = free_param, y = deaths_averted, fill = production_delay, group = production_delay)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    facet_grid(~strategy, scales = "free_x") +
-    scale_y_continuous(breaks = y_breaks, 
-                       labels = formatC(y_breaks / 1e6, digits = 2),
-                       expand = expand_scale(mult = c(0, .1))) +
-    xlab(xlab_string) +
-    ylab("Deaths averted (million)") +
-    theme_bw() +
-    theme(text = element_text(size = 12)) +
-    scale_fill_manual(name = "Production delay (days)",
-                      values = rev(RColorBrewer::brewer.pal(4,"Blues")))
+  # plot2 <- ggplot(pars[pars$strategy != "No vaccination",], aes(x = free_param, y = deaths_averted, fill = production_delay, group = production_delay)) +
+  #   geom_bar(stat = "identity", position = "dodge") +
+  #   facet_grid(~strategy, scales = "free_x") +
+  #   scale_y_continuous(breaks = y_breaks, 
+  #                      labels = formatC(y_breaks / 1e6, digits = 2),
+  #                      expand = expand_scale(mult = c(0, .1))) +
+  #   xlab(xlab_string) +
+  #   ylab("Deaths averted (million)") +
+  #   theme_bw() +
+  #   theme(text = element_text(size = 12)) +
+  #   scale_fill_manual(name = "Production delay (days)",
+  #                     values = rev(RColorBrewer::brewer.pal(4,"Blues")))
   
   if(bootstrap) {
     plot1 <- plot1 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted))
-    plot2 <- plot2 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted), position = "dodge")
+    # plot2 <- plot2 + geom_errorbar(aes(ymin = lower_deaths_averted, ymax = upper_deaths_averted), position = "dodge")
   }
   
   # save output as files
   if(save_output) {
-    ggsave(paste0(save_dir, "deaths_averted_complex_allocation.pdf"),
-           plot1, width = 15, height = 15, units = "cm")
-    ggsave(paste0(save_dir, "deaths_averted_complex_allocation_alt.pdf"),
-           plot2, width = 20, height = 10, units = "cm")
     print_table(pars, filename = paste0(save_dir, "deaths_averted_top_n_countries.tex"), "Top n countries")
     print_table(pars, filename = paste0(save_dir, "deaths_averted_fn_pop_size.tex"), 
                 "Function of population size")
+    width <- 15
+    height <- 15
+    ggsave(paste0(save_dir, "Fig3.pdf"),
+           plot1, width = width, height = height, units = "cm")
+    png(paste0(save_dir, "Fig3.png"),width=width,height=height, units = "cm", res = 300)
+    plot(plot1)
+    dev.off()
+    saveRDS(plot1, file = paste0(save_dir, "Fig3.rds"))
   }
   
-  list(table = pars, plot1 = plot1, plot2 = plot2)
+  list(table = pars, plot1 = plot1)
 }
 
 #' make Fig S1 in manuscript: death averted for vaccination allocation

@@ -147,8 +147,21 @@ calc_median_global_deaths <- function(filename) {
   median(calc_global_deaths(filename))
 }
 
-calc_global_deaths <- function(filename) {
+calc_global_deaths <- function(filename, alloc_split) {
+  stopifnot(alloc_split %in% c("global", "with", "without"))
   deaths <- readRDS(filename)
+  if(alloc_split != "global") {
+    coverage <- read.csv("data/coverage_data_intersect.csv")
+    if(alloc_split == "with") {
+      deaths <- lapply(deaths,
+                       function(x) x[coverage$dose_per_1000 > 0,] )
+    } else {
+      deaths <- lapply(deaths,
+                       function(x) x[coverage$dose_per_1000 == 0,] )
+      browser()
+    }
+
+  }
   vnapply(deaths, function(x) sum(x[, ncol(x)]))
 }
 

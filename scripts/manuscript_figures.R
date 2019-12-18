@@ -28,8 +28,10 @@ make_dirname <- function(strategy, production_delay, stockpile_size, free_param,
   if(strategy == "no_vaccination") {
     production_delay <- stockpile_size <- 0 
   }
-  dir_name <- paste0("outputs_delayed_protection/pd", production_delay, strategy, 
+  dir_name <- paste0("no_seasonality/pd", production_delay, strategy,
                      "_stockpile", num2str(stockpile_size), "_", seedCountries, "/")
+  # dir_name <- paste0("outputs_delayed_protection/pd", production_delay, strategy,
+                     # "_stockpile", num2str(stockpile_size), "_", seedCountries, "/")
   # if(!dir.exists(dir_name)) {
   #   dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, "/")
   # }
@@ -801,7 +803,7 @@ make_Fig2_split_alloc <- function(save_output = FALSE, bootstrap = TRUE) {
     deaths_averted <- t(apply_named_args(pars, 1, bootstrap_deaths_averted_wrapper)) %>%
       as.data.frame
     # do.call(rbind, .)
-    browser()
+    
     # format stuff
     colnames(median_deaths) <- c("lower_deaths", "median_deaths", "upper_deaths")
     colnames(deaths_averted) <- c("lower_deaths_averted", "deaths_averted", "upper_deaths_averted")
@@ -874,4 +876,36 @@ make_Fig2_split_alloc <- function(save_output = FALSE, bootstrap = TRUE) {
   }
   
   list(table = pars, plot1 = plot1)
+}
+
+get_deaths_countries_without_alloc <- function(strategy, production_delay, stockpile_size, free_param, seedCountries) {
+  dir_name <- make_dirname(strategy, production_delay, stockpile_size, free_param, seedCountries)
+  filename <- paste0(dir_name, strategy, "_fixed_deaths.rds")
+  deaths <- readRDS(filename)
+  coverage <- read.csv("data/coverage_data_intersect.csv")
+  deaths <- lapply(deaths,
+                   function(x) x[coverage$dose_per_1000 == 0,] )
+  deaths <- vapply(deaths, colSums, numeric(ncol(deaths[[1]])))
+  deaths
+}
+
+plot_deaths_countries_without_alloc_stockpile <- function() {
+  strategy <- c("no_vaccination", "curr_alloc")
+  get_quantile_deaths_countries_without_alloc <- function(strategy) {
+    deaths <- get_deaths_countries_without_alloc(strategy, 0, 550e6, 0, "China")%>%
+      apply(1, quantile, probs = c(0.025, 0.5, 0.975)) %>%
+      t %>%
+      as.data.frame
+    deaths$t <- as.numeric(rownames(deaths))
+    deaths$strategy <- strategy
+    deaths
+  }
+  deaths <- lapply(strategy, get_quantile_deaths_countries_without_alloc) %>%
+    do.call(rbind, .)
+  g <- ggplot(deaths, aes(x = t, group = strategy)) +
+    geom_line(aes(y = `50%`, color = strategy)) +
+    geom_ribbon(aes(ymin = `2.5%`, ymax = `97.5%`, fill = strategy), alpha = 0.3) +
+    theme_bw() +
+    xlab("Time (days)") +
+    ylab("Cumulative deaths")
 }

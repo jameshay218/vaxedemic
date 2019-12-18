@@ -1,4 +1,4 @@
-cluster <- TRUE # run on cluster or locally
+cluster <- FALSE # run on cluster or locally
 # user identifier -- only needed if running on cluster
 user <- "ayan"
 
@@ -29,7 +29,7 @@ output_prefix <- paste(outputDir, output_prefix, sep = "/")
 # seed_params, calculate_summaries_func, postprocessing_func, other_info
 
 ## How many runs for each set of simulations?
-n_runs <- 500
+n_runs <- 2
 
 # if TRUE, run a short test before the full number of runs
 short_test <- FALSE
@@ -52,7 +52,7 @@ seasonality_params <- list(tdelay = 180, # (in days) Shifts the seasonality func
                            amp = 0.3) # amplitude of seasonality
 
 ## Life history parameters, including R0
-life_history_params <- list(R0=1.4, TR=2.6, LP = 1.5, case_fatality_ratio = rep(2e-2,2))
+life_history_params <- list(R0=1.4, TR=2.6, LP = 1.5, case_fatality_ratio = rep(1e-3,2))
 
 ## Travel parameters
 travel_params <- list(epsilon = 5e-5)
@@ -102,14 +102,14 @@ seed_params <- list(Countries = seedCountries, # where to seed
 # calculate_summaries_func <- "calc_peak_times_and_attack_rates"
 # calculate_summaries_func <- "calc_region_time_series"
 # calculate_summaries_func <- "calc_incidence_time_series"
-calculate_summaries_func <- "calc_incidence_vaccinated_peak_times_attack_rates"
+calculate_summaries_func <- "calc_incidence_peak_times_attack_rates_deaths"
 # calculate_summaries_func <- "return_all_res"
 
 
 # character string specifying function to do postprocessing
 # see current options in get_vaxedemic_func_options()
 # postprocessing_func <- "postprocessing_peak_times_and_attack_rates"
-postprocessing_func <- "postprocessing_incidence_vaccinated_peak_times_attack_rates"
+postprocessing_func <- "postprocessing_incidence_peak_times_attack_rates_deaths"
 # postprocessing_func <- "postprocessing_simple_save"
 
 # certain postprocessing funcs require certain summaries to be calculated -- check

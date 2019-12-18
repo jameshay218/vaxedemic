@@ -1,4 +1,4 @@
-run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCountries = "China") {
+run_strategy_no_seasonality <- function(strategy, production_delay, stockpile_size = 0, seedCountries = "China") {
   
   stopifnot(strategy %in% c("no_vaccination", 
                             "incidence", 
@@ -21,7 +21,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
   setwd(package_dir)
   
   # Where to save simulation results
-  outputDir <- paste0("temp_outputs2/pd",
+  outputDir <- paste0("no_seasonality/pd",
                       production_delay, 
                       strategy, 
                       "_stockpile",
@@ -69,7 +69,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
                            spatialCoupling=TRUE,
                            real_data = TRUE,
                            country_specific_contact = TRUE,
-                           seasonal = TRUE,
+                           seasonal = FALSE,
                            rng_seed = NULL)
   
   # parameters to do with properties of the vaccine: efficacy and initial number vaccinated
@@ -206,7 +206,7 @@ run_all_strategies <- function() {
                 "top_n_countries",
                 "fn_pop_size")
   
-  production_delay <- c(0, 90, 180)
+  production_delay <- c(7, 90, 180)
   
   stockpile_size <- 550e6
   
@@ -214,7 +214,6 @@ run_all_strategies <- function() {
   #                    "Singapore", "Uganda")
   seedCountries <- c("Sao_Tome_and_Principe", "Belgium",
                      "Singapore", "Uganda")
-  
   # largest pop size, smallest pop size, medium pop size, 
   # 3rd largest connnectivity, smallest connectivity
   

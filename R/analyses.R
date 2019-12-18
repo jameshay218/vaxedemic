@@ -158,7 +158,7 @@ calc_global_deaths <- function(filename, alloc_split) {
     } else {
       deaths <- lapply(deaths,
                        function(x) x[coverage$dose_per_1000 == 0,] )
-      browser()
+      
     }
 
   }

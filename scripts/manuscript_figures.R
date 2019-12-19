@@ -28,13 +28,12 @@ make_dirname <- function(strategy, production_delay, stockpile_size, free_param,
   if(strategy == "no_vaccination") {
     production_delay <- stockpile_size <- 0 
   }
-  dir_name <- paste0("no_seasonality/pd", production_delay, strategy,
+  dir_name <- paste0("outputs_delayed_protection/pd", production_delay, strategy,
                      "_stockpile", num2str(stockpile_size), "_", seedCountries, "/")
-  # dir_name <- paste0("outputs_delayed_protection/pd", production_delay, strategy,
-                     # "_stockpile", num2str(stockpile_size), "_", seedCountries, "/")
-  # if(!dir.exists(dir_name)) {
-  #   dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, "/")
-  # }
+  if(!dir.exists(dir_name)) {
+    message(dir_name)
+    dir_name <- paste0("outputs/deaths_only/pd", production_delay, strategy, "/")
+  }
   dir_name
 }
 
@@ -262,15 +261,15 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
   strategy <- c("incidence",
                 "curr_alloc")
   # define production delays to plot
-  production_delay <- c(0, 7, 90, 180)
+  production_delay <- c(0, 0, 90, 180)
   # make grid of all combinations of vaccination strategies and production delays
   pars <- expand.grid(strategy = strategy, production_delay = production_delay,
                       stringsAsFactors = FALSE)
   pars <- rbind(pars, data.frame(strategy = "no_vaccination", production_delay = 0,
                                  stringsAsFactors = FALSE))
   # define other parameters (used to construct filename from which to read the data)
-  pars$stockpile_size <- 550e6
-  pars[pars$production_delay > 0,"stockpile_size"] <- 0
+  pars$stockpile_size <- 0
+  pars[seq_along(strategy),"stockpile_size"] <- 550e6
   pars$seedCountries <- "China"
   pars$free_param <- 0
   if(bootstrap) {
@@ -312,9 +311,10 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
                             levels = c("Current allocation", "Incidence", "No vaccination"))
     
   }
-  pars$production_delay <- factor(pars$production_delay)
-  levels(pars$production_delay) <- c("stockpile", production_delay[production_delay > 0])
-  
+
+  pars[pars$stockpile_size > 0, "production_delay"] <- "stockpile"
+  pars$production_delay <- factor(pars$production_delay, levels = unique(pars$production_delay))
+
   # make plots
   plot_wrapper <- function(production_delay_subset) {
     pars <- pars[pars$production_delay %in% production_delay_subset,]
@@ -347,7 +347,7 @@ make_Fig2 <- function(save_output = FALSE, bootstrap = TRUE) {
     }
     plot1
   }
-  production_delay_subset <- list(c("stockpile", 7),
+  production_delay_subset <- list(c("stockpile", 0),
                                   c(90, 180))
   plot1 <- lapply(production_delay_subset, plot_wrapper)
   # save output as files
@@ -383,7 +383,7 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
   alpha <- c(.5, 1, 2, 3)
   
   # define production delays to plot
-  production_delay <- c(0, 7, 90, 180)
+  production_delay <- c(0, 0, 90, 180)
   # make grid of all combinations of vaccination strategies and production delays
   pars <- expand.grid(strategy = "top_n_countries", 
                       production_delay = production_delay,
@@ -394,8 +394,8 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
                                   free_param = alpha,
                                   stringsAsFactors = FALSE))
   # define other parameters (used to construct filename from which to read the data)
-  pars$stockpile_size <- 550e6
-  pars[pars$production_delay > 0,"stockpile_size"] <- 0
+  pars$stockpile_size <- 0
+  pars[seq(1, nrow(pars), length(production_delay)),"stockpile_size"] <- 550e6
   pars$seedCountries <- "China"
   
   pars_reference <- pars[seq_len(4),]
@@ -439,8 +439,8 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
     levels(pars$strategy) <- c("Top n countries", "Function of population size", "No vaccination")
   }
   
-  pars$production_delay <- factor(pars$production_delay)
-  levels(pars$production_delay) <- c("stockpile", production_delay[production_delay > 0])
+  pars[pars$stockpile_size > 0, "production_delay"] <- "stockpile"
+  pars$production_delay <- factor(pars$production_delay, levels = unique(pars$production_delay))
   pars$free_param <- factor(pars$free_param)
   
   # get reference values
@@ -476,8 +476,9 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
       
     }
     
-    deaths_averted_curr_alloc$production_delay <- factor(deaths_averted_curr_alloc$production_delay)
-    levels(deaths_averted_curr_alloc$production_delay) <- c("stockpile", production_delay[production_delay > 0])
+    deaths_averted_curr_alloc[pars_reference$stockpile_size > 0, "production_delay"] <- "stockpile"
+    deaths_averted_curr_alloc$production_delay <- factor(deaths_averted_curr_alloc$production_delay, levels = unique(deaths_averted_curr_alloc$production_delay))
+
     if(plot_reference_curr_alloc_separate_panel) {
       deaths_averted_curr_alloc <- data.frame(strategy = factor("Current Allocation",
                                                                 levels = c(levels(pars$strategy), "Current Allocation")),
@@ -555,7 +556,7 @@ make_Fig3 <- function(plot_reference_curr_alloc = FALSE,
     plot1
   }
   
-  production_delay_subset <- list(c("stockpile", 7),
+  production_delay_subset <- list(c("stockpile", 0),
                                   c(90, 180))
   plot1 <- lapply(production_delay_subset, plot_wrapper)
   

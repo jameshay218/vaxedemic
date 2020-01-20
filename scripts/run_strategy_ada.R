@@ -200,7 +200,7 @@ run_strategy <- function(strategy, production_delay, stockpile_size = 0, seedCou
 
 run_all_strategies <- function() {
 
-  run_strategy("no_vaccination", 0, 0)
+  # run_strategy("no_vaccination", 0, 0)
   strategy <- c("incidence", 
                 "curr_alloc",
                 "top_n_countries",
@@ -223,13 +223,17 @@ run_all_strategies <- function() {
 
   pars$stockpile_size <- 0
   pars$seedCountries <- "China"
-  pars_stockpile <- data.frame(strategy = strategy, production_delay = 0, stockpile_size = stockpile_size)
-  pars_stockpile <- expand.grid(strategy = c(strategy, "no_vaccination"), 
-                                production_delay = 0, 
-                                stockpile_size = stockpile_size,
+  # pars_stockpile <- data.frame(strategy = strategy, production_delay = 0, stockpile_size = stockpile_size)
+  strategy <- c(strategy, "no_vaccination")
+  production_delay <- c(0, production_delay)
+  pars_different_seed_countries <- expand.grid(strategy = strategy, 
+                                production_delay = production_delay, 
+                                stockpile_size = 0,
                                 seedCountries = seedCountries,
                                 stringsAsFactors = FALSE)
-  pars <- pars_stockpile
+  pars_different_seed_countries$stockpile_size <- rep(c(stockpile_size, numeric(length(production_delay) - 1)),
+                                                      each = length(strategy))
+  pars <- pars_different_seed_countries
   # pars <- rbind(pars, pars_stockpile)
   Map(run_strategy, pars$strategy, pars$production_delay, pars$stockpile_size, pars$seedCountries)
 }

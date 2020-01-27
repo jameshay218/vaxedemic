@@ -52,18 +52,11 @@ gives the number of vaccines to allocate to each location, age, risk group}
 \value{
 list containing the elements:
 beta: infectivity parameter
-S: matrix containing the number of unvaccinated susceptibles in each
+incidence: matrix containing the incidence in each
 location, age, risk group at each timestep.
 nrow(S) = n_groups = n_countres * n_ages * n_riskgroups
 ncol(S) = tend = tmax * tdiv
-E: same as Smat but for unvaccinated exposed
-I: same as Smat but for unvaccinated infectious
-R: same as Smat but for unvaccinated removed
-SV: same as Smat but for vaccinated susceptible
-EV: same as Smat but for vaccinated exposed
-IV: same as Smat but for vaccinated infectious
-RV: same as Smat but for vaccinated removed
-vax_pool: numeric vector containing number of vaccines available at each timestep.
+deaths: same as incidence but for deaths
 }
 \description{
 main simulation loop

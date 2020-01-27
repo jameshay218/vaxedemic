@@ -12,6 +12,8 @@
 #' amp: amplitude of seasonality
 #' @param time_params list of parameters to do with time steps in simulation.
 # contains the elements tmax (Maximum time of simulation), tdiv (Number of time steps per day)
+#' @param intervention_params list of parameters to do with intervention.
+#' contains the elements tintervene (Time of intervention), prop_travel (proportion of between-country travel after intervention, relative to before intervention)
 #' @param vax_alloc_period allocate vaccines once every this many timesteps
 #' @param processed_inputs list. output of setup_inputs function
 #' @param n_runs number of repeats to run
@@ -21,8 +23,8 @@
 #' @import foreach
 #' @importFrom Matrix Matrix
 #' @export
-run_simulation <- function(simulation_flags, life_history_params, vax_params, seasonality_params,
-                           time_params, vax_alloc_period, processed_inputs,
+run_simulation_intervention <- function(simulation_flags, life_history_params, vax_params, seasonality_params,
+                           time_params, intervention_params, vax_alloc_period, processed_inputs,
                            n_runs=1,
                            calculate_summaries_func="return_all_res", other_info){
   
@@ -40,6 +42,8 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   amp <- seasonality_params[["amp"]] #Amplitude of seasonality########
   tmax <- time_params[["tmax"]]
   tdiv <- time_params[["tdiv"]]
+  tintervene <- intervention_params[["tintervene"]]
+  prop_travel <- intervention_params[["prop_travel"]]
   
   n_countries <- processed_inputs[["n_countries"]]
   n_ages <- processed_inputs[["n_ages"]]
@@ -96,9 +100,15 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     Knorm <- kronecker(matrix(1,1,n_countries),matrix(Krow,n_countries,1))
     travelMatrix <- travelMatrix/Knorm
   }
+
+  # scales off-diagonal of travelMatrix by prop_travel
+  travelMatrixIntervention <- travelMatrix * prop_travel + diag(diag(travelMatrix)) * (1 - prop_travel)
+
   Kdelta <- kronecker(diag(groupsPerLoc),travelMatrix)
+  KdeltaIntervention <- kronecker(diag(groupsPerLoc),travelMatrixIntervention)
   K1 <- kronecker(matrix(1,groupsPerLoc,groupsPerLoc),t(travelMatrix))
-  
+  K1Intervention <- kronecker(matrix(1,groupsPerLoc,groupsPerLoc),t(travelMatrixIntervention))
+
   ## combine contact and travel matrices
   if(is.list(contactMatrix)) { # if age-risk mixing is country-specific
     # row concatenation of age/risk matrices by country
@@ -112,8 +122,9 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     Cnew <- matrix(CT,groupsPerLoc,groupsPerLoc*n_countries)
     Chome <- kronecker(t(Cnew),matrix(1,1,n_countries))#Mix as though were home
     KC <- kronecker(matrix(1,n_ages * n_riskgroups,n_ages * n_riskgroups),travelMatrix)*Chome
+    KCIntervention <- kronecker(matrix(1,n_ages * n_riskgroups,n_ages * n_riskgroups),travelMatrixIntervention)*Chome
   } else {
-    KC <- kronecker(contactMatrix,t(travelMatrix))
+    KCIntervention <- kronecker(contactMatrix,t(travelMatrixIntervention))
   }
   
   ## Denominator of force of infection term
@@ -122,6 +133,12 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   M1[M==0] <- 0
   
   M1 <- kronecker(matrix(1,maxIndex,1),t(M1))
+
+  MIntervention <- K1Intervention%*%X
+  M1Intervention <- 1/MIntervention
+  M1Intervention[MIntervention==0] <- 0
+  
+  M1Intervention <- kronecker(matrix(1,maxIndex,1),t(M1Intervention))
   
   Xover=1/X
   Xover[X==0] <- 0
@@ -158,6 +175,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   sigma <- sigma/tdiv
   
   LD <- (Kdelta*M1)%*%KC ##DH: no beta
+  LDIntervention <- (KdeltaIntervention*M1Intervention)%*%KCIntervention ##DH: no beta
   
   #### calculation of force of infection matrix (LD) ends here
   
@@ -175,11 +193,16 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
       M1Phi <- M1*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i]))
       as.matrix(Matrix(Kdelta*M1Phi)%*%KC)
     }
+    LDIntervention <- foreach(i=1:ncol(Phi)) %do% {
+      M1PhiIntervention <- M1Intervention*kronecker(matrix(1,n_ages * n_riskgroups *n_countries,1),t(Phi[,i]))
+      as.matrix(Matrix(KdeltaIntervention*M1PhiIntervention)%*%KC)
+    }
   }
   
   ## gather model parameters
   modelParameters <- list("gamma"=gamma, "sigma" = sigma, "efficacy" = efficacy,
                           "beta" = beta, "M1" = M1, "Kdelta" = Kdelta, "KC"= KC,
+                          "M1Intervention" = M1Intervention, "KdeltaIntervention" = KdeltaIntervention, "KCIntervention"= KCIntervention,
                           "Phi" = Phi, "seasonal" = seasonal, 
                           "case_fatality_ratio" = processed_inputs[["case_fatality_ratio_vec"]])
   
@@ -194,7 +217,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   run_parallel <- TRUE
   if(run_parallel) {
     result <- foreach(i = 1:n_runs) %dopar% {
-      res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+      res <- main_simulation_intervention(tmax,tdiv, tintervene, vax_alloc_period, LD, LDIntervention, S, E, I, R,
                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                              vax_allocation_func)
       res <- c(list(res = res), calculate_summaries_args)
@@ -205,7 +228,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
     # series version for debugging
     result <- list(n_runs)
     for(i in 1:n_runs) {
-      res <- main_simulation(tmax,tdiv, vax_alloc_period, LD, S, E, I, R,
+      res <- main_simulation_intervention(tmax,tdiv, tintervene, vax_alloc_period, LD, LDIntervention, S, E, I, R,
                              SV, EV, IV, RV, modelParameters, cum_vax_pool_func,
                              vax_allocation_func)
       # put arguments of other_info into global environment, so that they can be passed
@@ -255,7 +278,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
 #' nrow(S) = n_groups = n_countres * n_ages * n_riskgroups
 #' ncol(S) = tend = tmax * tdiv
 #' deaths: same as incidence but for deaths
-main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0, 
+main_simulation_intervention <- function(tmax, tdiv, tintervene, vax_alloc_period, LD, LDIntervention, S0, E0, I0, R0, 
                             SV0, EV0, IV0, RV0, params,
                             cum_vax_pool_func, vax_allocation_func){
   ## extract model parameters  
@@ -267,6 +290,9 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   M1 <- params[["M1"]]
   Kdelta <- params[["Kdelta"]]
   KC <- Matrix(params[["KC"]])
+  M1Intervention <- params[["M1Intervention"]]
+  KdeltaIntervention <- params[["KdeltaIntervention"]]
+  KCIntervention <- Matrix(params[["KCIntervention"]])
   Phi <- params[["Phi"]]
   seasonal <- params[["seasonal"]]
   
@@ -294,10 +320,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
   switch_freq <- tend+1
   index <- 1
   LD1 <- LD
+  LDIntervention1 <- LDIntervention
   if(is.list(LD)){
     n_blocks <- length(LD)
     switch_freq <- tend/n_blocks
     LD1 <- LD[[index]]
+    LDIntervention1 <- LDIntervention[[index]]
   }
   
   ## initialise matrices to store simulation outputs
@@ -322,6 +350,7 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     if(i %% switch_freq == 0 && i < tend){
       index <- index + 1
       LD1 <- LD[[index]]
+      LDIntervention1 <- LDIntervention[[index]]
     }
     
     #################
@@ -415,7 +444,12 @@ main_simulation <- function(tmax, tdiv, vax_alloc_period, LD, S0, E0, I0, R0,
     ## INFECTIONS
     #################
     ## Generate force of infection on each group/location
-    lambda <- beta*LD1%*%(I + IV1 + IV2 + IP)
+    if(i > tdiv * tintervene) {
+      lambda <- beta*LDIntervention1%*%(I + IV1 + IV2 + IP)
+    } else {
+      lambda <- beta*LD1%*%(I + IV1 + IV2 + IP)
+    }
+
     
     ## Generate probability of infection from this
     P_infection <- 1 - exp(-lambda)

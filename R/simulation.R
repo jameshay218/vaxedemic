@@ -155,6 +155,7 @@ run_simulation <- function(simulation_flags, life_history_params, vax_params, se
   ## Convert to smaller time step rates
   beta <- beta/tdiv
   gamma <- gamma/tdiv
+  sigma <- sigma/tdiv
   
   LD <- (Kdelta*M1)%*%KC ##DH: no beta
   
